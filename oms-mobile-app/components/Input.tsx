@@ -1,20 +1,27 @@
 import { TextInput, TextInputProps, View, Text } from 'react-native';
+import { colors } from '@/constants/Colors';
 
 interface InputProps extends TextInputProps {
   label?: string;
   error?: string;
+  leftIcon?: React.ReactNode;
 }
 
-export function Input({ label, error, className = '', ...props }: InputProps) {
+export function Input({ label, error, leftIcon, className = '', ...props }: InputProps) {
   return (
     <View className={`w-full mb-4 ${className}`}>
-      {label && <Text className="text-gray-700 font-inter-semibold mb-2">{label}</Text>}
-      <TextInput
-        className={`w-full bg-gray-50 border ${error ? 'border-red-500' : 'border-gray-300'} rounded-xl px-4 py-3 text-black text-base`}
-        placeholderTextColor="#9CA3AF"
-        {...props}
-      />
-      {error && <Text className="text-red-500 text-sm mt-1">{error}</Text>}
+      {label && <Text className="text-text font-inter-semibold mb-2">{label}</Text>}
+      <View 
+        className={`flex-row items-center w-full bg-input-bg border ${error ? 'border-error' : 'border-border'} rounded-xl px-4 py-3`}
+      >
+        {leftIcon && <View className="mr-3">{leftIcon}</View>}
+        <TextInput
+          className="flex-1 text-text text-base font-inter p-0"
+          placeholderTextColor={colors.muted}
+          {...props}
+        />
+      </View>
+      {error && <Text className="text-error text-sm font-inter mt-1">{error}</Text>}
     </View>
   );
 }

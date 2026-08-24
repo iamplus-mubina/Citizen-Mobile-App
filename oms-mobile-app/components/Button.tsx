@@ -10,8 +10,8 @@ export function Button({ title, variant = 'primary', className = '', ...props }:
   let textClass = 'text-white';
 
   if (variant === 'secondary') {
-    bgClass = 'bg-gray-200';
-    textClass = 'text-gray-800';
+    bgClass = 'bg-secondary';
+    textClass = 'text-secondary-text';
   } else if (variant === 'outline') {
     bgClass = 'bg-transparent border-2 border-primary';
     textClass = 'text-primary';

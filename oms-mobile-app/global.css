@@ -7,5 +7,12 @@
     --color-primary: #003366;
     --color-background: #ffffff;
     --color-text: #1f2937;
+    --color-muted: #6b7280;
+    --color-secondary: #e5e7eb;
+    --color-secondary-text: #374151;
+    --color-border: #d1d5db;
+    --color-input-bg: #f9fafb;
+    --color-error: #b91c1c;
+    --color-on-primary: #ffffff;
   }
 }
