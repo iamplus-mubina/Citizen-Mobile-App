@@ -23,7 +23,6 @@ export default function RegisterScreen() {
   const [address, setAddress] = useState('');
 
   const handleNext = () => {
-    // Basic validation
     if (!fullName.trim()) {
       alert('Please enter your full name');
       return;

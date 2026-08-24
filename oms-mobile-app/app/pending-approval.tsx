@@ -10,12 +10,10 @@ export default function PendingApprovalScreen() {
   const renderContent = () => (
     <View className="flex-1 px-6 w-full max-w-md mx-auto pt-16 pb-10 justify-between">
       <View className="items-center w-full flex-1 justify-center">
-        {/* Checkmark Circle */}
         <View className="w-24 h-24 rounded-full bg-primary justify-center items-center mb-8">
           <CheckIcon size={48} color={colors.surface} />
         </View>
 
-        {/* Headings */}
         <Text className="text-3xl font-inter-bold text-primary mb-4 text-center">
           Registration Submitted!
         </Text>
@@ -23,7 +21,6 @@ export default function PendingApprovalScreen() {
           Your account is awaiting approval by Office Admin.
         </Text>
 
-        {/* Dashed Status Box */}
         <View className="w-full border-2 border-dashed border-primary rounded-2xl py-6 px-4 items-center mb-10">
           <Text className="text-muted text-base font-inter-medium mb-1">
             Status
@@ -33,13 +30,11 @@ export default function PendingApprovalScreen() {
           </Text>
         </View>
 
-        {/* Bottom Text */}
         <Text className="text-muted text-base font-inter text-center px-4">
           You will receive a notification once your account is approved.
         </Text>
       </View>
 
-      {/* Close Button positioned at the bottom */}
       <View className="w-full mt-4">
         <Button 
           title="Close" 
