@@ -17,6 +17,7 @@
 - [x] Fixed mobile keyboard overlap via `KeyboardAvoidingView` (bypassed on web).
 - [x] Corrected Metro package symlinking error on PNPM via hoisted node-linker configuration.
 - [x] Added type declarations for `.png` imports inside `app.d.ts`.
+- [x] Created onboarding Splash Screen inside `login.tsx` with circular logo, paging dots, version label, and touch swipe gesture transition.
 
 ## Next Steps
 - [ ] Implement backend API integration to send and verify OTP.

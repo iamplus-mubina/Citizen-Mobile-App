@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - Added "New user? / Register Now" text section below the submit buttons.
 - Fixed keyboard overlapping with `KeyboardAvoidingView` on iOS/Android (bypassed on Web to allow text input).
 - Positioned the OMS logo at the top of the header, resolving scale problems on Web via inline size styles.
+- Added onboarding Splash Screen step featuring circular logo, layout pagination dots, version label, and touch swipe transition gesture.
 
 ### Changed
 - Refactored `Button`, `Input`, and `login` screen layout styles to strictly use custom typography styles (`font-inter-*`) and design color tokens instead of hardcoded classes.
