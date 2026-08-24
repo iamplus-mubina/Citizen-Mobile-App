@@ -10,6 +10,7 @@ import {
   TextInput,
   Image
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,6 +19,7 @@ import { colors } from '@/constants/Colors';
 import omsLogo from '../assets/images/oms_logo.png';
 
 export default function LoginScreen() {
+  const router = useRouter();
   const [step, setStep] = useState<'splash' | 'mobile' | 'otp'>('splash');
   const [mobile, setMobile] = useState('');
   const [otp, setOtp] = useState('');
@@ -69,7 +71,7 @@ export default function LoginScreen() {
     } else {
       setError('');
       console.log('Login successful with mobile:', mobile);
-      alert('Verification successful!');
+      router.replace('/home');
     }
   };
 
