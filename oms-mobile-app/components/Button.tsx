@@ -23,7 +23,7 @@ export function Button({ title, variant = 'primary', className = '', ...props }:
       activeOpacity={0.8}
       {...props}
     >
-      <Text className={`text-lg font-bold ${textClass}`}>{title}</Text>
+      <Text className={`text-lg font-inter-bold ${textClass}`}>{title}</Text>
     </TouchableOpacity>
   );
 }

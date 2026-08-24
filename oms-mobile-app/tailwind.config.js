@@ -11,6 +11,14 @@ module.exports = {
         primary: 'var(--color-primary)',
         background: 'var(--color-background)',
         text: 'var(--color-text)',
+      },
+      fontFamily: {
+        sans: ["Inter_400Regular"],
+        inter: ["Inter_400Regular"],
+        "inter-regular": ["Inter_400Regular"],
+        "inter-medium": ["Inter_500Medium"],
+        "inter-semibold": ["Inter_600SemiBold"],
+        "inter-bold": ["Inter_700Bold"],
       }
     },
   },

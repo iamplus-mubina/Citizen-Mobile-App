@@ -8,7 +8,7 @@ interface InputProps extends TextInputProps {
 export function Input({ label, error, className = '', ...props }: InputProps) {
   return (
     <View className={`w-full mb-4 ${className}`}>
-      {label && <Text className="text-gray-700 font-semibold mb-2">{label}</Text>}
+      {label && <Text className="text-gray-700 font-inter-semibold mb-2">{label}</Text>}
       <TextInput
         className={`w-full bg-gray-50 border ${error ? 'border-red-500' : 'border-gray-300'} rounded-xl px-4 py-3 text-black text-base`}
         placeholderTextColor="#9CA3AF"

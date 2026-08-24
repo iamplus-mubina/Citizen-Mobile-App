@@ -8,7 +8,7 @@ export default function HomeScreen() {
     <SafeAreaView className="flex-1 bg-background">
       <View className="flex-1 px-6 justify-center">
         <View className="mb-10">
-          <Text className="text-3xl font-bold text-primary mb-2">Welcome</Text>
+          <Text className="text-3xl font-inter-bold text-primary mb-2">Welcome</Text>
           <Text className="text-gray-500 text-base">Please enter your details to proceed.</Text>
         </View>
 
