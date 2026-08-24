@@ -11,7 +11,6 @@ import {
   TextInput,
   Image
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -26,7 +25,6 @@ export default function LoginScreen() {
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [timeLeft, setTimeLeft] = useState(45);
-  const router = useRouter();
 
   const otpRef = useRef<TextInput>(null);
   const touchStartX = useRef(0);
