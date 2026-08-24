@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'expo-router';
 import {
   View,
   Text,
@@ -23,6 +24,7 @@ export default function LoginScreen() {
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [timeLeft, setTimeLeft] = useState(45);
+  const router = useRouter();
 
   const otpRef = useRef<TextInput>(null);
   const touchStartX = useRef(0);
@@ -207,7 +209,7 @@ export default function LoginScreen() {
                 <Text className="text-muted font-inter text-base mb-2">
                   New user?
                 </Text>
-                <TouchableOpacity onPress={() => console.log('Register Now Pressed')}>
+                <TouchableOpacity onPress={() => router.push('/register')}>
                   <Text className="text-base font-inter-semibold text-primary underline">
                     Register Now
                   </Text>

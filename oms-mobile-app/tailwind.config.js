@@ -18,6 +18,7 @@ module.exports = {
         'input-bg': 'var(--color-input-bg)',
         error: 'var(--color-error)',
         'on-primary': 'var(--color-on-primary)',
+        checkmark: 'var(--color-checkmark)',
       },
       fontFamily: {
         sans: ["Inter_400Regular"],

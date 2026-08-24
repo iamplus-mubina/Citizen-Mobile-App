@@ -9,4 +9,5 @@ export const colors = {
   warning: '#eab308', // Tailwind yellow-500
   error: '#b91c1c', // Tailwind red-700
   border: '#e2e8f0', // Tailwind slate-200
+  checkmark: '#1f2937',
 };
