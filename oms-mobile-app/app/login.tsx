@@ -1,19 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
-import { 
-  View, 
-  Text, 
-  KeyboardAvoidingView, 
-  Platform, 
-  TouchableWithoutFeedback, 
-  Keyboard, 
-  TouchableOpacity, 
-  TextInput 
+import {
+  View,
+  Text,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+  TouchableOpacity,
+  TextInput,
+  Image
 } from 'react-native';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PhoneIcon, ArrowLeftIcon } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
+import omsLogo from '../assets/images/oms_logo.png';
 
 export default function LoginScreen() {
   const [step, setStep] = useState<'mobile' | 'otp'>('mobile');
@@ -26,7 +28,7 @@ export default function LoginScreen() {
 
   useEffect(() => {
     if (step !== 'otp' || timeLeft <= 0) return;
-    
+
     const timer = setInterval(() => {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
@@ -95,10 +97,10 @@ export default function LoginScreen() {
   };
 
   const renderContent = () => (
-    <View className="flex-1 px-6">
+    <View className="flex-1 px-6 w-full max-w-md mx-auto">
       <View className="h-14 justify-center">
         {step === 'otp' && (
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={handleBackToMobile}
             className="self-start p-2 -ml-2 rounded-full"
             activeOpacity={0.7}
@@ -110,12 +112,17 @@ export default function LoginScreen() {
 
       <View className="flex-1 justify-center pb-14">
         <View className="mb-10 items-center">
+          <Image
+            source={omsLogo}
+            style={{ width: 150, height: 150, marginBottom: 24 }}
+            resizeMode="contain"
+          />
           <Text className="text-3xl font-inter-bold text-primary mb-2 text-center">
             {step === 'mobile' ? 'Welcome' : 'Enter OTP'}
           </Text>
           <Text className="text-muted text-lg font-inter text-center">
-            {step === 'mobile' 
-              ? 'Please enter your mobile number.' 
+            {step === 'mobile'
+              ? 'Please enter your mobile number.'
               : `We have sent a 6-digit code to ${mobile}`
             }
           </Text>
@@ -123,9 +130,9 @@ export default function LoginScreen() {
 
         {step === 'mobile' && (
           <>
-            <Input 
-              label="Mobile Number" 
-              placeholder="Enter your 10-digit number" 
+            <Input
+              label="Mobile Number"
+              placeholder="Enter your 10-digit number"
               keyboardType="number-pad"
               value={mobile}
               onChangeText={handleMobileChange}
@@ -162,9 +169,8 @@ export default function LoginScreen() {
                     key={index}
                     activeOpacity={1}
                     onPress={() => otpRef.current?.focus()}
-                    className={`w-12 h-14 border-2 rounded-xl justify-center items-center bg-input-bg ${
-                      isFocused ? 'border-primary' : 'border-border'
-                    }`}
+                    className={`w-12 h-14 border-2 rounded-xl justify-center items-center bg-input-bg ${isFocused ? 'border-primary' : 'border-border'
+                      }`}
                   >
                     <Text className="text-xl font-inter-semibold text-text">
                       {digit}
@@ -198,15 +204,14 @@ export default function LoginScreen() {
               <Text className="text-text font-inter-medium text-base mb-2">
                 {formatTime(timeLeft)}
               </Text>
-              
-              <TouchableOpacity 
+
+              <TouchableOpacity
                 onPress={handleResendOtp}
                 disabled={timeLeft > 0}
               >
-                <Text 
-                  className={`text-base font-inter-semibold underline ${
-                    timeLeft > 0 ? 'text-muted opacity-50' : 'text-primary'
-                  }`}
+                <Text
+                  className={`text-base font-inter-semibold underline ${timeLeft > 0 ? 'text-muted opacity-50' : 'text-primary'
+                    }`}
                 >
                   Resend OTP
                 </Text>
