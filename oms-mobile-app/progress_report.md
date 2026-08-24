@@ -18,8 +18,14 @@
 - [x] Corrected Metro package symlinking error on PNPM via hoisted node-linker configuration.
 - [x] Added type declarations for `.png` imports inside `app.d.ts`.
 - [x] Created onboarding Splash Screen inside `login.tsx` with circular logo, paging dots, version label, and touch swipe gesture transition.
+- [x] Created reusable Header component containing Menu and Notification icons.
+- [x] Built Home Dashboard route screen (`home.tsx`) and integrated router redirection upon OTP verification.
+- [x] Created custom BottomNavigation component with active tab highlights and integrated tab selection inside `home.tsx`.
+- [x] Built the mockup-aligned Home Dashboard screen containing the Greeting header, Register Complaint trigger card, Quick Action button grids, and Recent Complaint status lists.
+- [x] Refactored home screen widgets into a single polymorphic `Card` component supporting `complaint`, `quick`, and `recent` variants.
+- [x] Implemented getFormattedDate helper function to display dynamic current date on the dashboard.
 
 ## Next Steps
 - [ ] Implement backend API integration to send and verify OTP.
 - [ ] Connect authentication state to Zustand store (`useAppStore`).
-- [ ] Design and build Dashboard/Home dashboard shell route.
+- [ ] Build sub-pages for Complaints, Notifications, and Profile tabs.

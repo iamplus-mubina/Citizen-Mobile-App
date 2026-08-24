@@ -18,6 +18,12 @@ All notable changes to this project will be documented in this file.
 - Fixed keyboard overlapping with `KeyboardAvoidingView` on iOS/Android (bypassed on Web to allow text input).
 - Positioned the OMS logo at the top of the header, resolving scale problems on Web via inline size styles.
 - Added onboarding Splash Screen step featuring circular logo, layout pagination dots, version label, and touch swipe transition gesture.
+- Created reusable Header component containing left hamburger menu and right notification bell.
+- Built new Home screen route (`app/home.tsx`) and configured Root Layout stack to allow redirection on OTP verify success.
+- Created custom BottomNavigation component featuring four tabs (Home, Complaints, Notifications, Profile) with active state highlights, and integrated it inside the Home screen.
+- Built the Home screen dashboard layout containing the greeting section, "Register Complaint" trigger card, "Quick Actions" 2x2 grid buttons, and the scrollable "Recent Complaints" status list.
+- Created polymorphic `Card` component inside the components directory (`components/Card.tsx`) supporting `complaint`, `quick`, and `recent` variants, replacing the initial three separate card files and integrating it into `home.tsx`.
+- Added a `getFormattedDate` utility to render the current local date dynamically in the Recent Complaints card.
 
 ### Changed
 - Refactored `Button`, `Input`, and `login` screen layout styles to strictly use custom typography styles (`font-inter-*`) and design color tokens instead of hardcoded classes.
