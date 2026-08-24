@@ -3,7 +3,7 @@
 ## Coding Standards
 1. Use TypeScript for all new code.
 2. Ensure strict type safety; avoid using `any` unless absolutely necessary.
-3. Use Tailwind CSS via NativeWind v4 utility classes for styling. Do not use the `style` prop (inline styles).
+3. Use Tailwind CSS via NativeWind v4 utility classes for styling. Do not use the `style` prop (inline styles) unless overriding native-specific rendering bugs (like setting exact dimensions on static Web images).
 4. Do not use hardcoded colors (like `#ffffff` or `rgb(...)`) directly. Use theme tokens defined in the Tailwind configuration where possible, though absolute system neutrals like `text-white`, `text-black`, `bg-white`, and `bg-black` are permitted.
 5. Keep components small, reusable, and single-purpose.
 
