@@ -2,16 +2,19 @@ import { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Image, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { PhotoIcon, DocumentIcon, XMarkIcon } from 'react-native-heroicons/outline';
+import { ChevronLeftIcon, PhotoIcon, DocumentIcon, XMarkIcon, ArrowUpTrayIcon } from 'react-native-heroicons/outline';
 import { Button } from '@/components/Button';
 import { Header } from '@/components/Header';
 import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
+import { UploadModal } from '@/components/UploadModal';
+import * as DocumentPicker from 'expo-document-picker';
 
 export default function AttachmentsScreen() {
   const router = useRouter();
   const [photos, setPhotos] = useState<string[]>([]);
   const [documents, setDocuments] = useState<{ name: string }[]>([]);
+  const [modalVisible, setModalVisible] = useState(false);
   const setAttachments = useComplaintStore((s) => s.setAttachments);
 
   const containerClass = Platform.OS === 'web'
@@ -19,19 +22,28 @@ export default function AttachmentsScreen() {
     : "flex-1 bg-background";
 
   const handleAddPhoto = () => {
-    Alert.alert(
-      'Upload Photo',
-      'Photo upload will be connected in the next sprint.',
-      [{ text: 'OK' }]
-    );
+    setModalVisible(true);
   };
 
-  const handleChooseFile = () => {
-    Alert.alert(
-      'Upload Document',
-      'Document upload will be connected in the next sprint.',
-      [{ text: 'OK' }]
-    );
+  const handleImagePicked = (uri: string) => {
+    setPhotos((prev) => [...prev, uri]);
+  };
+
+  const handleChooseFile = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: '*/*',
+        copyToCacheDirectory: true,
+      });
+
+      if (!result.canceled && result.assets?.[0]) {
+        const file = result.assets[0];
+        setDocuments((prev) => [...prev, { name: file.name }]);
+      }
+    } catch (e) {
+      console.log('Error picking document:', e);
+      Alert.alert('Error', 'Failed to pick document. Please try again.');
+    }
   };
 
   const handleRemovePhoto = (index: number) => {
@@ -58,38 +70,45 @@ export default function AttachmentsScreen() {
           </View>
 
           <View className="mb-8">
-            <Text className="text-text font-inter-semibold mb-4">Upload Photos (Optional)</Text>
+            <TouchableOpacity onPress={handleAddPhoto} activeOpacity={0.7} className="self-start">
+              <Text className="text-text font-inter-semibold mb-4">Upload Photos (Optional)</Text>
+            </TouchableOpacity>
 
-            <View className="flex-row flex-wrap gap-3 mb-4">
-              {photos.map((uri, index) => (
-                <View key={index} className="w-24 h-24 rounded-xl overflow-hidden border border-border relative">
-                  <Image source={{ uri }} className="w-full h-full" resizeMode="cover" />
-                  <TouchableOpacity
-                    onPress={() => handleRemovePhoto(index)}
-                    className="absolute top-1 right-1 bg-black/50 rounded-full p-0.5"
-                    activeOpacity={0.7}
-                  >
-                    <XMarkIcon size={14} color={colors.white} />
-                  </TouchableOpacity>
+            {photos.length === 0 ? (
+              <TouchableOpacity
+                onPress={handleAddPhoto}
+                activeOpacity={0.7}
+                className="w-full border-2 border-dashed border-border bg-input-bg rounded-2xl py-10 items-center justify-center mb-4"
+              >
+                <View className="w-12 h-12 rounded-full bg-primary/10 justify-center items-center mb-3">
+                  <ArrowUpTrayIcon size={24} color={colors.primary} />
                 </View>
-              ))}
-
-              {photos.length === 0 && (
-                <View className="flex-row gap-3">
-                  {[0, 1, 2].map((i) => (
-                    <View key={i} className="w-24 h-24 rounded-xl border border-border bg-input-bg items-center justify-center">
-                      <PhotoIcon size={28} color={colors.muted} />
+                <Text className="text-sm font-inter-semibold text-text">Upload Photo</Text>
+              </TouchableOpacity>
+            ) : (
+              <>
+                <View className="flex-row flex-wrap gap-3 mb-4">
+                  {photos.map((uri, index) => (
+                    <View key={index} className="w-24 h-24 rounded-xl overflow-hidden border border-border relative">
+                      <Image source={{ uri }} className="w-full h-full" resizeMode="cover" />
+                      <TouchableOpacity
+                        onPress={() => handleRemovePhoto(index)}
+                        className="absolute top-1 right-1 bg-black/50 rounded-full p-0.5"
+                        activeOpacity={0.7}
+                      >
+                        <XMarkIcon size={14} color={colors.white} />
+                      </TouchableOpacity>
                     </View>
                   ))}
                 </View>
-              )}
-            </View>
 
-            <Button
-              title="+ Add More"
-              variant="outline"
-              onPress={handleAddPhoto}
-            />
+                <Button
+                  title="+ Add More"
+                  variant="outline"
+                  onPress={handleAddPhoto}
+                />
+              </>
+            )}
           </View>
 
           <View className="mb-8">
@@ -129,6 +148,11 @@ export default function AttachmentsScreen() {
           />
         </View>
 
+        <UploadModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          onImagePicked={handleImagePicked}
+        />
       </View>
     </SafeAreaView>
   );

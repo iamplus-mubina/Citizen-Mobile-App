@@ -22,6 +22,7 @@ export default function ReviewScreen() {
     photoCount,
     documentCount,
     resetForm,
+    submitComplaint,
   } = useComplaintStore();
 
   const containerClass = Platform.OS === 'web'
@@ -30,6 +31,7 @@ export default function ReviewScreen() {
 
   const confirmSubmit = () => {
     setShowWebModal(false);
+    submitComplaint();
     resetForm();
     router.replace('/complaint/success');
   };

@@ -28,10 +28,13 @@ All notable changes to this project will be documented in this file.
 - Built Register Complaint wizard Step 3 (`complaint/location.tsx`) — Address, Area, Ward dropdown, Pincode, and "Use Current Location" button.
 - Created reusable `Dropdown` component with inline popover list, selected state highlight, and check icon.
 
-- Built Register Complaint wizard Step 4 (`complaint/attachments.tsx`) with placeholder upload buttons.
+- Built Register Complaint wizard Step 4 (`complaint/attachments.tsx`) with a dashed border upload button featuring an upload icon when empty, and previews + Add More once populated.
 - Built Register Complaint wizard Step 5 (`complaint/review.tsx`) with Web-compatible Custom Modal confirmation.
 - Built Complaint Submitted Success screen (`complaint/success.tsx`) using dashed input box design.
 - Created `store/useComplaintStore.ts` using Zustand to manage global complaint state across the wizard.
+- Installed `expo-image-picker` dependency and created cross-platform `UploadModal` component supporting Take Photo (Camera) and Choose Gallery (Media Library) inputs across Web, Android, and iOS.
+- Installed `expo-document-picker` dependency and integrated file uploading capability on the attachments page.
+- Connected submitted complaints dynamically to the Home screen dashboard from the global Zustand store, updating it upon successful submission.
 - Added `--color-white` token to `global.css` and `Colors.ts`.
 
 ### Changed

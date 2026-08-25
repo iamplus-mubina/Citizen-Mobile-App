@@ -37,14 +37,17 @@
 - [x] Built Step 1 — Category Selection (`complaint/category.tsx`) with radio buttons and disabled Next guard.
 - [x] Built Step 2 — Complaint Details (`complaint/details.tsx`) with Title, Description textarea, and Priority selection.
 - [x] Built Step 3 — Location (`complaint/location.tsx`) with Address, Area, Ward dropdown, Pincode, and Current Location button.
-- [x] Built Step 4 — Attachments UI (`complaint/attachments.tsx`) with placeholders.
+- [x] Built Step 4 — Attachments UI (`complaint/attachments.tsx`) with a dashed border upload button featuring an upload icon when empty, and previews + Add More once populated.
 - [x] Built Step 5 — Review and Submit Complaint UI (`complaint/review.tsx`).
 - [x] Built Complaint Submitted Successfully confirmation screen (`complaint/success.tsx`).
 - [x] Created reusable `Dropdown` component with inline popover and selected state.
+- [x] Created cross-platform `UploadModal` component using `expo-image-picker` to capture photos or pick gallery images across Web, Android, and iOS.
 - [x] Updated `Input` component to support `multiline` textarea mode.
 - [x] Updated `Input` component with `TouchableOpacity` focus fix for mobile keyboard activation.
 - [x] Updated `Button` component with optional `leftIcon` support.
 - [x] Configured Zustand store (`store/useComplaintStore.ts`) to manage wizard form state.
+- [x] Integrated cross-platform document uploading using `expo-document-picker` inside `attachments.tsx`.
+- [x] Connected submitted complaints dynamically to the Home screen dashboard list from the Zustand store.
 
 ## In Progress
 - [ ] My Complaints dashboard with tabs (All, Pending, In Progress, Resolved).

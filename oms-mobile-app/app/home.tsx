@@ -12,10 +12,12 @@ import {
   QuestionMarkCircleIcon
 } from 'react-native-heroicons/outline';
 import { MyComplaints } from '@/components/MyComplaints';
+import { useComplaintStore } from '@/store/useComplaintStore';
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const router = useRouter();
+  const { submittedComplaints } = useComplaintStore();
 
   const getFormattedDate = () => {
     const date = new Date();
@@ -90,14 +92,18 @@ export default function HomeScreen() {
                 </TouchableOpacity>
               </View>
 
-              <Card 
-                variant="recent"
-                ticketId="CMP-1024"
-                title="CMP-1024"
-                description="Road Repair"
-                date={getFormattedDate()}
-                status="In Progress"
-              />
+              {submittedComplaints.map((item) => (
+                <View key={item.ticketId} className="mb-3">
+                  <Card 
+                    variant="recent"
+                    ticketId={item.ticketId}
+                    title={item.ticketId}
+                    description={item.title}
+                    date={item.date}
+                    status={item.status}
+                  />
+                </View>
+              ))}
             </View>
           </ScrollView>
         );
