@@ -1,30 +1,32 @@
-import { View, TouchableOpacity } from 'react-native';
-import { Bars3Icon, BellIcon } from 'react-native-heroicons/outline';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { UserCircleIcon } from 'react-native-heroicons/solid';
 import { colors } from '@/constants/Colors';
 
 interface HeaderProps {
-  onMenuPress?: () => void;
-  onNotificationPress?: () => void;
   className?: string;
+  avatarUrl?: string;
 }
 
-export function Header({ onMenuPress, onNotificationPress, className = '' }: HeaderProps) {
+export function Header({ className = '', avatarUrl }: HeaderProps) {
   return (
     <View className={`h-16 flex-row items-center justify-between px-6 bg-background ${className}`}>
-      <TouchableOpacity 
-        onPress={onMenuPress} 
-        activeOpacity={0.7}
-        className="p-1 -ml-1 rounded-full"
-      >
-        <Bars3Icon size={28} color={colors.text} />
-      </TouchableOpacity>
+      <View>
+        <Text className="text-xl font-inter-bold text-primary">OMS Citizen</Text>
+      </View>
 
       <TouchableOpacity 
-        onPress={onNotificationPress} 
         activeOpacity={0.7}
-        className="p-1 -mr-1 rounded-full"
+        className="p-1 -mr-1"
       >
-        <BellIcon size={28} color={colors.text} />
+        {avatarUrl ? (
+          <Image 
+            source={{ uri: avatarUrl }} 
+            className="w-10 h-10 rounded-full"
+            resizeMode="cover"
+          />
+        ) : (
+          <UserCircleIcon size={36} color={colors.primary} />
+        )}
       </TouchableOpacity>
     </View>
   );

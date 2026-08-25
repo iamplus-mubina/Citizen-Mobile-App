@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View, Text, Platform, ScrollView, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/Header';
 import { BottomNavigation, TabType } from '@/components/BottomNavigation';
@@ -13,6 +14,7 @@ import {
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<TabType>('home');
+  const router = useRouter();
 
   const getFormattedDate = () => {
     const date = new Date();
@@ -42,7 +44,7 @@ export default function HomeScreen() {
               variant="complaint"
               title="Register Complaint"
               description="Raise a new complaint"
-              onPress={() => console.log('Register Complaint pressed')}
+              onPress={() => router.push('/complaint/category')}
             />
 
             <View className="mb-8">
@@ -125,10 +127,7 @@ export default function HomeScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <View className={containerClass}>
         <View className="flex-1">
-          <Header 
-            onMenuPress={() => console.log('Menu pressed')}
-            onNotificationPress={() => console.log('Notification pressed')}
-          />
+          <Header />
           {renderTabContent()}
         </View>
         
