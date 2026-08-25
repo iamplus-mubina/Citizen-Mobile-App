@@ -7,6 +7,7 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Dropdown } from '@/components/Dropdown';
 import { colors } from '@/constants/Colors';
+import { useComplaintStore } from '@/store/useComplaintStore';
 
 const WARDS = [
   'Ward A',
@@ -22,6 +23,7 @@ export default function LocationScreen() {
   const [area, setArea] = useState('');
   const [ward, setWard] = useState('');
   const [pincode, setPincode] = useState('');
+  const setLocation = useComplaintStore((s) => s.setLocation);
 
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background"
@@ -102,7 +104,10 @@ export default function LocationScreen() {
         <View className="px-6 py-4 pb-8 border-t border-border bg-background">
           <Button 
             title="Next" 
-            onPress={() => console.log('Next to step 4 with:', { address, area, ward, pincode })}
+            onPress={() => {
+              setLocation(address, area, ward, pincode);
+              router.push('/complaint/attachments');
+            }}
             disabled={!isFormValid}
             className={!isFormValid ? 'opacity-50' : ''}
           />

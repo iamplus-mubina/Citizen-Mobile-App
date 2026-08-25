@@ -10,7 +10,6 @@ import {
   Inter_700Bold 
 } from '@expo-google-fonts/inter';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -41,6 +40,9 @@ export default function RootLayout() {
       <Stack.Screen name="complaint/category" options={{ headerShown: false }} />
       <Stack.Screen name="complaint/details" options={{ headerShown: false }} />
       <Stack.Screen name="complaint/location" options={{ headerShown: false }} />
+      <Stack.Screen name="complaint/attachments" options={{ headerShown: false }} />
+      <Stack.Screen name="complaint/review" options={{ headerShown: false }} />
+      <Stack.Screen name="complaint/success" options={{ headerShown: false }} />
     </Stack>
   );
 }

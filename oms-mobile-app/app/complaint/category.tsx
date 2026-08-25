@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { ChevronLeftIcon } from 'react-native-heroicons/outline';
 import { Button } from '@/components/Button';
 import { colors } from '@/constants/Colors';
+import { useComplaintStore } from '@/store/useComplaintStore';
 
 const CATEGORIES = [
   'Road',
@@ -18,6 +19,7 @@ const CATEGORIES = [
 export default function CategoryScreen() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const setCategory = useComplaintStore((s) => s.setCategory);
 
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background"
@@ -79,7 +81,12 @@ export default function CategoryScreen() {
         <View className="px-6 py-4 pb-8 border-t border-border bg-background">
           <Button 
             title="Next" 
-            onPress={() => router.push('/complaint/details')}
+            onPress={() => {
+              if (selectedCategory) {
+                setCategory(selectedCategory);
+                router.push('/complaint/details');
+              }
+            }}
             disabled={!selectedCategory}
             className={!selectedCategory ? 'opacity-50' : ''}
           />

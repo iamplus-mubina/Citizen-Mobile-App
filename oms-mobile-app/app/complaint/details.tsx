@@ -6,6 +6,7 @@ import { ChevronLeftIcon } from 'react-native-heroicons/outline';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { colors } from '@/constants/Colors';
+import { useComplaintStore } from '@/store/useComplaintStore';
 
 const PRIORITIES = ['Low', 'Medium', 'High'];
 
@@ -14,6 +15,7 @@ export default function DetailsScreen() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState('Medium');
+  const setDetails = useComplaintStore((s) => s.setDetails);
 
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background"
@@ -102,7 +104,10 @@ export default function DetailsScreen() {
         <View className="px-6 py-4 pb-8 border-t border-border bg-background">
           <Button 
             title="Next" 
-            onPress={() => router.push('/complaint/location')}
+            onPress={() => {
+              setDetails(title, description, priority);
+              router.push('/complaint/location');
+            }}
             disabled={!isFormValid}
             className={!isFormValid ? 'opacity-50' : ''}
           />
