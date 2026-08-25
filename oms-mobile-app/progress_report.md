@@ -1,31 +1,58 @@
 # Progress Report
 
 ## Current Status
-**Project Phase**: Frontend Foundation & Login/OTP Setup Complete.
+**Project Phase**: Phase 2 - Complaint Registration Wizard (In Progress)
 
 ## Completed Tasks
+
+### Foundation & Setup
 - [x] Initialized Expo Router structure.
 - [x] Installed NativeWind v4 & Tailwind CSS.
 - [x] Configured absolute path aliases (`@/*`).
 - [x] Installed `react-native-heroicons` & `react-native-svg` for vector icons.
 - [x] Configured custom Google Inter font assets (Regular, Medium, SemiBold, Bold) to load asynchronously.
-- [x] Formulated theme design color tokens (primary, secondary, background, text, error, muted, etc.) to support theme customization.
+- [x] Formulated theme design color tokens (primary, secondary, background, text, error, muted, etc.).
+- [x] Corrected Metro package symlinking error on PNPM via hoisted node-linker configuration.
+- [x] Added type declarations for `.png` imports inside `app.d.ts`.
+
+### Login & Onboarding
 - [x] Created `login.tsx` route with redirect from root `index.tsx`.
 - [x] Configured input constraints (numeric-only, 10-digit limit, error state) and left phone icon.
 - [x] Built OTP verification flow (6 digit boxes, back navigation, countdown timer, resend button).
 - [x] Adjusted viewport to handle desktop screen layouts responsibly (`w-full max-w-md mx-auto` centering).
 - [x] Fixed mobile keyboard overlap via `KeyboardAvoidingView` (bypassed on web).
-- [x] Corrected Metro package symlinking error on PNPM via hoisted node-linker configuration.
-- [x] Added type declarations for `.png` imports inside `app.d.ts`.
-- [x] Created onboarding Splash Screen inside `login.tsx` with circular logo, paging dots, version label, and touch swipe gesture transition.
-- [x] Created reusable Header component containing Menu and Notification icons.
-- [x] Built Home Dashboard route screen (`home.tsx`) and integrated router redirection upon OTP verification.
-- [x] Created custom BottomNavigation component with active tab highlights and integrated tab selection inside `home.tsx`.
-- [x] Built the mockup-aligned Home Dashboard screen containing the Greeting header, Register Complaint trigger card, Quick Action button grids, and Recent Complaint status lists.
-- [x] Refactored home screen widgets into a single polymorphic `Card` component supporting `complaint`, `quick`, and `recent` variants.
-- [x] Implemented getFormattedDate helper function to display dynamic current date on the dashboard.
+- [x] Created onboarding Splash Screen with circular logo, paging dots, and touch swipe gesture transition.
+- [x] Fixed OTP input boxes not responding to touch on physical Android devices in Expo Go.
+
+### Home Dashboard
+- [x] Created reusable `Header` component (app branding + user avatar).
+- [x] Built `home.tsx` dashboard with router redirection upon OTP verification.
+- [x] Created `BottomNavigation` component with 4 tabs and active state highlights.
+- [x] Built Home Dashboard: Greeting, Register Complaint card, Quick Actions grid, Recent Complaints list.
+- [x] Refactored home screen widgets into a single polymorphic `Card` component (`complaint`, `quick`, `recent` variants).
+- [x] Implemented `getFormattedDate` helper for dynamic date display.
+- [x] Fixed Bottom Navigation overlap on Android via `SafeAreaView` bottom edge.
+
+### Complaint Registration Wizard
+- [x] Built Step 1 — Category Selection (`complaint/category.tsx`) with radio buttons and disabled Next guard.
+- [x] Built Step 2 — Complaint Details (`complaint/details.tsx`) with Title, Description textarea, and Priority selection.
+- [x] Built Step 3 — Location (`complaint/location.tsx`) with Address, Area, Ward dropdown, Pincode, and Current Location button.
+- [x] Created reusable `Dropdown` component with inline popover and selected state.
+- [x] Updated `Input` component to support `multiline` textarea mode.
+- [x] Updated `Input` component with `TouchableOpacity` focus fix for mobile keyboard activation.
+- [x] Updated `Button` component with optional `leftIcon` support.
+
+## In Progress
+- [ ] Step 4 — Photo and Document Attachments Upload UI (`complaint/attachments.tsx`).
 
 ## Next Steps
-- [ ] Implement backend API integration to send and verify OTP.
-- [ ] Connect authentication state to Zustand store (`useAppStore`).
-- [ ] Build sub-pages for Complaints, Notifications, and Profile tabs.
+- [ ] Step 4 — Attachments UI (Photo/Document upload).
+- [ ] Step 5 — Review and Submit Complaint UI.
+- [ ] Complaint Submitted Successfully confirmation screen.
+- [ ] My Complaints dashboard with tabs (All, Pending, In Progress, Resolved).
+- [ ] Complaint Details view and Status Tracking Timeline.
+- [ ] In-App Notifications History screen.
+- [ ] Citizen Profile view and Edit Profile screens.
+- [ ] Help & Support, No Internet, and Error fallback screens.
+- [ ] Backend API integration for OTP send/verify.
+- [ ] Connect authentication state to Zustand store.

@@ -8,22 +8,35 @@ All notable changes to this project will be documented in this file.
 - Integrated `@expo-google-fonts/inter` to load Inter fonts asynchronously with splash screen management in root layout.
 - Configured custom font family mappings in `tailwind.config.js` (`font-inter`, `font-inter-medium`, `font-inter-semibold`, `font-inter-bold`).
 - Integrated `react-native-heroicons` and `react-native-svg` for vectorized icons.
-- Created theme color tokens inside `global.css` (`--color-primary`, `--color-background`, `--color-text`, `--color-muted`, `--color-secondary`, `--color-secondary-text`, `--color-border`, `--color-input-bg`, `--color-error`, `--color-on-primary`) and mapped them inside Tailwind.
+- Created theme color tokens inside `global.css` and mapped them inside Tailwind (`--color-primary`, `--color-background`, `--color-text`, `--color-muted`, etc.).
 - Configured `node-linker=hoisted` inside `.npmrc` to flatten node_modules and solve Metro bundler symlink errors on PNPM.
 - Added wildcard typescript declaration for `*.png` inside `app.d.ts` to allow static image imports.
 - Built responsive Mobile Login Screen (`login.tsx`) and set root path (`index.tsx`) to redirect to `/login`.
 - Added numeric-only input validation, 10-digit limit, and left phone icon inside Mobile Number Input.
 - Added OTP verification step containing 6 rounded digit boxes, active back navigation arrow, and countdown timer.
 - Added "New user? / Register Now" text section below the submit buttons.
-- Fixed keyboard overlapping with `KeyboardAvoidingView` on iOS/Android (bypassed on Web to allow text input).
-- Positioned the OMS logo at the top of the header, resolving scale problems on Web via inline size styles.
-- Added onboarding Splash Screen step featuring circular logo, layout pagination dots, version label, and touch swipe transition gesture.
-- Created reusable Header component containing left hamburger menu and right notification bell.
-- Built new Home screen route (`app/home.tsx`) and configured Root Layout stack to allow redirection on OTP verify success.
-- Created custom BottomNavigation component featuring four tabs (Home, Complaints, Notifications, Profile) with active state highlights, and integrated it inside the Home screen.
-- Built the Home screen dashboard layout containing the greeting section, "Register Complaint" trigger card, "Quick Actions" 2x2 grid buttons, and the scrollable "Recent Complaints" status list.
-- Created polymorphic `Card` component inside the components directory (`components/Card.tsx`) supporting `complaint`, `quick`, and `recent` variants, replacing the initial three separate card files and integrating it into `home.tsx`.
-- Added a `getFormattedDate` utility to render the current local date dynamically in the Recent Complaints card.
+- Fixed keyboard overlapping with `KeyboardAvoidingView` on iOS/Android (bypassed on Web).
+- Added onboarding Splash Screen step featuring circular logo, paging dots, and touch swipe transition gesture.
+- Created reusable `Header` component.
+- Built `app/home.tsx` and configured Root Layout stack with OTP redirect.
+- Created `BottomNavigation` component with four tabs and active state highlights.
+- Built the Home screen dashboard: greeting section, Register Complaint card, Quick Actions 2x2 grid, and Recent Complaints list.
+- Created polymorphic `Card` component supporting `complaint`, `quick`, and `recent` variants.
+- Added `getFormattedDate` utility for dynamic date display.
+- Built Register Complaint wizard Step 1 (`complaint/category.tsx`) — category selection with radio buttons and disabled Next guard.
+- Built Register Complaint wizard Step 2 (`complaint/details.tsx`) — Complaint Title, Description textarea, and Priority radio selection.
+- Built Register Complaint wizard Step 3 (`complaint/location.tsx`) — Address, Area, Ward dropdown, Pincode, and "Use Current Location" button.
+- Created reusable `Dropdown` component with inline popover list, selected state highlight, and check icon.
 
 ### Changed
-- Refactored `Button`, `Input`, and `login` screen layout styles to strictly use custom typography styles (`font-inter-*`) and design color tokens instead of hardcoded classes.
+- Refactored `Button`, `Input`, and `login` screen styles to use `font-inter-*` typography classes and design color tokens only.
+- Refactored `Header` to remove hamburger/notification icons; replaced with app branding and right-aligned user avatar.
+- Updated `Input` to support `multiline` textareas with top-aligned text and minimum height.
+- Updated `Input` to wrap `TextInput` in `TouchableOpacity` with `ref` focus for reliable keyboard activation on physical Android devices.
+- Updated `Button` to support an optional `leftIcon` prop.
+- Updated `SafeAreaView` in `home.tsx` to include `edges={['top', 'bottom']}`, resolving Bottom Navigation overlap on Android.
+
+### Fixed
+- OTP input boxes not responding to touch on physical Android in Expo Go — resolved by overlaying a full-width invisible `TextInput` over the digit boxes with `autoFocus`.
+- Description textarea not opening keyboard on mobile — resolved via `TouchableOpacity` wrapper and `ref.focus()` in `Input` component.
+- Bottom Navigation bar overlapping page content on Android — resolved by using `edges={['top', 'bottom']}` on `SafeAreaView`.
