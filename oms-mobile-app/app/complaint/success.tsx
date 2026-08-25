@@ -1,33 +1,67 @@
 import { View, Text, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { CheckCircleIcon } from 'react-native-heroicons/outline';
+import { CheckIcon } from 'react-native-heroicons/solid';
 import { Button } from '@/components/Button';
 import { colors } from '@/constants/Colors';
 
 export default function SuccessScreen() {
   const router = useRouter();
 
-  const containerClass = Platform.OS === 'web'
-    ? "flex-1 w-full max-w-md mx-auto bg-background justify-center items-center px-6"
-    : "flex-1 bg-background justify-center items-center px-6";
+  const renderContent = () => (
+    <View className="flex-1 px-6 w-full max-w-md mx-auto pt-16 pb-10 justify-between">
+      <View className="items-center w-full flex-1 justify-center">
+        <View className="w-24 h-24 rounded-full bg-primary justify-center items-center mb-8">
+          <CheckIcon size={48} color={colors.surface} />
+        </View>
+
+        <Text className="text-3xl font-inter-bold text-primary mb-10 text-center">
+          Complaint Submitted{"\n"}Successfully!
+        </Text>
+
+        <View className="w-full space-y-4 mb-10">
+          <View className="w-full border-2 border-dashed border-primary rounded-2xl py-4 px-4 items-center">
+            <Text className="text-muted text-base font-inter-medium mb-1">
+              Complaint ID
+            </Text>
+            <Text className="text-primary text-2xl font-inter-bold">
+              CMP-1025
+            </Text>
+          </View>
+          
+          <View className="w-full border-2 border-dashed border-primary rounded-2xl py-4 px-4 items-center mt-4">
+            <Text className="text-muted text-base font-inter-medium mb-1">
+              Status
+            </Text>
+            <Text className="text-primary text-2xl font-inter-bold">
+              Pending Verification
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      <View className="w-full mt-4 space-y-3">
+        <Button 
+          title="Track Complaint" 
+          variant="secondary"
+          onPress={() => console.log('Track Complaint')} 
+          className="w-full"
+        />
+        <View className="mt-3">
+          <Button 
+            title="Back to Home" 
+            variant="secondary" 
+            onPress={() => router.replace('/home')} 
+            className="w-full"
+          />
+        </View>
+      </View>
+    </View>
+  );
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
-      <View className={containerClass}>
-        <CheckCircleIcon size={80} color={colors.primary} />
-        <Text className="text-2xl font-inter-bold text-text mt-6 mb-3 text-center">
-          Complaint Submitted!
-        </Text>
-        <Text className="text-base font-inter text-muted text-center mb-10">
-          Your complaint has been registered successfully. We will review it and get back to you.
-        </Text>
-        <Button
-          title="Go to Home"
-          onPress={() => router.replace('/home')}
-          className="w-full"
-        />
-      </View>
+      {renderContent()}
     </SafeAreaView>
   );
 }

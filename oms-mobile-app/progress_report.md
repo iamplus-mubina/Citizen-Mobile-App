@@ -37,22 +37,23 @@
 - [x] Built Step 1 — Category Selection (`complaint/category.tsx`) with radio buttons and disabled Next guard.
 - [x] Built Step 2 — Complaint Details (`complaint/details.tsx`) with Title, Description textarea, and Priority selection.
 - [x] Built Step 3 — Location (`complaint/location.tsx`) with Address, Area, Ward dropdown, Pincode, and Current Location button.
+- [x] Built Step 4 — Attachments UI (`complaint/attachments.tsx`) with placeholders.
+- [x] Built Step 5 — Review and Submit Complaint UI (`complaint/review.tsx`).
+- [x] Built Complaint Submitted Successfully confirmation screen (`complaint/success.tsx`).
 - [x] Created reusable `Dropdown` component with inline popover and selected state.
 - [x] Updated `Input` component to support `multiline` textarea mode.
 - [x] Updated `Input` component with `TouchableOpacity` focus fix for mobile keyboard activation.
 - [x] Updated `Button` component with optional `leftIcon` support.
+- [x] Configured Zustand store (`store/useComplaintStore.ts`) to manage wizard form state.
 
 ## In Progress
-- [ ] Step 4 — Photo and Document Attachments Upload UI (`complaint/attachments.tsx`).
+- [ ] My Complaints dashboard with tabs (All, Pending, In Progress, Resolved).
 
 ## Next Steps
-- [ ] Step 4 — Attachments UI (Photo/Document upload).
-- [ ] Step 5 — Review and Submit Complaint UI.
-- [ ] Complaint Submitted Successfully confirmation screen.
 - [ ] My Complaints dashboard with tabs (All, Pending, In Progress, Resolved).
 - [ ] Complaint Details view and Status Tracking Timeline.
 - [ ] In-App Notifications History screen.
 - [ ] Citizen Profile view and Edit Profile screens.
 - [ ] Help & Support, No Internet, and Error fallback screens.
-- [ ] Backend API integration for OTP send/verify.
+- [ ] Backend API integration for OTP send/verify and Complaint submission.
 - [ ] Connect authentication state to Zustand store.

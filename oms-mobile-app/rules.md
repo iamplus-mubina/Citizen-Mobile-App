@@ -10,6 +10,7 @@
 | Icons | react-native-heroicons + react-native-svg |
 | Fonts | @expo-google-fonts/inter |
 | Navigation | Expo Router (file-based routing) |
+| State | Zustand |
 | Package Manager | pnpm only |
 
 ## Project Architecture

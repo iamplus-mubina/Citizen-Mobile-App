@@ -28,6 +28,12 @@ All notable changes to this project will be documented in this file.
 - Built Register Complaint wizard Step 3 (`complaint/location.tsx`) — Address, Area, Ward dropdown, Pincode, and "Use Current Location" button.
 - Created reusable `Dropdown` component with inline popover list, selected state highlight, and check icon.
 
+- Built Register Complaint wizard Step 4 (`complaint/attachments.tsx`) with placeholder upload buttons.
+- Built Register Complaint wizard Step 5 (`complaint/review.tsx`) with Web-compatible Custom Modal confirmation.
+- Built Complaint Submitted Success screen (`complaint/success.tsx`) using dashed input box design.
+- Created `store/useComplaintStore.ts` using Zustand to manage global complaint state across the wizard.
+- Added `--color-white` token to `global.css` and `Colors.ts`.
+
 ### Changed
 - Refactored `Button`, `Input`, and `login` screen styles to use `font-inter-*` typography classes and design color tokens only.
 - Refactored `Header` to remove hamburger/notification icons; replaced with app branding and right-aligned user avatar.
@@ -40,3 +46,4 @@ All notable changes to this project will be documented in this file.
 - OTP input boxes not responding to touch on physical Android in Expo Go — resolved by overlaying a full-width invisible `TextInput` over the digit boxes with `autoFocus`.
 - Description textarea not opening keyboard on mobile — resolved via `TouchableOpacity` wrapper and `ref.focus()` in `Input` component.
 - Bottom Navigation bar overlapping page content on Android — resolved by using `edges={['top', 'bottom']}` on `SafeAreaView`.
+- Fixed `Alert.alert` silently failing on Web by implementing a custom React Native `Modal` fallback inside `review.tsx`.
