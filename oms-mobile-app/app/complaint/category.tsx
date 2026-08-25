@@ -39,9 +39,11 @@ export default function CategoryScreen() {
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
           <View className="mb-8">
-            <View className="flex-row justify-between items-end mb-2">
-              <Text className="text-2xl font-inter-bold text-text">Register Complaint</Text>
-              <Text className="text-sm font-inter-semibold text-muted">1 of 4</Text>
+            <View className="items-center mb-2">
+              <Text className="text-lg font-inter-bold text-text">Register Complaint</Text>
+            </View>
+            <View className="items-end mb-2">
+              <Text className="text-sm font-inter-semibold text-text">1 of 4</Text>
             </View>
             <View className="h-[1px] bg-border w-full mb-6" />
             <Text className="text-base font-inter-semibold text-text mb-4">Select Category</Text>
@@ -77,7 +79,7 @@ export default function CategoryScreen() {
         <View className="px-6 py-4 pb-8 border-t border-border bg-background">
           <Button 
             title="Next" 
-            onPress={() => console.log('Next to step 2 with:', selectedCategory)}
+            onPress={() => router.push('/complaint/details')}
             disabled={!selectedCategory}
             className={!selectedCategory ? 'opacity-50' : ''}
           />

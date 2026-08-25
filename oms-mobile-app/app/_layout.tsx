@@ -39,6 +39,8 @@ export default function RootLayout() {
       <Stack.Screen name="pending-approval" options={{ headerShown: false }} />
       <Stack.Screen name="home" options={{ headerShown: false }} />
       <Stack.Screen name="complaint/category" options={{ headerShown: false }} />
+      <Stack.Screen name="complaint/details" options={{ headerShown: false }} />
+      <Stack.Screen name="complaint/location" options={{ headerShown: false }} />
     </Stack>
   );
 }
