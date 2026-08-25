@@ -54,7 +54,7 @@ export function Dropdown({
                 <TouchableOpacity
                   key={item}
                   activeOpacity={0.7}
-                  className={`flex-row items-center justify-between px-4 py-3 border-b border-border ${isSelected ? 'bg-primary/10' : ''}`}
+                  className={`flex-row items-center justify-between px-4 py-3 ${isSelected ? 'bg-primary/10' : ''}`}
                   onPress={() => {
                     onSelect(item);
                     setIsOpen(false);

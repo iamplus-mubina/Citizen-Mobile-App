@@ -23,7 +23,7 @@ export function BottomNavigation({ activeTab, onTabPress }: BottomNavigationProp
   ];
 
   return (
-    <View className="h-20 flex-row justify-around items-center border-t border-border bg-background pb-2">
+    <View className="h-16 flex-row justify-around items-center border-t border-border bg-background">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         const color = isActive ? colors.primary : colors.muted;

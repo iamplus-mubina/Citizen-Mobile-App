@@ -219,27 +219,26 @@ export default function LoginScreen() {
           )}
 
           {step === 'otp' && (
-            <View className="w-full items-center">
+            <View className="w-full items-center relative">
               <View className="flex-row justify-between w-full mb-8">
                 {Array.from({ length: 6 }).map((_, index) => {
                   const digit = otp[index] || '';
                   const isFocused = otp.length === index;
                   return (
-                    <TouchableOpacity
+                    <View
                       key={index}
-                      activeOpacity={1}
-                      onPress={() => otpRef.current?.focus()}
                       className={`w-12 h-14 border-2 rounded-xl justify-center items-center bg-input-bg ${isFocused ? 'border-primary' : 'border-border'
                         }`}
                     >
                       <Text className="text-xl font-inter-semibold text-text">
                         {digit}
                       </Text>
-                    </TouchableOpacity>
+                    </View>
                   );
                 })}
               </View>
 
+              
               <TextInput
                 ref={otpRef}
                 value={otp}
@@ -252,8 +251,15 @@ export default function LoginScreen() {
                 }}
                 maxLength={6}
                 keyboardType="number-pad"
-                style={{ position: 'absolute', opacity: 0, width: 1, height: 1 }}
+                style={{ 
+                  position: 'absolute', 
+                  width: '100%', 
+                  height: 56,
+                  opacity: 0,
+                  color: 'transparent'
+                }}
                 caretHidden
+                autoFocus
               />
 
               {error ? (

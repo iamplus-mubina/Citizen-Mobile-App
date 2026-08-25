@@ -124,7 +124,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
       <View className={containerClass}>
         <View className="flex-1">
           <Header />
