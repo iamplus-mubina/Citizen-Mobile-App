@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { ChevronLeftIcon, MapPinIcon } from 'react-native-heroicons/outline';
+import { MapPinIcon } from 'react-native-heroicons/outline';
 import { Button } from '@/components/Button';
+import { Header } from '@/components/Header';
 import { Input } from '@/components/Input';
 import { Dropdown } from '@/components/Dropdown';
 import { colors } from '@/constants/Colors';
@@ -34,17 +35,7 @@ export default function LocationScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className={containerClass}>
-        
-        
-        <View className="flex-row items-center justify-between px-6 py-4">
-          <TouchableOpacity 
-            onPress={() => router.back()}
-            className="p-2 -ml-2 rounded-full"
-            activeOpacity={0.7}
-          >
-            <ChevronLeftIcon size={24} color={colors.text} />
-          </TouchableOpacity>
-        </View>
+        <Header showBack />
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
           

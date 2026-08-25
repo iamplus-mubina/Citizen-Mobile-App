@@ -11,6 +11,7 @@ import {
   UserIcon,
   QuestionMarkCircleIcon
 } from 'react-native-heroicons/outline';
+import { MyComplaints } from '@/components/MyComplaints';
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<TabType>('home');
@@ -101,11 +102,7 @@ export default function HomeScreen() {
           </ScrollView>
         );
       case 'complaints':
-        return (
-          <View className="flex-1 justify-center items-center px-6">
-            <Text className="text-xl font-inter-semibold text-text">Complaints Screen</Text>
-          </View>
-        );
+        return <MyComplaints />;
       case 'notifications':
         return (
           <View className="flex-1 justify-center items-center px-6">

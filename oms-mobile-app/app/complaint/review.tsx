@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Platform, Alert, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { ChevronLeftIcon } from 'react-native-heroicons/outline';
 import { Button } from '@/components/Button';
+import { Header } from '@/components/Header';
 import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
 
@@ -62,15 +62,9 @@ export default function ReviewScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
       <View className={containerClass}>
 
-        <View className="flex-row items-center px-6 py-4">
-          <TouchableOpacity
-            onPress={() => router.back()}
-            className="p-2 -ml-2 rounded-full"
-            activeOpacity={0.7}
-          >
-            <ChevronLeftIcon size={24} color={colors.text} />
-          </TouchableOpacity>
-          <Text className="text-lg font-inter-bold text-text ml-2">Review Your Complaint</Text>
+        <Header showBack />
+        <View className="px-6 pb-2">
+          <Text className="text-lg font-inter-bold text-text">Review Your Complaint</Text>
         </View>
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
