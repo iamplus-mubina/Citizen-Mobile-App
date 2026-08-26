@@ -43,28 +43,28 @@ export default function ComplaintDetailsViewScreen() {
             </View>
           </View>
 
-          <View className="space-y-6">
-            <View>
+          <View>
+            <View className="mb-6">
               <Text className="text-sm font-inter-bold text-text mb-1">Category</Text>
               <Text className="text-sm font-inter text-muted">{complaint.category}</Text>
             </View>
 
-            <View>
+            <View className="mb-6">
               <Text className="text-sm font-inter-bold text-text mb-1">Title</Text>
               <Text className="text-sm font-inter text-muted">{complaint.title}</Text>
             </View>
 
-            <View>
+            <View className="mb-6">
               <Text className="text-sm font-inter-bold text-text mb-1">Description</Text>
               <Text className="text-sm font-inter text-muted leading-5">{complaint.description}</Text>
             </View>
 
-            <View>
+            <View className="mb-6">
               <Text className="text-sm font-inter-bold text-text mb-1">Address</Text>
               <Text className="text-sm font-inter text-muted leading-5">{complaint.address}</Text>
             </View>
 
-            <View>
+            <View className="mb-8">
               <Text className="text-sm font-inter-bold text-text mb-1">Priority</Text>
               <Text className="text-sm font-inter text-muted">{complaint.priority}</Text>
             </View>
@@ -74,7 +74,7 @@ export default function ComplaintDetailsViewScreen() {
         <View className="px-6 py-4 bg-background border-t border-border">
           <Button 
             title="View Timeline" 
-            onPress={() => console.log('Navigate to timeline')} 
+            onPress={() => router.push({ pathname: '/complaint/timeline/[id]', params: { id: complaint.id } })}  
             variant="secondary"
           />
         </View>

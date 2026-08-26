@@ -9,9 +9,12 @@ import {
   ClipboardDocumentListIcon,
   BellIcon,
   UserIcon,
-  QuestionMarkCircleIcon
+  QuestionMarkCircleIcon,
+  MegaphoneIcon
 } from 'react-native-heroicons/outline';
 import { MyComplaints } from '@/components/MyComplaints';
+import { Notifications } from '@/components/Notifications';
+import { Profile } from '@/components/Profile';
 import { useComplaintStore } from '@/store/useComplaintStore';
 
 export default function HomeScreen() {
@@ -81,6 +84,13 @@ export default function HomeScreen() {
                   Icon={QuestionMarkCircleIcon} 
                   onPress={() => console.log('Help pressed')}
                 />
+                
+                <Card 
+                  variant="quick"
+                  title="City Updates" 
+                  Icon={MegaphoneIcon} 
+                  onPress={() => router.push('/updates' as any)}
+                />
               </View>
             </View>
 
@@ -110,17 +120,9 @@ export default function HomeScreen() {
       case 'complaints':
         return <MyComplaints />;
       case 'notifications':
-        return (
-          <View className="flex-1 justify-center items-center px-6">
-            <Text className="text-xl font-inter-semibold text-text">Notifications Screen</Text>
-          </View>
-        );
+        return <Notifications />;
       case 'profile':
-        return (
-          <View className="flex-1 justify-center items-center px-6">
-            <Text className="text-xl font-inter-semibold text-text">Profile Screen</Text>
-          </View>
-        );
+        return <Profile />;
       default:
         return null;
     }
