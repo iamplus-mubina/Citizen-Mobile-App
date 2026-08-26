@@ -58,7 +58,7 @@ export function Card({
         }}
       >
         <View className="w-8 h-8 rounded-full bg-border justify-center items-center mb-3">
-          {Icon && <Icon size={16} color={colors.iconMuted} />}
+          {Icon && <Icon size={16} color={colors.dark} />}
         </View>
         <Text className="text-xs font-inter-semibold text-dark leading-tight" numberOfLines={2}>
           {title}
