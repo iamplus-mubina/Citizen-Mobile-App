@@ -5,7 +5,8 @@
 @layer base {
   :root {
     --color-primary: #ffba01;
-    --color-background: #ffffff;
+    --color-background: #f0f0f0;
+    --color-surface: #ffffff;
     --color-text: #1f2937;
     --color-muted: #6b7280;
     --color-secondary: #e5e7eb;

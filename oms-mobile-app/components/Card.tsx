@@ -19,7 +19,7 @@ export function Card({
   description, 
   ticketId, 
   date, 
-  status, 
+  status,
   Icon, 
   onPress 
 }: CardProps) {
@@ -37,7 +37,7 @@ export function Card({
           )}
         </View>
         <View className="w-12 h-12 rounded-full bg-primary justify-center items-center">
-          <PlusIcon size={24} color="#ffffff" />
+          <PlusIcon size={24} color={colors.white} />
         </View>
       </TouchableOpacity>
     );
@@ -48,10 +48,19 @@ export function Card({
       <TouchableOpacity 
         onPress={onPress}
         activeOpacity={0.7}
-        className="w-[48%] bg-background border border-border p-4 rounded-xl flex-row items-center gap-x-3 mb-4"
+        className="w-[31%] rounded-lg p-3 mb-4 bg-surface"
+        style={{
+          shadowColor: colors.dark,
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.1,
+          shadowRadius: 3,
+          elevation: 3,
+        }}
       >
-        {Icon && <Icon size={20} color={colors.iconMuted} />}
-        <Text className="text-sm font-inter-semibold text-dark flex-1" numberOfLines={1}>
+        <View className="w-8 h-8 rounded-full bg-border justify-center items-center mb-3">
+          {Icon && <Icon size={16} color={colors.dark} />}
+        </View>
+        <Text className="text-xs font-inter-semibold text-dark leading-tight" numberOfLines={2}>
           {title}
         </Text>
       </TouchableOpacity>

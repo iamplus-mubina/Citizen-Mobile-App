@@ -52,38 +52,34 @@ export default function HomeScreen() {
             <View className="mb-8">
               <Text className="text-lg font-inter-bold text-dark mb-4">Quick Actions</Text>
               
-              <View className="flex-row flex-wrap justify-between">
+              <View className="flex-row flex-wrap gap-[3.5%]">
                 <Card 
                   variant="quick"
                   title="My Complaints" 
                   Icon={ClipboardDocumentListIcon} 
                   onPress={() => setActiveTab('complaints')}
                 />
-
                 <Card 
                   variant="quick"
                   title="Notifications" 
                   Icon={BellIcon} 
                   onPress={() => setActiveTab('notifications')}
                 />
-
                 <Card 
                   variant="quick"
                   title="Profile" 
                   Icon={UserIcon} 
                   onPress={() => setActiveTab('profile')}
                 />
-
                 <Card 
                   variant="quick"
                   title="Help & Support" 
                   Icon={QuestionMarkCircleIcon} 
                   onPress={() => console.log('Help pressed')}
                 />
-                
                 <Card 
                   variant="quick"
-                  title="City Updates" 
+                  title="Updates" 
                   Icon={MegaphoneIcon} 
                   onPress={() => router.push('/updates' as any)}
                 />
