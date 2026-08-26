@@ -96,7 +96,6 @@ export function Profile() {
             title="Logout" 
             onPress={handleLogout} 
             variant="primary"
-            className="rounded-full"
           />
         </View>
 

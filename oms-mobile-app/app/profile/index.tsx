@@ -6,7 +6,7 @@ import { Profile } from '@/components/Profile';
 
 export default function ProfileScreen() {
   const containerClass = Platform.OS === 'web'
-    ? 'flex-1 w-full max-w-md mx-auto bg-background'
+    ? 'flex-1 w-full max-w-md mx-auto bg-background h-screen overflow-hidden'
     : 'flex-1 bg-background';
 
   return (

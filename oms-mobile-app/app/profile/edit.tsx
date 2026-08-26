@@ -16,7 +16,7 @@ export default function EditProfileScreen() {
   const [pincode, setPincode] = useState(store.profilePincode);
 
   const containerClass = Platform.OS === 'web'
-    ? "flex-1 w-full max-w-md mx-auto bg-background"
+    ? "flex-1 w-full max-w-md mx-auto bg-background h-screen overflow-hidden"
     : "flex-1 bg-background";
 
   const handleSave = () => {

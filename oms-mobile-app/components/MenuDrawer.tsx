@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
   Image,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import {
@@ -22,7 +23,8 @@ import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const DRAWER_WIDTH = SCREEN_WIDTH * 0.78;
+const APP_WIDTH = Platform.OS === 'web' ? Math.min(SCREEN_WIDTH, 448) : SCREEN_WIDTH;
+const DRAWER_WIDTH = APP_WIDTH * 0.78;
 
 interface MenuDrawerProps {
   visible: boolean;
@@ -42,9 +44,11 @@ export function MenuDrawer({ visible, onClose }: MenuDrawerProps) {
   const { profileName, profileEmail, profilePhoto } = useComplaintStore();
   const translateX = useRef(new Animated.Value(DRAWER_WIDTH)).current;
   const opacity = useRef(new Animated.Value(0)).current;
+  const [isRendered, setIsRendered] = useState(visible);
 
   useEffect(() => {
     if (visible) {
+      setIsRendered(true);
       Animated.parallel([
         Animated.timing(translateX, {
           toValue: 0,
@@ -69,7 +73,9 @@ export function MenuDrawer({ visible, onClose }: MenuDrawerProps) {
           duration: 220,
           useNativeDriver: true,
         }),
-      ]).start();
+      ]).start(() => {
+        setIsRendered(false);
+      });
     }
   }, [visible]);
 
@@ -107,7 +113,7 @@ export function MenuDrawer({ visible, onClose }: MenuDrawerProps) {
     },
   ];
 
-  if (!visible) return null;
+  if (!isRendered) return null;
 
   return (
     <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 100 }}>
@@ -139,11 +145,11 @@ export function MenuDrawer({ visible, onClose }: MenuDrawerProps) {
           transform: [{ translateX }],
         }}
       >
-        <View className="bg-header-bg px-5 pt-12 pb-5">
+        <View className="bg-header-bg h-36 px-5 pt-4 pb-5 justify-between">
           <TouchableOpacity
             onPress={onClose}
             activeOpacity={0.7}
-            className="self-end mb-4 p-1"
+            className="self-end p-1 -mr-1"
           >
             <XMarkIcon size={24} color={colors.white} />
           </TouchableOpacity>

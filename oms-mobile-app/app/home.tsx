@@ -33,7 +33,7 @@ export default function HomeScreen() {
   };
 
   const containerClass = Platform.OS === 'web'
-    ? "flex-1 w-full max-w-md mx-auto bg-background justify-between"
+    ? "flex-1 w-full max-w-md mx-auto bg-background justify-between h-screen overflow-hidden"
     : "flex-1 bg-background justify-between";
 
   const renderTabContent = () => {
@@ -124,12 +124,12 @@ export default function HomeScreen() {
         </View>
         
         <BottomNavigation activeTab={activeTab} onTabPress={setActiveTab} />
+        
+        <MenuDrawer
+          visible={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+        />
       </View>
-
-      <MenuDrawer
-        visible={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-      />
     </SafeAreaView>
   );
 }
