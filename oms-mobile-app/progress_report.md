@@ -55,6 +55,7 @@
 - [x] Created dynamic "Personal Details" card displaying Name, Phone, Email, Address, and Pincode on the Profile screen, featuring a Pencil Edit Icon to edit and update fields in the Zustand store.
 - [x] Customized the Logout button with a pill-shaped rounded layout and warm orange-mustard branding color (`#d97706`).
 - [x] Enhanced the "Personal Details" card on the Profile screen with premium icons (User, Phone, Envelope, and Location markers) for each field.
+- [x] Customized the `BottomNavigation` component to show active tab icons in a solid style filled with the warm orange-mustard branding color (`#d97706`).
 
 ## In Progress
 - [ ] My Complaints dashboard with tabs (All, Pending, In Progress, Resolved).
