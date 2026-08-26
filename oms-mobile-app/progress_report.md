@@ -58,9 +58,10 @@
 - [x] Set the icon colors of the Home screen "Quick Actions" cards to the matching custom slate-gray/lavender theme color (`icon-muted` / `#a5a4bf`).
 - [x] Customized the `BottomNavigation` component to show active tab icons in a solid style filled with the primary brand color (`#ffba01`).
 - [x] Configured the "View Timeline" button inside the Complaint Details screen (`view/[id].tsx`) to use the primary gold-yellow button variant.
-- [x] Customized the `Header` component background to use the dark blue theme token (`header-bg` / `#1A3B5C`) and styled the header text and icons to white.
+- [x] Customized the `Header` component background to use the dark blue theme token (`header-bg` / `#1A3B5C`), expanded its height to `h-36` to match the tall mockup hero layout, and styled the header text and back navigation arrow (`ArrowLeftIcon`) to white.
 - [x] Changed the "Welcome" and "Enter OTP" text headers on the Login screen to be in black.
 - [x] Mapped the CSS variable `--color-text` to the cleaner Tailwind class `text-dark` and `colors.dark` key to avoid the duplicate `text-text` syntax.
+- [x] Replaced the body "Good Morning, Rahul Sharma" greeting with a clean, industry-standard header displaying user avatar and welcome text dynamically.
 
 ## In Progress
 - [ ] My Complaints dashboard with tabs (All, Pending, In Progress, Resolved).

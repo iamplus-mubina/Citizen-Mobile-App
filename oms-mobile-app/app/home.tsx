@@ -40,11 +40,7 @@ export default function HomeScreen() {
     switch (activeTab) {
       case 'home':
         return (
-          <ScrollView className="flex-1 px-6 pt-4" showsVerticalScrollIndicator={false}>
-            <View className="mb-6">
-              <Text className="text-xl font-inter text-muted mb-1">Good Morning,</Text>
-              <Text className="text-3xl font-inter-bold text-dark">Rahul Sharma</Text>
-            </View>
+          <ScrollView className="flex-1 px-6 pt-8" showsVerticalScrollIndicator={false}>
 
             <Card 
               variant="complaint"
