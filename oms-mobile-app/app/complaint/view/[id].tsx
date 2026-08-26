@@ -4,9 +4,10 @@ import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/Button';
 
-const getComplaintDetails = (id: string | string[]) => {
+const getComplaintDetails = (id: string | string[] | undefined) => {
+  const finalId = Array.isArray(id) ? id[0] : id;
   return {
-    id: id || 'CMP-1025',
+    id: finalId || 'CMP-1025',
     status: 'Pending Verification',
     category: 'Water Supply',
     title: 'Pipeline Leakage',
@@ -75,7 +76,7 @@ export default function ComplaintDetailsViewScreen() {
           <Button 
             title="View Timeline" 
             onPress={() => router.push({ pathname: '/complaint/timeline/[id]', params: { id: complaint.id } })}  
-            variant="secondary"
+            variant="primary"
           />
         </View>
       </View>

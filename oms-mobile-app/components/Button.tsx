@@ -2,14 +2,15 @@ import { TouchableOpacity, Text, TouchableOpacityProps, View } from 'react-nativ
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
-  variant?: 'primary' | 'secondary' | 'outline' | 'logout';
+  variant?: 'primary' | 'secondary' | 'outline';
   leftIcon?: React.ReactNode;
 }
 
 export function Button({ title, variant = 'primary', leftIcon, className = '', ...props }: ButtonProps) {
   let bgClass = 'bg-primary';
   let textClass = 'text-white';
-  let roundedClass = 'rounded-xl';
+  const hasRoundedClass = className.includes('rounded-');
+  const roundedClass = hasRoundedClass ? '' : 'rounded-xl';
 
   if (variant === 'secondary') {
     bgClass = 'bg-secondary';
@@ -17,10 +18,6 @@ export function Button({ title, variant = 'primary', leftIcon, className = '', .
   } else if (variant === 'outline') {
     bgClass = 'bg-transparent border-2 border-border';
     textClass = 'text-text';
-  } else if (variant === 'logout') {
-    bgClass = 'bg-[#d97706]';
-    textClass = 'text-white';
-    roundedClass = 'rounded-full';
   }
 
   return (

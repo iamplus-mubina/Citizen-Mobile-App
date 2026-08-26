@@ -40,7 +40,7 @@ All notable changes to this project will be documented in this file.
 - Connected citizen phone number dynamically to the Profile screen (`components/Profile.tsx`), saving the value entered during OTP verification.
 - Created dynamic "Personal Details" card displaying Name, Phone, Email, Address, and Pincode on the Profile screen, featuring a Pencil Edit Icon to edit and update fields in the Zustand store.
 - Added custom premium icons (User, Phone, Envelope, Location markers) next to each detail row inside the Profile screen "Personal Details" card.
-- Updated `BottomNavigation` component to show solid-filled icons when a tab is active, and styled the active states with the warm orange-mustard brand color (`#d97706`).
+- Updated `BottomNavigation` component to show solid-filled icons when a tab is active, and styled the active states with the primary brand color.
 - Added `--color-white` token to `global.css` and `Colors.ts`.
 
 ### Changed
@@ -49,7 +49,8 @@ All notable changes to this project will be documented in this file.
 - Removed Address, About App, and Change Password menu fields from Profile screen (`components/Profile.tsx`).
 - Updated `Input` to support `multiline` textareas with top-aligned text and minimum height.
 - Updated `Input` to wrap `TextInput` in `TouchableOpacity` with `ref` focus for reliable keyboard activation on physical Android devices.
-- Updated `Button` component to support an optional `leftIcon` prop, and added a custom `logout` button variant (warm orange-mustard `#d97706` background with pill-shaped `rounded-full` layout).
+- Updated primary brand color in `global.css` (`--color-primary`) and `constants/Colors.ts` to the warm gold-yellow brand color (`#ffba01`), automatically updating all primary buttons, input focus states, headers, and active navigation states globally across all pages.
+- Updated `Button` component to support an optional `leftIcon` prop, and allowed custom `rounded-` classes to override default rounded styles (e.g. `rounded-full` for Logout button on Profile).
 - Updated `SafeAreaView` in `home.tsx` to include `edges={['top', 'bottom']}`, resolving Bottom Navigation overlap on Android.
 
 ### Fixed

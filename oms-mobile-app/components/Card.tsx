@@ -50,7 +50,7 @@ export function Card({
         activeOpacity={0.7}
         className="w-[48%] bg-background border border-border p-4 rounded-xl flex-row items-center gap-x-3 mb-4"
       >
-        {Icon && <Icon size={20} color={colors.primary} />}
+        {Icon && <Icon size={20} color="#a5a4bf" />}
         <Text className="text-sm font-inter-semibold text-text flex-1" numberOfLines={1}>
           {title}
         </Text>

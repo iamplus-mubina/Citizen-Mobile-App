@@ -32,7 +32,7 @@ export function BottomNavigation({ activeTab, onTabPress }: BottomNavigationProp
     <View className="h-16 flex-row justify-around items-center border-t border-border bg-background">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
-        const color = isActive ? '#d97706' : colors.muted;
+        const color = isActive ? colors.primary : colors.muted;
         const fontClass = isActive ? 'font-inter-semibold' : 'font-inter-medium';
         const Icon = isActive ? tab.SolidIcon : tab.OutlineIcon;
 

@@ -95,7 +95,8 @@ export function Profile() {
           <Button 
             title="Logout" 
             onPress={handleLogout} 
-            variant="logout"
+            variant="primary"
+            className="rounded-full"
           />
         </View>
 
@@ -123,8 +124,8 @@ function DetailRow({
 }) {
   return (
     <View className="flex-row items-center py-2.5">
-      <View className="w-9 h-9 rounded-xl bg-primary/5 items-center justify-center mr-3">
-        <IconComponent size={18} color={colors.primary} />
+      <View className="w-9 h-9 rounded-xl bg-[#a5a4bf]/10 items-center justify-center mr-3">
+        <IconComponent size={18} color="#a5a4bf" />
       </View>
       <View className="flex-1">
         <Text className="text-xs font-inter-semibold text-muted mb-0.5">{label}</Text>

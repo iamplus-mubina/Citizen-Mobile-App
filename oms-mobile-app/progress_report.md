@@ -53,9 +53,11 @@
 - [x] Persisted profile photo state inside global Zustand store to maintain state across unmounts and update top Header avatar.
 - [x] Connected citizen phone number dynamically to the Profile screen from the login credentials.
 - [x] Created dynamic "Personal Details" card displaying Name, Phone, Email, Address, and Pincode on the Profile screen, featuring a Pencil Edit Icon to edit and update fields in the Zustand store.
-- [x] Customized the Logout button with a pill-shaped rounded layout and warm orange-mustard branding color (`#d97706`).
-- [x] Enhanced the "Personal Details" card on the Profile screen with premium icons (User, Phone, Envelope, and Location markers) for each field.
-- [x] Customized the `BottomNavigation` component to show active tab icons in a solid style filled with the warm orange-mustard branding color (`#d97706`).
+- [x] Customized the Logout button with a pill-shaped rounded layout and mapped all primary buttons globally to the warm gold-yellow branding color (`#ffda83`).
+- [x] Enhanced the "Personal Details" card on the Profile screen with premium icons (User, Phone, Envelope, and Location markers) in a custom slate-gray/lavender color (`#a5a4bf`) for each field.
+- [x] Set the icon colors of the Home screen "Quick Actions" cards to the matching custom slate-gray/lavender color (`#a5a4bf`).
+- [x] Customized the `BottomNavigation` component to show active tab icons in a solid style filled with the primary brand color (`#ffda83`).
+- [x] Configured the "View Timeline" button inside the Complaint Details screen (`view/[id].tsx`) to use the primary gold-yellow button variant.
 
 ## In Progress
 - [ ] My Complaints dashboard with tabs (All, Pending, In Progress, Resolved).
