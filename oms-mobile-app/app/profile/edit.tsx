@@ -86,11 +86,21 @@ export default function EditProfileScreen() {
             </View>
           </ScrollView>
 
-          <View className="px-6 py-4 bg-background border-t border-border">
-            <Button 
-              title="Save Changes" 
-              onPress={handleSave} 
-            />
+          <View className="px-6 py-4 bg-background border-t border-border flex-row gap-x-3">
+            <View className="flex-1">
+              <Button 
+                title="Update" 
+                onPress={handleSave} 
+                variant="primary"
+              />
+            </View>
+            <View className="flex-1">
+              <Button 
+                title="Cancel" 
+                onPress={() => router.back()} 
+                variant="secondary"
+              />
+            </View>
           </View>
 
         </View>

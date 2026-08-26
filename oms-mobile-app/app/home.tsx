@@ -5,20 +5,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/Header';
 import { BottomNavigation, TabType } from '@/components/BottomNavigation';
 import { Card } from '@/components/Card';
+import { MenuDrawer } from '@/components/MenuDrawer';
 import { 
   ClipboardDocumentListIcon,
   BellIcon,
-  UserIcon,
   QuestionMarkCircleIcon,
   MegaphoneIcon
 } from 'react-native-heroicons/outline';
 import { MyComplaints } from '@/components/MyComplaints';
 import { Notifications } from '@/components/Notifications';
-import { Profile } from '@/components/Profile';
 import { useComplaintStore } from '@/store/useComplaintStore';
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<TabType>('home');
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const router = useRouter();
   const { submittedComplaints, profilePhoto } = useComplaintStore();
 
@@ -67,12 +67,6 @@ export default function HomeScreen() {
                 />
                 <Card 
                   variant="quick"
-                  title="Profile" 
-                  Icon={UserIcon} 
-                  onPress={() => setActiveTab('profile')}
-                />
-                <Card 
-                  variant="quick"
                   title="Help & Support" 
                   Icon={QuestionMarkCircleIcon} 
                   onPress={() => console.log('Help pressed')}
@@ -113,8 +107,6 @@ export default function HomeScreen() {
         return <MyComplaints />;
       case 'notifications':
         return <Notifications />;
-      case 'profile':
-        return <Profile />;
       default:
         return null;
     }
@@ -124,12 +116,20 @@ export default function HomeScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
       <View className={containerClass}>
         <View className="flex-1">
-          <Header avatarUrl={profilePhoto || undefined} />
+          <Header
+            avatarUrl={profilePhoto || undefined}
+            onMenuPress={() => setDrawerOpen(true)}
+          />
           {renderTabContent()}
         </View>
         
         <BottomNavigation activeTab={activeTab} onTabPress={setActiveTab} />
       </View>
+
+      <MenuDrawer
+        visible={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+      />
     </SafeAreaView>
   );
 }

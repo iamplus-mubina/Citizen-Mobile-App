@@ -9,9 +9,10 @@ interface HeaderProps {
   className?: string;
   avatarUrl?: string;
   showBack?: boolean;
+  onMenuPress?: () => void;
 }
 
-export function Header({ className = '', avatarUrl, showBack }: HeaderProps) {
+export function Header({ className = '', avatarUrl, showBack, onMenuPress }: HeaderProps) {
   const router = useRouter();
   const { profileName } = useComplaintStore();
   const displayName = profileName || 'Rahul Sharma';
@@ -73,7 +74,7 @@ export function Header({ className = '', avatarUrl, showBack }: HeaderProps) {
               <TouchableOpacity 
                 activeOpacity={0.7}
                 className="p-1 -mr-1 rounded-full"
-                onPress={() => console.log('Menu pressed')}
+                onPress={onMenuPress}
               >
                 <Bars3Icon size={24} color={colors.white} />
               </TouchableOpacity>
