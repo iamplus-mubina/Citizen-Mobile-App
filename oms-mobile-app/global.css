@@ -16,5 +16,8 @@
     --color-on-primary: #ffffff;
     --color-checkmark: #1f2937;
     --color-white: #ffffff;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-teal: #0f766e;
   }
 }

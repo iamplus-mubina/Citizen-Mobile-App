@@ -3,47 +3,60 @@ import { View, ScrollView, Platform, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { Header } from '@/components/Header';
-import { StepperTimeline, StepperTimelineStep } from '@/components/StepperTimeline';
+import { Stepper, StepperStep } from '@/components/Stepper';
 
-const getComplaintHistory = (id: string | string[]): StepperTimelineStep[] => {
+const getComplaintHistory = (id: string | string[]): StepperStep[] => {
   return [
     {
       id: 'step-1',
       title: 'Complaint Submitted',
       description: 'Your complaint has been submitted successfully.',
       date: '13 May 2024 10:30 AM',
-      status: 'completed'
+      status: 'completed',
+      theme: 'primary'
     },
     {
       id: 'step-2',
       title: 'Pending Verification',
       description: 'Office admin is verifying your complaint.',
       date: '13 May 2024 11:15 AM',
-      status: 'current'
+      status: 'completed',
+      theme: 'success'
     },
     {
       id: 'step-3',
       title: 'Assigned',
       description: 'Yet to be assigned',
-      status: 'future'
+      status: 'completed',
+      theme: 'warning'
     },
     {
       id: 'step-4',
       title: 'In Progress',
       description: 'Work is in progress',
-      status: 'future'
+      status: 'completed',
+      theme: 'warning'
     },
     {
       id: 'step-5',
       title: 'Resolved',
       description: 'Work has been completed',
-      status: 'future'
+      status: 'completed',
+      theme: 'secondary'
     },
     {
       id: 'step-6',
+      title: 'Rejected',
+      description: 'Complaint could not be processed',
+      status: 'completed',
+      theme: 'error'
+    },
+    {
+      id: 'step-7',
       title: 'Completed',
       description: 'Complaint closed',
-      status: 'future'
+      status: 'completed',
+      theme: 'success'
     }
   ];
 };
@@ -73,7 +86,7 @@ export default function TimelineScreen() {
         </View>
 
         <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
-          <StepperTimeline steps={historySteps} />
+          <Stepper steps={historySteps} />
         </ScrollView>
         
       </View>

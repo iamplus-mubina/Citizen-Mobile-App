@@ -9,7 +9,8 @@ import {
   ClipboardDocumentListIcon,
   BellIcon,
   UserIcon,
-  QuestionMarkCircleIcon
+  QuestionMarkCircleIcon,
+  MegaphoneIcon
 } from 'react-native-heroicons/outline';
 import { MyComplaints } from '@/components/MyComplaints';
 import { Notifications } from '@/components/Notifications';
@@ -82,6 +83,13 @@ export default function HomeScreen() {
                   title="Help & Support" 
                   Icon={QuestionMarkCircleIcon} 
                   onPress={() => console.log('Help pressed')}
+                />
+                
+                <Card 
+                  variant="quick"
+                  title="City Updates" 
+                  Icon={MegaphoneIcon} 
+                  onPress={() => router.push('/updates' as any)}
                 />
               </View>
             </View>

@@ -19,6 +19,9 @@ module.exports = {
         error: 'var(--color-error)',
         'on-primary': 'var(--color-on-primary)',
         checkmark: 'var(--color-checkmark)',
+        success: 'var(--color-success)',
+        warning: 'var(--color-warning)',
+        teal: 'var(--color-teal)',
       },
       fontFamily: {
         sans: ["Inter_400Regular"],

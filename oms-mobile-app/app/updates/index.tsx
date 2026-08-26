@@ -54,12 +54,10 @@ export default function UpdatesListScreen() {
               onPress={() => router.push({ pathname: '/updates/[id]', params: { id: update.id } } as any)}
               className="bg-background border border-border rounded-xl p-4 shadow-sm mb-4 flex-row items-start"
             >
-              {/* Image Placeholder */}
-              <View className="w-16 h-16 bg-slate-200 rounded-lg items-center justify-center mr-4">
+              <View className="w-16 h-16 bg-border rounded-lg items-center justify-center mr-4">
                 <MegaphoneIcon size={24} color={colors.muted} />
               </View>
               
-              {/* Content */}
               <View className="flex-1">
                 <Text className="text-base font-inter-bold text-text mb-1" numberOfLines={2}>
                   {update.title}
