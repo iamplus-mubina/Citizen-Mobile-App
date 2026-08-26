@@ -28,11 +28,20 @@ interface ComplaintFormState {
   photoCount: number;
   documentCount: number;
   submittedComplaints: SubmittedComplaint[];
+  profilePhoto: string | null;
+  phoneNumber: string;
+  profileName: string;
+  profileEmail: string;
+  profileAddress: string;
+  profilePincode: string;
   setCategory: (value: string) => void;
   setDetails: (title: string, description: string, priority: string) => void;
   setLocation: (address: string, area: string, ward: string, pincode: string) => void;
   setAttachments: (photoCount: number, documentCount: number) => void;
   submitComplaint: () => void;
+  setProfilePhoto: (uri: string | null) => void;
+  setPhoneNumber: (phone: string) => void;
+  setProfile: (profileName: string, profileEmail: string, profileAddress: string, profilePincode: string) => void;
   resetForm: () => void;
 }
 
@@ -70,10 +79,19 @@ const initialComplaints: SubmittedComplaint[] = [
 export const useComplaintStore = create<ComplaintFormState>((set) => ({
   ...defaultState,
   submittedComplaints: initialComplaints,
+  profilePhoto: null,
+  phoneNumber: '+91 9876543210',
+  profileName: 'Rahul Sharma',
+  profileEmail: 'rahul@example.com',
+  profileAddress: 'Street 12, Green Park, Bhopal',
+  profilePincode: '462001',
   setCategory: (category) => set({ category }),
   setDetails: (title, description, priority) => set({ title, description, priority }),
   setLocation: (address, area, ward, pincode) => set({ address, area, ward, pincode }),
   setAttachments: (photoCount, documentCount) => set({ photoCount, documentCount }),
+  setProfilePhoto: (profilePhoto) => set({ profilePhoto }),
+  setPhoneNumber: (phoneNumber) => set({ phoneNumber }),
+  setProfile: (profileName, profileEmail, profileAddress, profilePincode) => set({ profileName, profileEmail, profileAddress, profilePincode }),
   submitComplaint: () => set((state) => {
     const nextTicketNumber = state.submittedComplaints.length > 0
       ? Math.max(...state.submittedComplaints.map(c => parseInt(c.ticketId.replace('CMP-', '')))) + 1

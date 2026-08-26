@@ -5,19 +5,22 @@ import { Stack, useRouter } from 'expo-router';
 import { Header } from '@/components/Header';
 import { Input } from '@/components/Input';
 import { Button } from '@/components/Button';
+import { useComplaintStore } from '@/store/useComplaintStore';
 
 export default function EditProfileScreen() {
   const router = useRouter();
-  const [name, setName] = useState('Rahul Sharma');
-  const [email, setEmail] = useState('rahul@example.com');
-  const [address, setAddress] = useState('Street 12, Green Park, Bhopal');
-  const [pincode, setPincode] = useState('462001');
+  const store = useComplaintStore();
+  const [name, setName] = useState(store.profileName);
+  const [email, setEmail] = useState(store.profileEmail);
+  const [address, setAddress] = useState(store.profileAddress);
+  const [pincode, setPincode] = useState(store.profilePincode);
 
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background"
     : "flex-1 bg-background";
 
   const handleSave = () => {
+    store.setProfile(name, email, address, pincode);
     router.back();
   };
 

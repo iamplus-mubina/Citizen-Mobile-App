@@ -85,6 +85,7 @@ export function UploadModal({ visible, onClose, onImagePicked }: UploadModalProp
       transparent
       animationType="fade"
       onRequestClose={onClose}
+      statusBarTranslucent={true}
     >
       <TouchableWithoutFeedback onPress={onClose}>
         <View className="flex-1 bg-black/60 justify-end items-center">
@@ -92,7 +93,7 @@ export function UploadModal({ visible, onClose, onImagePicked }: UploadModalProp
             <View className="bg-background w-full max-w-md rounded-t-3xl p-6 pb-8 border-t border-border">
               <View className="flex-row justify-between items-center mb-6">
                 <Text className="text-lg font-inter-bold text-text">Upload Photo</Text>
-                <TouchableOpacity onPress={onClose} className="p-1" activeOpacity={0.7}>
+                <TouchableOpacity onPress={onClose} className="p-1 no-underline outline-none" activeOpacity={0.7}>
                   <XMarkIcon size={20} color={colors.text} />
                 </TouchableOpacity>
               </View>
@@ -101,23 +102,35 @@ export function UploadModal({ visible, onClose, onImagePicked }: UploadModalProp
                 <TouchableOpacity 
                   onPress={handleTakePhoto}
                   activeOpacity={0.7}
-                  className="items-center justify-center bg-input-bg border border-border w-[42%] py-6 rounded-2xl"
+                  className="items-center justify-center bg-input-bg border border-border w-[42%] py-6 rounded-2xl no-underline outline-none"
+                  style={Platform.OS === 'web' ? { outlineStyle: 'none', textDecorationLine: 'none', textDecoration: 'none' } as any : {}}
                 >
                   <View className="w-12 h-12 rounded-full bg-primary/10 justify-center items-center mb-2">
                     <CameraIcon size={24} color={colors.primary} />
                   </View>
-                  <Text className="text-sm font-inter-semibold text-text">Take Photo</Text>
+                  <Text 
+                    className="text-sm font-inter-semibold text-text no-underline"
+                    style={Platform.OS === 'web' ? { textDecorationLine: 'none', textDecoration: 'none' } as any : {}}
+                  >
+                    Take Photo
+                  </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity 
                   onPress={handleChooseGallery}
                   activeOpacity={0.7}
-                  className="items-center justify-center bg-input-bg border border-border w-[42%] py-6 rounded-2xl"
+                  className="items-center justify-center bg-input-bg border border-border w-[42%] py-6 rounded-2xl no-underline outline-none"
+                  style={Platform.OS === 'web' ? { outlineStyle: 'none', textDecorationLine: 'none', textDecoration: 'none' } as any : {}}
                 >
                   <View className="w-12 h-12 rounded-full bg-primary/10 justify-center items-center mb-2">
                     <PhotoIcon size={24} color={colors.primary} />
                   </View>
-                  <Text className="text-sm font-inter-semibold text-text">Choose Gallery</Text>
+                  <Text 
+                    className="text-sm font-inter-semibold text-text no-underline"
+                    style={Platform.OS === 'web' ? { textDecorationLine: 'none', textDecoration: 'none' } as any : {}}
+                  >
+                    Choose Gallery
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>

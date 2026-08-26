@@ -20,7 +20,7 @@ import { useComplaintStore } from '@/store/useComplaintStore';
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const router = useRouter();
-  const { submittedComplaints } = useComplaintStore();
+  const { submittedComplaints, profilePhoto } = useComplaintStore();
 
   const getFormattedDate = () => {
     const date = new Date();
@@ -132,7 +132,7 @@ export default function HomeScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
       <View className={containerClass}>
         <View className="flex-1">
-          <Header />
+          <Header avatarUrl={profilePhoto || undefined} />
           {renderTabContent()}
         </View>
         

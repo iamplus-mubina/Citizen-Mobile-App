@@ -17,9 +17,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { PhoneIcon, ArrowLeftIcon } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 import omsLogo from '../assets/images/oms_logo.png';
+import { useComplaintStore } from '@/store/useComplaintStore';
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { setPhoneNumber } = useComplaintStore();
   const [step, setStep] = useState<'splash' | 'mobile' | 'otp'>('splash');
   const [mobile, setMobile] = useState('');
   const [otp, setOtp] = useState('');
@@ -70,6 +72,7 @@ export default function LoginScreen() {
       setError('Incorrect OTP. Please use 123456');
     } else {
       setError('');
+      setPhoneNumber(`+91 ${mobile}`);
       console.log('Login successful with mobile:', mobile);
       router.replace('/home');
     }

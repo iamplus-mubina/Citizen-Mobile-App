@@ -35,14 +35,20 @@ All notable changes to this project will be documented in this file.
 - Installed `expo-image-picker` dependency and created cross-platform `UploadModal` component supporting Take Photo (Camera) and Choose Gallery (Media Library) inputs across Web, Android, and iOS.
 - Installed `expo-document-picker` dependency and integrated file uploading capability on the attachments page.
 - Connected submitted complaints dynamically to the Home screen dashboard from the global Zustand store, updating it upon successful submission.
+- Integrated profile photo upload and preview inside the Profile screen (`components/Profile.tsx`) using the custom `UploadModal`.
+- Connected profile photo state to global Zustand store to maintain selections across screens and dynamically update the top Header avatar component.
+- Connected citizen phone number dynamically to the Profile screen (`components/Profile.tsx`), saving the value entered during OTP verification.
+- Created dynamic "Personal Details" card displaying Name, Phone, Email, Address, and Pincode on the Profile screen, featuring a Pencil Edit Icon to edit and update fields in the Zustand store.
+- Added custom premium icons (User, Phone, Envelope, Location markers) next to each detail row inside the Profile screen "Personal Details" card.
 - Added `--color-white` token to `global.css` and `Colors.ts`.
 
 ### Changed
 - Refactored `Button`, `Input`, and `login` screen styles to use `font-inter-*` typography classes and design color tokens only.
 - Refactored `Header` to remove hamburger/notification icons; replaced with app branding and right-aligned user avatar.
+- Removed Address, About App, and Change Password menu fields from Profile screen (`components/Profile.tsx`).
 - Updated `Input` to support `multiline` textareas with top-aligned text and minimum height.
 - Updated `Input` to wrap `TextInput` in `TouchableOpacity` with `ref` focus for reliable keyboard activation on physical Android devices.
-- Updated `Button` to support an optional `leftIcon` prop.
+- Updated `Button` component to support an optional `leftIcon` prop, and added a custom `logout` button variant (warm orange-mustard `#d97706` background with pill-shaped `rounded-full` layout).
 - Updated `SafeAreaView` in `home.tsx` to include `edges={['top', 'bottom']}`, resolving Bottom Navigation overlap on Android.
 
 ### Fixed

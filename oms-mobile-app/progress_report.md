@@ -48,6 +48,13 @@
 - [x] Configured Zustand store (`store/useComplaintStore.ts`) to manage wizard form state.
 - [x] Integrated cross-platform document uploading using `expo-document-picker` inside `attachments.tsx`.
 - [x] Connected submitted complaints dynamically to the Home screen dashboard list from the Zustand store.
+- [x] Removed Address, About App, Change Password, and Language menu fields from Profile screen.
+- [x] Integrated profile photo upload and edit triggers inside the Profile screen avatar using `UploadModal`.
+- [x] Persisted profile photo state inside global Zustand store to maintain state across unmounts and update top Header avatar.
+- [x] Connected citizen phone number dynamically to the Profile screen from the login credentials.
+- [x] Created dynamic "Personal Details" card displaying Name, Phone, Email, Address, and Pincode on the Profile screen, featuring a Pencil Edit Icon to edit and update fields in the Zustand store.
+- [x] Customized the Logout button with a pill-shaped rounded layout and warm orange-mustard branding color (`#d97706`).
+- [x] Enhanced the "Personal Details" card on the Profile screen with premium icons (User, Phone, Envelope, and Location markers) for each field.
 
 ## In Progress
 - [ ] My Complaints dashboard with tabs (All, Pending, In Progress, Resolved).
