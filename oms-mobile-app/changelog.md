@@ -45,7 +45,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Refactored `Button`, `Input`, and `login` screen styles to use `font-inter-*` typography classes and design color tokens only.
-- Refactored `Header` to remove hamburger/notification icons; replaced with app branding and right-aligned user avatar, and styled its background using the new `bg-header-bg` CSS variable theme token (`#1A3B5C`) with white text and back navigation arrow (`ArrowLeftIcon`). Configured its height to `h-36` (144px) to support a dynamic welcome greeting alongside a dark sub-banner ("User from: Office Management System") mimicking the mockup design structure on main screens.
+- Refactored `Header` to support app branding, a right-aligned user avatar, and a white three-line hamburger menu icon (`Bars3Icon`) for side navigation on main screens. Styled its background using the new `bg-header-bg` CSS variable theme token (`#1A3B5C`) with white text and back navigation arrow (`ArrowLeftIcon`). Configured its height to `h-36` (144px) to support a dynamic welcome greeting alongside a dark sub-banner ("User from: Office Management System") mimicking the mockup design structure on main screens.
 - Removed the static "Good Morning, Rahul Sharma" greeting block from the home screen body (`app/home.tsx`), since it is now natively integrated inside the header.
 - Mapped all custom icon colors inside Profile details and Home quick actions to the `icon-muted` CSS variable theme token (`#a5a4bf`) instead of using hardcoded color strings.
 - Removed Address, About App, and Change Password menu fields from Profile screen (`components/Profile.tsx`).
