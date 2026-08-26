@@ -52,7 +52,7 @@ export default function HomeScreen() {
             <View className="mb-8">
               <Text className="text-lg font-inter-bold text-dark mb-4">Quick Actions</Text>
               
-              <View className="flex-row flex-wrap gap-[3.5%]">
+              <View className="flex-row flex-wrap -mx-[1%]">
                 <Card 
                   variant="quick"
                   title="My Complaints" 

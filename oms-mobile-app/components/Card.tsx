@@ -48,7 +48,7 @@ export function Card({
       <TouchableOpacity 
         onPress={onPress}
         activeOpacity={0.7}
-        className="w-[31%] rounded-lg p-3 mb-4 bg-surface"
+        className="w-[31%] mx-[1%] rounded-lg p-3 mb-4 bg-surface"
         style={{
           shadowColor: colors.dark,
           shadowOffset: { width: 0, height: 1 },
@@ -58,7 +58,7 @@ export function Card({
         }}
       >
         <View className="w-8 h-8 rounded-full bg-border justify-center items-center mb-3">
-          {Icon && <Icon size={16} color={colors.dark} />}
+          {Icon && <Icon size={16} color={colors.iconMuted} />}
         </View>
         <Text className="text-xs font-inter-semibold text-dark leading-tight" numberOfLines={2}>
           {title}
@@ -72,7 +72,7 @@ export function Card({
       <TouchableOpacity 
         onPress={onPress}
         activeOpacity={onPress ? 0.7 : 1}
-        className="bg-background border border-border p-4 rounded-xl mb-4"
+        className="bg-white border border-border p-4 rounded-xl mb-4"
       >
         <View className="flex-row justify-between items-center mb-1">
           <Text className="text-base font-inter-bold text-dark">{ticketId || title}</Text>

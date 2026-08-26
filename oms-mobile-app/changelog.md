@@ -55,6 +55,10 @@ All notable changes to this project will be documented in this file.
 - Mapped the CSS variable `--color-text` to the cleaner Tailwind class `text-dark` (and `colors.dark` in TypeScript) to avoid the redundant `text-text` class naming convention.
 - Changed "Welcome" and "Enter OTP" text headers on the Login screen to use `text-dark` (black) instead of the primary brand color.
 - Updated `Button` component to support an optional `leftIcon` prop, and allowed custom `rounded-` classes to override default rounded styles (e.g. `rounded-full` for Logout button on Profile).
+- Created a generic, reusable `Tabs` component (`components/Tabs.tsx`) supporting customizable label arrays, active selections, and counts, and integrated it into the My Complaints dashboard.
+- Updated My Complaints filter tabs (`All`, `Unsolved`, `In-Progress`, `Solved`) to use a rectangular `rounded-lg` layout with thin slate borders, solid primary background with black text when active, and added dynamic complaint item counts next to each tab label.
+- Updated Card component's "recent" variant to use a solid white background (`bg-white`) instead of `bg-background` to stand out cleanly from the screen.
+- Refactored Quick Actions cards container in `home.tsx` to use negative margins (`-mx-[1%]`) and `mx-[1%]` grid items, preventing flexbox wrapping and overlapping bugs on web/desktop viewports.
 - Updated `SafeAreaView` in `home.tsx` to include `edges={['top', 'bottom']}`, resolving Bottom Navigation overlap on Android.
 
 ### Fixed

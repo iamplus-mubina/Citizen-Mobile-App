@@ -5,38 +5,40 @@ import { useRouter } from 'expo-router';
 import { Input } from '@/components/Input';
 import { Card } from '@/components/Card';
 import { colors } from '@/constants/Colors';
+import { useComplaintStore } from '@/store/useComplaintStore';
+import { Tabs } from '@/components/Tabs';
 
-type FilterTab = 'All' | 'Pending' | 'In Progress' | 'Resolved';
+type FilterTab = 'All' | 'Unsolved' | 'In-Progress' | 'Solved';
 
-const TABS: FilterTab[] = ['All', 'Pending', 'In Progress', 'Resolved'];
+const TABS: FilterTab[] = ['All', 'Unsolved', 'In-Progress', 'Solved'];
 
 const MOCK_COMPLAINTS = [
   {
-    id: 'CMP-1025',
+    ticketId: 'CMP-1025',
     title: 'Pipeline Leakage',
     status: 'Pending Verification',
     date: '12 May 2024',
   },
   {
-    id: 'CMP-1024',
+    ticketId: 'CMP-1024',
     title: 'Road Repair',
     status: 'In Progress',
     date: '12 May 2024',
   },
   {
-    id: 'CMP-1023',
+    ticketId: 'CMP-1023',
     title: 'Street Light Not Working',
     status: 'Resolved',
     date: '10 May 2024',
   },
   {
-    id: 'CMP-1022',
+    ticketId: 'CMP-1022',
     title: 'Garbage Collection Issue',
     status: 'Pending Verification',
     date: '08 May 2024',
   },
   {
-    id: 'CMP-1021',
+    ticketId: 'CMP-1021',
     title: 'Drainage Blockage',
     status: 'In Progress',
     date: '05 May 2024',
@@ -45,24 +47,43 @@ const MOCK_COMPLAINTS = [
 
 export function MyComplaints() {
   const router = useRouter();
+  const { submittedComplaints } = useComplaintStore();
   const [activeTab, setActiveTab] = useState<FilterTab>('All');
   const [searchQuery, setSearchQuery] = useState('');
 
+  const allComplaints = useMemo(() => {
+    // Merge mock complaints with user-submitted complaints dynamically
+    return [...submittedComplaints, ...MOCK_COMPLAINTS];
+  }, [submittedComplaints]);
+
+  // Compute counts for each status dynamically
+  const counts = useMemo(() => {
+    return {
+      All: allComplaints.length,
+      Unsolved: allComplaints.filter(
+        (c) => c.status === 'Pending Verification' || c.status === 'Pending'
+      ).length,
+      'In-Progress': allComplaints.filter((c) => c.status === 'In Progress').length,
+      Solved: allComplaints.filter((c) => c.status === 'Resolved').length,
+    };
+  }, [allComplaints]);
+
   const filteredComplaints = useMemo(() => {
-    return MOCK_COMPLAINTS.filter((complaint) => {
+    return allComplaints.filter((complaint) => {
       const matchesSearch = 
-        complaint.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        complaint.ticketId.toLowerCase().includes(searchQuery.toLowerCase()) ||
         complaint.title.toLowerCase().includes(searchQuery.toLowerCase());
       
       const matchesTab = 
         activeTab === 'All' || 
-        (activeTab === 'Pending' && complaint.status === 'Pending Verification') ||
-        (activeTab === 'In Progress' && complaint.status === 'In Progress') ||
-        (activeTab === 'Resolved' && complaint.status === 'Resolved');
+        (activeTab === 'Unsolved' && 
+          (complaint.status === 'Pending Verification' || complaint.status === 'Pending')) ||
+        (activeTab === 'In-Progress' && complaint.status === 'In Progress') ||
+        (activeTab === 'Solved' && complaint.status === 'Resolved');
 
       return matchesSearch && matchesTab;
     });
-  }, [activeTab, searchQuery]);
+  }, [allComplaints, activeTab, searchQuery]);
 
   return (
     <View className="flex-1">
@@ -77,35 +98,12 @@ export function MyComplaints() {
           />
         </View>
 
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
-          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 8, gap: 8 }}
-        >
-          {TABS.map((tab) => {
-            const isActive = activeTab === tab;
-            return (
-              <TouchableOpacity
-                key={tab}
-                onPress={() => setActiveTab(tab)}
-                activeOpacity={0.7}
-                className={`px-4 py-2 rounded-full ${
-                  isActive 
-                    ? 'bg-primary' 
-                    : 'bg-slate-100'
-                }`}
-              >
-                <Text 
-                  className={`text-sm font-inter-semibold ${
-                    isActive ? 'text-white' : 'text-dark'
-                  }`}
-                >
-                  {tab}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
+        <Tabs 
+          tabs={TABS}
+          activeTab={activeTab}
+          onTabPress={setActiveTab}
+          counts={counts}
+        />
       </View>
 
       <ScrollView 
@@ -116,13 +114,13 @@ export function MyComplaints() {
         {filteredComplaints.length > 0 ? (
           filteredComplaints.map((complaint) => (
             <Card
-              key={complaint.id}
+              key={complaint.ticketId}
               variant="recent"
-              ticketId={complaint.id}
+              ticketId={complaint.ticketId}
               title={complaint.title}
               date={complaint.date}
               status={complaint.status}
-              onPress={() => router.push({ pathname: '/complaint/view/[id]', params: { id: complaint.id } })}
+              onPress={() => router.push({ pathname: '/complaint/view/[id]', params: { id: complaint.ticketId } })}
             />
           ))
         ) : (

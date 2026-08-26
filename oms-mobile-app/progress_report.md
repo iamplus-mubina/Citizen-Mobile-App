@@ -62,12 +62,14 @@
 - [x] Changed the "Welcome" and "Enter OTP" text headers on the Login screen to be in black.
 - [x] Mapped the CSS variable `--color-text` to the cleaner Tailwind class `text-dark` and `colors.dark` key to avoid the duplicate `text-text` syntax.
 - [x] Replaced the body "Good Morning, Rahul Sharma" greeting with a clean, industry-standard header displaying user avatar and welcome text dynamically.
+- [x] Configured the My Complaints dashboard filter tabs (`All`, `Unsolved`, `In-Progress`, `Solved`) to match the mockup styling (rectangular rounded-lg layout with black borders, solid primary fill on active states, and dynamic counts of complaints in brackets).
+- [x] Extracted the tabs design into a generic, reusable `Tabs` component (`components/Tabs.tsx`) supporting customizable label arrays, active selections, and counts.
+- [x] Changed the background of complaints cards inside the My Complaints tab list (`variant="recent"`) to a solid white (`bg-white`) to stand out from the screen.
+- [x] Corrected the Quick Actions layout grid on Home screen by using proportional margin adjustments (`mx-[1%]` and `-mx-[1%]`), preventing browser flex wrap bugs/overlapping on web/desktop viewports.
 
 ## In Progress
-- [ ] My Complaints dashboard with tabs (All, Pending, In Progress, Resolved).
 
 ## Next Steps
-- [ ] My Complaints dashboard with tabs (All, Pending, In Progress, Resolved).
 - [ ] Complaint Details view and Status Tracking Timeline.
 - [ ] In-App Notifications History screen.
 - [ ] Citizen Profile view and Edit Profile screens.
