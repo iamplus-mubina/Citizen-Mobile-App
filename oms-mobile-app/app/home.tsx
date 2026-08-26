@@ -43,7 +43,7 @@ export default function HomeScreen() {
           <ScrollView className="flex-1 px-6 pt-4" showsVerticalScrollIndicator={false}>
             <View className="mb-6">
               <Text className="text-xl font-inter text-muted mb-1">Good Morning,</Text>
-              <Text className="text-3xl font-inter-bold text-text">Rahul Sharma</Text>
+              <Text className="text-3xl font-inter-bold text-dark">Rahul Sharma</Text>
             </View>
 
             <Card 
@@ -54,7 +54,7 @@ export default function HomeScreen() {
             />
 
             <View className="mb-8">
-              <Text className="text-lg font-inter-bold text-text mb-4">Quick Actions</Text>
+              <Text className="text-lg font-inter-bold text-dark mb-4">Quick Actions</Text>
               
               <View className="flex-row flex-wrap justify-between">
                 <Card 
@@ -96,7 +96,7 @@ export default function HomeScreen() {
 
             <View className="mb-8">
               <View className="flex-row justify-between items-center mb-4">
-                <Text className="text-lg font-inter-bold text-text">Recent Complaints</Text>
+                <Text className="text-lg font-inter-bold text-dark">Recent Complaints</Text>
                 <TouchableOpacity onPress={() => setActiveTab('complaints')}>
                   <Text className="text-sm font-inter-semibold text-primary underline">View All</Text>
                 </TouchableOpacity>

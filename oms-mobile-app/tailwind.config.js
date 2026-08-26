@@ -10,7 +10,7 @@ module.exports = {
       colors: {
         primary: 'var(--color-primary)',
         background: 'var(--color-background)',
-        text: 'var(--color-text)',
+        dark: 'var(--color-text)',
         muted: 'var(--color-muted)',
         secondary: 'var(--color-secondary)',
         'secondary-text': 'var(--color-secondary-text)',
@@ -22,6 +22,8 @@ module.exports = {
         success: 'var(--color-success)',
         warning: 'var(--color-warning)',
         teal: 'var(--color-teal)',
+        'header-bg': 'var(--color-header-bg)',
+        'icon-muted': 'var(--color-icon-muted)',
       },
       fontFamily: {
         sans: ["Inter_400Regular"],

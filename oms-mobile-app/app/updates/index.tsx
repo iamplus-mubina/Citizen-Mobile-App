@@ -42,7 +42,7 @@ export default function UpdatesListScreen() {
         <Header showBack />
 
         <View className="px-6 pb-2 pt-2 border-b border-border mb-4">
-          <Text className="text-xl font-inter-bold text-text">City Updates</Text>
+          <Text className="text-xl font-inter-bold text-dark">City Updates</Text>
           <Text className="text-sm font-inter text-muted mt-1">Official announcements & news</Text>
         </View>
 
@@ -59,7 +59,7 @@ export default function UpdatesListScreen() {
               </View>
               
               <View className="flex-1">
-                <Text className="text-base font-inter-bold text-text mb-1" numberOfLines={2}>
+                <Text className="text-base font-inter-bold text-dark mb-1" numberOfLines={2}>
                   {update.title}
                 </Text>
                 <Text className="text-xs font-inter-medium text-muted mb-2">

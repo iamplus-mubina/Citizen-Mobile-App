@@ -141,7 +141,7 @@ export default function LoginScreen() {
               style={{ width: 160, height: 160, marginBottom: 32 }}
               resizeMode="contain"
             />
-            <Text className="text-3xl font-inter-bold text-text mb-10 text-center leading-10">
+            <Text className="text-3xl font-inter-bold text-dark mb-10 text-center leading-10">
               {"Office Management\nCitizen App"}
             </Text>
 
@@ -168,7 +168,7 @@ export default function LoginScreen() {
               className="self-start p-2 -ml-2 rounded-full"
               activeOpacity={0.7}
             >
-              <ArrowLeftIcon size={24} color={colors.text} />
+              <ArrowLeftIcon size={24} color={colors.dark} />
             </TouchableOpacity>
           )}
         </View>
@@ -180,7 +180,7 @@ export default function LoginScreen() {
               style={{ width: 150, height: 150, marginBottom: 24 }}
               resizeMode="contain"
             />
-            <Text className="text-3xl font-inter-bold text-primary mb-2 text-center">
+            <Text className="text-3xl font-inter-bold text-dark mb-2 text-center">
               {step === 'mobile' ? 'Welcome' : 'Enter OTP'}
             </Text>
             <Text className="text-muted text-lg font-inter text-center">
@@ -233,7 +233,7 @@ export default function LoginScreen() {
                       className={`w-12 h-14 border-2 rounded-xl justify-center items-center bg-input-bg ${isFocused ? 'border-primary' : 'border-border'
                         }`}
                     >
-                      <Text className="text-xl font-inter-semibold text-text">
+                      <Text className="text-xl font-inter-semibold text-dark">
                         {digit}
                       </Text>
                     </View>
@@ -270,7 +270,7 @@ export default function LoginScreen() {
               ) : null}
 
               <View className="items-center mb-8">
-                <Text className="text-text font-inter-medium text-base mb-2">
+                <Text className="text-dark font-inter-medium text-base mb-2">
                   {formatTime(timeLeft)}
                 </Text>
 

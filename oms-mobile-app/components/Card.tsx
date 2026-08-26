@@ -31,7 +31,7 @@ export function Card({
         className="bg-input-bg border border-border p-6 rounded-2xl flex-row items-center justify-between mb-8"
       >
         <View className="flex-1 mr-4">
-          <Text className="text-xl font-inter-bold text-text mb-1">{title}</Text>
+          <Text className="text-xl font-inter-bold text-dark mb-1">{title}</Text>
           {description && (
             <Text className="text-sm font-inter text-muted">{description}</Text>
           )}
@@ -50,8 +50,8 @@ export function Card({
         activeOpacity={0.7}
         className="w-[48%] bg-background border border-border p-4 rounded-xl flex-row items-center gap-x-3 mb-4"
       >
-        {Icon && <Icon size={20} color="#a5a4bf" />}
-        <Text className="text-sm font-inter-semibold text-text flex-1" numberOfLines={1}>
+        {Icon && <Icon size={20} color={colors.iconMuted} />}
+        <Text className="text-sm font-inter-semibold text-dark flex-1" numberOfLines={1}>
           {title}
         </Text>
       </TouchableOpacity>
@@ -66,7 +66,7 @@ export function Card({
         className="bg-background border border-border p-4 rounded-xl mb-4"
       >
         <View className="flex-row justify-between items-center mb-1">
-          <Text className="text-base font-inter-bold text-text">{ticketId || title}</Text>
+          <Text className="text-base font-inter-bold text-dark">{ticketId || title}</Text>
           {date && <Text className="text-xs font-inter text-muted">{date}</Text>}
         </View>
         {description && (

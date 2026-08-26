@@ -26,7 +26,7 @@ export function Dropdown({
 
   return (
     <View className={`w-full mb-4 z-50 ${className}`}>
-      {label && <Text className="text-text font-inter-semibold mb-2">{label}</Text>}
+      {label && <Text className="text-dark font-inter-semibold mb-2">{label}</Text>}
       
       
       <TouchableOpacity 
@@ -34,10 +34,10 @@ export function Dropdown({
         onPress={() => setIsOpen(!isOpen)}
         className={`flex-row items-center justify-between w-full bg-input-bg border ${error ? 'border-error' : (isOpen ? 'border-primary' : 'border-border')} rounded-xl px-4 py-3`}
       >
-        <Text className={`text-base font-inter ${value ? 'text-text' : 'text-muted'}`}>
+        <Text className={`text-base font-inter ${value ? 'text-dark' : 'text-muted'}`}>
           {value || placeholder}
         </Text>
-        <ChevronDownIcon size={20} color={isOpen ? colors.primary : colors.text} />
+        <ChevronDownIcon size={20} color={isOpen ? colors.primary : colors.dark} />
       </TouchableOpacity>
       
       {error && <Text className="text-error text-sm font-inter mt-1">{error}</Text>}
@@ -60,7 +60,7 @@ export function Dropdown({
                     setIsOpen(false);
                   }}
                 >
-                  <Text className={`text-base font-inter ${isSelected ? 'text-primary font-inter-semibold' : 'text-text'}`}>
+                  <Text className={`text-base font-inter ${isSelected ? 'text-primary font-inter-semibold' : 'text-dark'}`}>
                     {item}
                   </Text>
                   {isSelected && <CheckIcon size={20} color={colors.primary} />}

@@ -62,16 +62,16 @@ export default function AttachmentsScreen() {
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
           <View className="mb-8">
             <View className="items-center mb-2">
-              <Text className="text-lg font-inter-bold text-text">Register Complaint</Text>
+              <Text className="text-lg font-inter-bold text-dark">Register Complaint</Text>
             </View>
             <View className="items-end mb-2">
-              <Text className="text-sm font-inter-semibold text-text">4 of 4</Text>
+              <Text className="text-sm font-inter-semibold text-dark">4 of 4</Text>
             </View>
           </View>
 
           <View className="mb-8">
             <TouchableOpacity onPress={handleAddPhoto} activeOpacity={0.7} className="self-start">
-              <Text className="text-text font-inter-semibold mb-4">Upload Photos (Optional)</Text>
+              <Text className="text-dark font-inter-semibold mb-4">Upload Photos (Optional)</Text>
             </TouchableOpacity>
 
             {photos.length === 0 ? (
@@ -83,7 +83,7 @@ export default function AttachmentsScreen() {
                 <View className="w-12 h-12 rounded-full bg-primary/10 justify-center items-center mb-3">
                   <ArrowUpTrayIcon size={24} color={colors.primary} />
                 </View>
-                <Text className="text-sm font-inter-semibold text-text">Upload Photo</Text>
+                <Text className="text-sm font-inter-semibold text-dark">Upload Photo</Text>
               </TouchableOpacity>
             ) : (
               <>
@@ -112,7 +112,7 @@ export default function AttachmentsScreen() {
           </View>
 
           <View className="mb-8">
-            <Text className="text-text font-inter-semibold mb-4">Upload Documents (Optional)</Text>
+            <Text className="text-dark font-inter-semibold mb-4">Upload Documents (Optional)</Text>
 
             {documents.length > 0 && (
               <View className="mb-4 space-y-3">
@@ -120,7 +120,7 @@ export default function AttachmentsScreen() {
                   <View key={index} className="flex-row items-center justify-between bg-input-bg border border-border rounded-xl px-4 py-3">
                     <View className="flex-row items-center flex-1 mr-2">
                       <DocumentIcon size={20} color={colors.primary} />
-                      <Text className="ml-2 text-sm font-inter text-text flex-1" numberOfLines={1}>{doc.name}</Text>
+                      <Text className="ml-2 text-sm font-inter text-dark flex-1" numberOfLines={1}>{doc.name}</Text>
                     </View>
                     <TouchableOpacity onPress={() => handleRemoveDocument(index)} activeOpacity={0.7}>
                       <XMarkIcon size={18} color={colors.muted} />

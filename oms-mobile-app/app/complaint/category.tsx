@@ -33,13 +33,13 @@ export default function CategoryScreen() {
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
           <View className="mb-8">
             <View className="items-center mb-2">
-              <Text className="text-lg font-inter-bold text-text">Register Complaint</Text>
+              <Text className="text-lg font-inter-bold text-dark">Register Complaint</Text>
             </View>
             <View className="items-end mb-2">
-              <Text className="text-sm font-inter-semibold text-text">1 of 4</Text>
+              <Text className="text-sm font-inter-semibold text-dark">1 of 4</Text>
             </View>
             <View className="h-[1px] bg-border w-full mb-6" />
-            <Text className="text-base font-inter-semibold text-text mb-4">Select Category</Text>
+            <Text className="text-base font-inter-semibold text-dark mb-4">Select Category</Text>
           </View>
 
           <View className="space-y-4 mb-8">
@@ -60,7 +60,7 @@ export default function CategoryScreen() {
                       <View className="w-3 h-3 rounded-full bg-primary" />
                     )}
                   </View>
-                  <Text className={`text-lg font-inter ${isSelected ? 'text-primary' : 'text-text'}`}>
+                  <Text className={`text-lg font-inter ${isSelected ? 'text-primary' : 'text-dark'}`}>
                     {category}
                   </Text>
                 </TouchableOpacity>

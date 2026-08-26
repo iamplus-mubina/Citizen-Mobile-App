@@ -13,7 +13,7 @@ export function Input({ label, error, leftIcon, className = '', ...props }: Inpu
 
   return (
     <View className={`w-full mb-4 ${className}`}>
-      {label && <Text className="text-text font-inter-semibold mb-2">{label}</Text>}
+      {label && <Text className="text-dark font-inter-semibold mb-2">{label}</Text>}
       <TouchableOpacity
         activeOpacity={1}
         onPress={() => inputRef.current?.focus()}
@@ -22,7 +22,7 @@ export function Input({ label, error, leftIcon, className = '', ...props }: Inpu
         {leftIcon && <View className="mr-3">{leftIcon}</View>}
         <TextInput
           ref={inputRef}
-          className="flex-1 text-text text-base font-inter p-0"
+          className="flex-1 text-dark text-base font-inter p-0"
           placeholderTextColor={colors.muted}
           textAlignVertical={props.multiline ? 'top' : 'auto'}
           {...props}

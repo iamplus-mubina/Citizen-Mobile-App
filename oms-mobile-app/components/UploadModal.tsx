@@ -92,9 +92,9 @@ export function UploadModal({ visible, onClose, onImagePicked }: UploadModalProp
           <TouchableWithoutFeedback>
             <View className="bg-background w-full max-w-md rounded-t-3xl p-6 pb-8 border-t border-border">
               <View className="flex-row justify-between items-center mb-6">
-                <Text className="text-lg font-inter-bold text-text">Upload Photo</Text>
+                <Text className="text-lg font-inter-bold text-dark">Upload Photo</Text>
                 <TouchableOpacity onPress={onClose} className="p-1 no-underline outline-none" activeOpacity={0.7}>
-                  <XMarkIcon size={20} color={colors.text} />
+                  <XMarkIcon size={20} color={colors.dark} />
                 </TouchableOpacity>
               </View>
 
@@ -109,7 +109,7 @@ export function UploadModal({ visible, onClose, onImagePicked }: UploadModalProp
                     <CameraIcon size={24} color={colors.primary} />
                   </View>
                   <Text 
-                    className="text-sm font-inter-semibold text-text no-underline"
+                    className="text-sm font-inter-semibold text-dark no-underline"
                     style={Platform.OS === 'web' ? { textDecorationLine: 'none', textDecoration: 'none' } as any : {}}
                   >
                     Take Photo
@@ -126,7 +126,7 @@ export function UploadModal({ visible, onClose, onImagePicked }: UploadModalProp
                     <PhotoIcon size={24} color={colors.primary} />
                   </View>
                   <Text 
-                    className="text-sm font-inter-semibold text-text no-underline"
+                    className="text-sm font-inter-semibold text-dark no-underline"
                     style={Platform.OS === 'web' ? { textDecorationLine: 'none', textDecoration: 'none' } as any : {}}
                   >
                     Choose Gallery

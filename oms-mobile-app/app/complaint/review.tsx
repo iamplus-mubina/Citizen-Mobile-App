@@ -66,7 +66,7 @@ export default function ReviewScreen() {
 
         <Header showBack />
         <View className="px-6 pb-2">
-          <Text className="text-lg font-inter-bold text-text">Review Your Complaint</Text>
+          <Text className="text-lg font-inter-bold text-dark">Review Your Complaint</Text>
         </View>
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
@@ -93,7 +93,7 @@ export default function ReviewScreen() {
           >
             <View className="flex-1 bg-black/50 justify-center items-center">
               <View className="bg-background w-11/12 max-w-sm rounded-xl p-6 shadow-lg">
-                <Text className="text-xl font-inter-bold text-text mb-2">Submit Complaint</Text>
+                <Text className="text-xl font-inter-bold text-dark mb-2">Submit Complaint</Text>
                 <Text className="text-base font-inter text-muted mb-8">Are you sure you want to submit this complaint?</Text>
                 
                 <View className="flex-row justify-end gap-6">
@@ -118,7 +118,7 @@ function ReviewRow({ label, value, isLast = false }: { label: string; value: str
   return (
     <View className={`py-4 ${!isLast ? 'border-b border-border' : ''}`}>
       <Text className="text-xs font-inter-semibold text-muted mb-1">{label}</Text>
-      <Text className="text-base font-inter text-text">{value}</Text>
+      <Text className="text-base font-inter text-dark">{value}</Text>
     </View>
   );
 }

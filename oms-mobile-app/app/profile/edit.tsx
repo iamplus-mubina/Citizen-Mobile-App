@@ -36,14 +36,14 @@ export default function EditProfileScreen() {
           <Header showBack />
 
           <View className="px-6 pb-6 pt-2">
-            <Text className="text-lg font-inter-bold text-text">Edit Profile</Text>
+            <Text className="text-lg font-inter-bold text-dark">Edit Profile</Text>
           </View>
 
           <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
             <View>
               
               <View className="mb-6">
-                <Text className="text-sm font-inter-semibold text-text mb-2">Full Name</Text>
+                <Text className="text-sm font-inter-semibold text-dark mb-2">Full Name</Text>
                 <Input
                   placeholder="Enter full name"
                   value={name}
@@ -52,7 +52,7 @@ export default function EditProfileScreen() {
               </View>
 
               <View className="mb-6">
-                <Text className="text-sm font-inter-semibold text-text mb-2">Email</Text>
+                <Text className="text-sm font-inter-semibold text-dark mb-2">Email</Text>
                 <Input
                   placeholder="Enter email address"
                   value={email}
@@ -62,7 +62,7 @@ export default function EditProfileScreen() {
               </View>
 
               <View className="mb-6">
-                <Text className="text-sm font-inter-semibold text-text mb-2">Address</Text>
+                <Text className="text-sm font-inter-semibold text-dark mb-2">Address</Text>
                 <Input
                   placeholder="Enter address"
                   value={address}
@@ -73,7 +73,7 @@ export default function EditProfileScreen() {
               </View>
 
               <View className="mb-8">
-                <Text className="text-sm font-inter-semibold text-text mb-2">Pincode</Text>
+                <Text className="text-sm font-inter-semibold text-dark mb-2">Pincode</Text>
                 <Input
                   placeholder="Enter pincode"
                   value={pincode}

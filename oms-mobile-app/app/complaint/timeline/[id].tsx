@@ -79,7 +79,7 @@ export default function TimelineScreen() {
         <View className="px-6 pb-2 pt-2">
           <View className="flex-row justify-between items-center">
             <View>
-              <Text className="text-lg font-inter-bold text-text">Timeline</Text>
+              <Text className="text-lg font-inter-bold text-dark">Timeline</Text>
               <Text className="text-xs font-inter-medium text-muted mt-1">{id || 'CMP-1025'}</Text>
             </View>
           </View>

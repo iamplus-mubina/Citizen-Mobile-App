@@ -53,11 +53,14 @@
 - [x] Persisted profile photo state inside global Zustand store to maintain state across unmounts and update top Header avatar.
 - [x] Connected citizen phone number dynamically to the Profile screen from the login credentials.
 - [x] Created dynamic "Personal Details" card displaying Name, Phone, Email, Address, and Pincode on the Profile screen, featuring a Pencil Edit Icon to edit and update fields in the Zustand store.
-- [x] Customized the Logout button with a pill-shaped rounded layout and mapped all primary buttons globally to the warm gold-yellow branding color (`#ffda83`).
-- [x] Enhanced the "Personal Details" card on the Profile screen with premium icons (User, Phone, Envelope, and Location markers) in a custom slate-gray/lavender color (`#a5a4bf`) for each field.
-- [x] Set the icon colors of the Home screen "Quick Actions" cards to the matching custom slate-gray/lavender color (`#a5a4bf`).
-- [x] Customized the `BottomNavigation` component to show active tab icons in a solid style filled with the primary brand color (`#ffda83`).
+- [x] Customized the Logout button with a pill-shaped rounded layout and mapped all primary buttons globally to the warm gold-yellow branding color (`#ffba01`).
+- [x] Enhanced the "Personal Details" card on the Profile screen with premium icons (User, Phone, Envelope, and Location markers) in a custom slate-gray/lavender theme color (`icon-muted` / `#a5a4bf`) for each field.
+- [x] Set the icon colors of the Home screen "Quick Actions" cards to the matching custom slate-gray/lavender theme color (`icon-muted` / `#a5a4bf`).
+- [x] Customized the `BottomNavigation` component to show active tab icons in a solid style filled with the primary brand color (`#ffba01`).
 - [x] Configured the "View Timeline" button inside the Complaint Details screen (`view/[id].tsx`) to use the primary gold-yellow button variant.
+- [x] Customized the `Header` component background to use the dark blue theme token (`header-bg` / `#1A3B5C`) and styled the header text and icons to white.
+- [x] Changed the "Welcome" and "Enter OTP" text headers on the Login screen to be in black.
+- [x] Mapped the CSS variable `--color-text` to the cleaner Tailwind class `text-dark` and `colors.dark` key to avoid the duplicate `text-text` syntax.
 
 ## In Progress
 - [ ] My Complaints dashboard with tabs (All, Pending, In Progress, Resolved).

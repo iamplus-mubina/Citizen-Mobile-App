@@ -45,11 +45,14 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Refactored `Button`, `Input`, and `login` screen styles to use `font-inter-*` typography classes and design color tokens only.
-- Refactored `Header` to remove hamburger/notification icons; replaced with app branding and right-aligned user avatar.
+- Refactored `Header` to remove hamburger/notification icons; replaced with app branding and right-aligned user avatar, and styled its background using the new `bg-header-bg` CSS variable theme token (`#1A3B5C`) with white text and icons.
+- Mapped all custom icon colors inside Profile details and Home quick actions to the `icon-muted` CSS variable theme token (`#a5a4bf`) instead of using hardcoded color strings.
 - Removed Address, About App, and Change Password menu fields from Profile screen (`components/Profile.tsx`).
 - Updated `Input` to support `multiline` textareas with top-aligned text and minimum height.
 - Updated `Input` to wrap `TextInput` in `TouchableOpacity` with `ref` focus for reliable keyboard activation on physical Android devices.
 - Updated primary brand color in `global.css` (`--color-primary`) and `constants/Colors.ts` to the warm gold-yellow brand color (`#ffba01`), automatically updating all primary buttons, input focus states, headers, and active navigation states globally across all pages.
+- Mapped the CSS variable `--color-text` to the cleaner Tailwind class `text-dark` (and `colors.dark` in TypeScript) to avoid the redundant `text-text` class naming convention.
+- Changed "Welcome" and "Enter OTP" text headers on the Login screen to use `text-dark` (black) instead of the primary brand color.
 - Updated `Button` component to support an optional `leftIcon` prop, and allowed custom `rounded-` classes to override default rounded styles (e.g. `rounded-full` for Logout button on Profile).
 - Updated `SafeAreaView` in `home.tsx` to include `edges={['top', 'bottom']}`, resolving Bottom Navigation overlap on Android.
 

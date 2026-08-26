@@ -3,7 +3,7 @@ export const colors = {
   secondary: '#0f766e',
   background: '#f8fafc',
   surface: '#ffffff',
-  text: '#0f172a',
+  dark: '#0f172a',
   muted: '#64748b',
   success: '#15803d',
   warning: '#eab308',
@@ -11,4 +11,6 @@ export const colors = {
   border: '#e2e8f0',
   checkmark: '#1f2937',
   white: '#ffffff',
+  headerBg: '#1A3B5C',
+  iconMuted: '#a5a4bf',
 };

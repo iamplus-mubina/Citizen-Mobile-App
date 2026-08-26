@@ -97,7 +97,7 @@ export function MyComplaints() {
               >
                 <Text 
                   className={`text-sm font-inter-semibold ${
-                    isActive ? 'text-white' : 'text-text'
+                    isActive ? 'text-white' : 'text-dark'
                   }`}
                 >
                   {tab}

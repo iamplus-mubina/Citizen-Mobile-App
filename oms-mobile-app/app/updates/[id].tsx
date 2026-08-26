@@ -35,24 +35,24 @@ export default function UpdateDetailScreen() {
               <Text className="text-xs font-inter-bold text-primary">Official Notice</Text>
             </View>
             
-            <Text className="text-2xl font-inter-bold text-text mb-2">
+            <Text className="text-2xl font-inter-bold text-dark mb-2">
               Road Construction Notice: Ward 5 Area
             </Text>
             <Text className="text-sm font-inter-medium text-muted mb-6">
               Published on 14 May 2024 • 09:00 AM
             </Text>
 
-            <Text className="text-base font-inter text-text leading-6 mb-4">
+            <Text className="text-base font-inter text-dark leading-6 mb-4">
               Dear Citizens, {"\n\n"}
               This is to inform you that major road reconstruction will commence on the Main Road of Ward 5 starting tomorrow morning at 8:00 AM.
             </Text>
             
-            <Text className="text-base font-inter text-text leading-6 mb-4">
+            <Text className="text-base font-inter text-dark leading-6 mb-4">
               The project is expected to last for approximately 3 days. During this time, heavy machinery will be operating in the area, and traffic diversions will be in place.
             </Text>
 
             <View className="bg-background p-4 rounded-xl border border-border mt-2">
-              <Text className="text-sm font-inter-bold text-text mb-1">Action Required:</Text>
+              <Text className="text-sm font-inter-bold text-dark mb-1">Action Required:</Text>
               <Text className="text-sm font-inter text-muted leading-5">
                 Please use the alternative routes via Green Park Avenue. We regret the temporary inconvenience and appreciate your cooperation in building a better city infrastructure.
               </Text>

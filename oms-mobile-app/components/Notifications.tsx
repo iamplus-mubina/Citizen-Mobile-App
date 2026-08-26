@@ -54,7 +54,7 @@ export function Notifications() {
         >
           <Text
             className={`text-base ${
-              activeTab === 'All' ? 'font-inter-bold text-text' : 'font-inter-medium text-muted'
+              activeTab === 'All' ? 'font-inter-bold text-dark' : 'font-inter-medium text-muted'
             }`}
           >
             All
@@ -70,7 +70,7 @@ export function Notifications() {
         >
           <Text
             className={`text-base ${
-              activeTab === 'Unread' ? 'font-inter-bold text-text' : 'font-inter-medium text-muted'
+              activeTab === 'Unread' ? 'font-inter-bold text-dark' : 'font-inter-medium text-muted'
             }`}
           >
             Unread
@@ -86,10 +86,10 @@ export function Notifications() {
                 key={notif.id} 
                 className="bg-background border border-border rounded-xl p-4 shadow-sm mb-4"
               >
-                <Text className="text-base font-inter-bold text-text mb-1">
+                <Text className="text-base font-inter-bold text-dark mb-1">
                   {notif.title}
                 </Text>
-                <Text className="text-sm font-inter text-text mb-3 leading-5">
+                <Text className="text-sm font-inter text-dark mb-3 leading-5">
                   {notif.message}
                 </Text>
                 <Text className="text-xs font-inter-medium text-muted">

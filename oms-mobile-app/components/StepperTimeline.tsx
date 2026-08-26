@@ -55,7 +55,7 @@ export function StepperTimeline({ steps }: StepperTimelineProps) {
               )}
               <Text 
                 className={`text-base font-inter-bold mb-1 ${
-                  step.status === 'future' ? 'text-muted' : 'text-text'
+                  step.status === 'future' ? 'text-muted' : 'text-dark'
                 }`}
               >
                 {step.title}

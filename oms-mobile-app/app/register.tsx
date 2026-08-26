@@ -44,13 +44,13 @@ export default function RegisterScreen() {
           className="self-start p-2 -ml-2 rounded-full"
           activeOpacity={0.7}
         >
-          <ArrowLeftIcon size={24} color={colors.text} />
+          <ArrowLeftIcon size={24} color={colors.dark} />
         </TouchableOpacity>
       </View>
 
       <View className="flex-1 mt-4">
         <View className="mb-8">
-          <Text className="text-3xl font-inter-bold text-text mb-2">
+          <Text className="text-3xl font-inter-bold text-dark mb-2">
             Create Your Account
           </Text>
           <Text className="text-muted text-lg font-inter">

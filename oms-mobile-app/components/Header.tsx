@@ -14,7 +14,7 @@ export function Header({ className = '', avatarUrl, showBack }: HeaderProps) {
   const router = useRouter();
 
   return (
-    <View className={`h-16 flex-row items-center justify-between px-6 bg-background border-b border-border ${className}`}>
+    <View className={`h-16 flex-row items-center justify-between px-6 bg-header-bg ${className}`}>
       <View className="flex-row items-center">
         {showBack && (
           <TouchableOpacity 
@@ -22,10 +22,10 @@ export function Header({ className = '', avatarUrl, showBack }: HeaderProps) {
             className="p-2 -ml-3 mr-1 rounded-full"
             activeOpacity={0.7}
           >
-            <ChevronLeftIcon size={24} color={colors.text} />
+            <ChevronLeftIcon size={24} color={colors.white} />
           </TouchableOpacity>
         )}
-        <Text className="text-xl font-inter-bold text-primary">OMS Citizen</Text>
+        <Text className="text-xl font-inter-bold text-white">OMS Citizen</Text>
       </View>
 
       <TouchableOpacity 
@@ -39,7 +39,7 @@ export function Header({ className = '', avatarUrl, showBack }: HeaderProps) {
             resizeMode="cover"
           />
         ) : (
-          <UserCircleIcon size={36} color={colors.primary} />
+          <UserCircleIcon size={36} color={colors.white} />
         )}
       </TouchableOpacity>
     </View>

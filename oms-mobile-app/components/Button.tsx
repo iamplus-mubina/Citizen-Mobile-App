@@ -17,7 +17,7 @@ export function Button({ title, variant = 'primary', leftIcon, className = '', .
     textClass = 'text-secondary-text';
   } else if (variant === 'outline') {
     bgClass = 'bg-transparent border-2 border-border';
-    textClass = 'text-text';
+    textClass = 'text-dark';
   }
 
   return (

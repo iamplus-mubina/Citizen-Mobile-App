@@ -41,10 +41,10 @@ export default function LocationScreen() {
           
           <View className="mb-8">
             <View className="items-center mb-2">
-              <Text className="text-lg font-inter-bold text-text">Register Complaint</Text>
+              <Text className="text-lg font-inter-bold text-dark">Register Complaint</Text>
             </View>
             <View className="items-end mb-2">
-              <Text className="text-sm font-inter-semibold text-text">3 of 4</Text>
+              <Text className="text-sm font-inter-semibold text-dark">3 of 4</Text>
             </View>
           </View>
 
@@ -84,7 +84,7 @@ export default function LocationScreen() {
             <Button 
               title="Use Current Location" 
               variant="outline"
-              leftIcon={<MapPinIcon size={20} color={colors.text} />}
+              leftIcon={<MapPinIcon size={20} color={colors.dark} />}
               onPress={() => console.log('Fetch location...')}
               className="mt-2"
             />

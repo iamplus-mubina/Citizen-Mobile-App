@@ -32,10 +32,10 @@ export default function DetailsScreen() {
           
           <View className="mb-8">
             <View className="items-center mb-2">
-              <Text className="text-lg font-inter-bold text-text">Register Complaint</Text>
+              <Text className="text-lg font-inter-bold text-dark">Register Complaint</Text>
             </View>
             <View className="items-end mb-2">
-              <Text className="text-sm font-inter-semibold text-text">2 of 4</Text>
+              <Text className="text-sm font-inter-semibold text-dark">2 of 4</Text>
             </View>
           </View>
 
@@ -60,7 +60,7 @@ export default function DetailsScreen() {
 
           
           <View className="mb-8">
-            <Text className="text-text font-inter-semibold mb-4">Priority</Text>
+            <Text className="text-dark font-inter-semibold mb-4">Priority</Text>
             <View className="space-y-4">
               {PRIORITIES.map((p) => {
                 const isSelected = priority === p;
@@ -79,7 +79,7 @@ export default function DetailsScreen() {
                         <View className="w-2.5 h-2.5 rounded-full bg-primary" />
                       )}
                     </View>
-                    <Text className={`text-base font-inter ${isSelected ? 'text-text font-inter-semibold' : 'text-text'}`}>
+                    <Text className={`text-base font-inter ${isSelected ? 'text-dark font-inter-semibold' : 'text-dark'}`}>
                       {p}
                     </Text>
                   </TouchableOpacity>
