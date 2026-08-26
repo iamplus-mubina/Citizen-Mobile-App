@@ -20,7 +20,8 @@ export function Tabs<T extends string>({
       horizontal 
       showsHorizontalScrollIndicator={false} 
       className={className}
-      contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 8, gap: 8 }}
+      style={{ flexGrow: 0, flexShrink: 0 }}
+      contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 8, gap: 6, alignItems: 'flex-start' }}
     >
       {tabs.map((tab) => {
         const isActive = activeTab === tab;

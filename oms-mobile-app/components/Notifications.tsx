@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { useState, useMemo } from 'react';
+import { View, Text, ScrollView } from 'react-native';
+import { Tabs } from '@/components/Tabs';
 
 type NotificationTab = 'All' | 'Unread';
+
+const NOTIF_TABS: NotificationTab[] = ['All', 'Unread'];
 
 interface NotificationItem {
   id: string;
@@ -38,57 +41,40 @@ const MOCK_NOTIFICATIONS: NotificationItem[] = [
 export function Notifications() {
   const [activeTab, setActiveTab] = useState<NotificationTab>('All');
 
-  const filteredNotifications = MOCK_NOTIFICATIONS.filter(
-    (notif) => activeTab === 'All' || !notif.read
-  );
+  const counts = useMemo(() => ({
+    All: MOCK_NOTIFICATIONS.length,
+    Unread: MOCK_NOTIFICATIONS.filter((n) => !n.read).length,
+  }), []);
+
+  const filteredNotifications = useMemo(() =>
+    MOCK_NOTIFICATIONS.filter(
+      (notif) => activeTab === 'All' || !notif.read
+    ), [activeTab]);
 
   return (
-    <View className="flex-1 w-full bg-background pt-4">
-      <View className="flex-row px-6 mb-6">
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => setActiveTab('All')}
-          className={`flex-1 py-2 items-center rounded-md ${
-            activeTab === 'All' ? 'bg-secondary border border-border' : ''
-          }`}
-        >
-          <Text
-            className={`text-base ${
-              activeTab === 'All' ? 'font-inter-bold text-dark' : 'font-inter-medium text-muted'
-            }`}
-          >
-            All
-          </Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => setActiveTab('Unread')}
-          className={`flex-1 py-2 items-center rounded-md ${
-            activeTab === 'Unread' ? 'bg-secondary border border-border' : ''
-          }`}
-        >
-          <Text
-            className={`text-base ${
-              activeTab === 'Unread' ? 'font-inter-bold text-dark' : 'font-inter-medium text-muted'
-            }`}
-          >
-            Unread
-          </Text>
-        </TouchableOpacity>
-      </View>
+    <View className="flex-1 w-full bg-background pt-2">
+      <Tabs
+        tabs={NOTIF_TABS}
+        activeTab={activeTab}
+        onTabPress={setActiveTab}
+        counts={counts}
+        className="mb-2"
+      />
 
       <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
         {filteredNotifications.length > 0 ? (
-          <View className="space-y-4 pb-24">
+          <View className="pb-24">
             {filteredNotifications.map((notif) => (
               <View 
                 key={notif.id} 
-                className="bg-background border border-border rounded-xl p-4 shadow-sm mb-4"
+                className="bg-white border border-border rounded-xl p-4 mb-4"
               >
-                <Text className="text-base font-inter-bold text-dark mb-1">
-                  {notif.title}
-                </Text>
+                <View className="flex-row items-center justify-between mb-1">
+                  <Text className="text-base font-inter-bold text-dark">{notif.title}</Text>
+                  {!notif.read && (
+                    <View className="w-2 h-2 rounded-full bg-primary" />
+                  )}
+                </View>
                 <Text className="text-sm font-inter text-dark mb-3 leading-5">
                   {notif.message}
                 </Text>
@@ -107,3 +93,4 @@ export function Notifications() {
     </View>
   );
 }
+
