@@ -66,6 +66,7 @@
 - [x] Extracted the tabs design into a generic, reusable `Tabs` component (`components/Tabs.tsx`) supporting customizable label arrays, active selections, and counts.
 - [x] Changed the background of complaints cards inside the My Complaints tab list (`variant="recent"`) to a solid white (`bg-white`) to stand out from the screen.
 - [x] Corrected the Quick Actions layout grid on Home screen by using proportional margin adjustments (`mx-[1%]` and `-mx-[1%]`), preventing browser flex wrap bugs/overlapping on web/desktop viewports.
+- [x] Added a white three-line hamburger menu icon (`Bars3Icon`) to the right of the header on main screens to trigger side navigation drawer interactions.
 
 ## In Progress
 

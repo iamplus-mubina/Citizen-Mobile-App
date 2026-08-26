@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { UserCircleIcon } from 'react-native-heroicons/solid';
-import { ArrowLeftIcon } from 'react-native-heroicons/outline';
+import { ArrowLeftIcon, Bars3Icon } from 'react-native-heroicons/outline';
 import { useRouter } from 'expo-router';
 import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
@@ -68,7 +68,16 @@ export function Header({ className = '', avatarUrl, showBack }: HeaderProps) {
                 <Text className="text-base font-inter-bold text-white leading-5">{displayName}</Text>
               </View>
             </View>
-            <Text className="text-sm font-inter-bold text-white/80">OMS Citizen</Text>
+            <View className="flex-row items-center">
+              <Text className="text-sm font-inter-bold text-white/80 mr-3">OMS Citizen</Text>
+              <TouchableOpacity 
+                activeOpacity={0.7}
+                className="p-1 -mr-1 rounded-full"
+                onPress={() => console.log('Menu pressed')}
+              >
+                <Bars3Icon size={24} color={colors.white} />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View className="bg-black/20 rounded-xl px-4 py-2.5 flex-row items-center">
