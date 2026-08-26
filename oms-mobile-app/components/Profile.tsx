@@ -53,7 +53,7 @@ export function Profile() {
             onPress={() => setModalVisible(true)}
             className="relative"
           >
-            <View className="w-24 h-24 rounded-full bg-slate-200 items-center justify-center overflow-hidden border border-border">
+            <View className="w-24 h-24 rounded-full bg-border/50 items-center justify-center overflow-hidden border border-border">
               {profilePhoto ? (
                 <Image source={{ uri: profilePhoto }} className="w-full h-full" resizeMode="cover" />
               ) : (
