@@ -123,8 +123,8 @@ function DetailRow({
 }) {
   return (
     <View className="flex-row items-center py-2.5">
-      <View className="w-9 h-9 rounded-xl bg-icon-muted/10 items-center justify-center mr-3">
-        <IconComponent size={18} color={colors.iconMuted} />
+      <View className="w-9 h-9 rounded-xl items-center justify-center mr-3">
+        <IconComponent size={18} color={colors.dark} />
       </View>
       <View className="flex-1">
         <Text className="text-xs font-inter-semibold text-muted mb-0.5">{label}</Text>

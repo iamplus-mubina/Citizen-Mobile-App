@@ -29,6 +29,7 @@ const DRAWER_WIDTH = APP_WIDTH * 0.78;
 interface MenuDrawerProps {
   visible: boolean;
   onClose: () => void;
+  onSelectTab?: (tab: string) => void;
 }
 
 interface MenuItem {
@@ -39,7 +40,7 @@ interface MenuItem {
   danger?: boolean;
 }
 
-export function MenuDrawer({ visible, onClose }: MenuDrawerProps) {
+export function MenuDrawer({ visible, onClose, onSelectTab }: MenuDrawerProps) {
   const router = useRouter();
   const { profileName, profileEmail, profilePhoto } = useComplaintStore();
   const translateX = useRef(new Animated.Value(DRAWER_WIDTH)).current;
@@ -84,7 +85,11 @@ export function MenuDrawer({ visible, onClose }: MenuDrawerProps) {
       id: 'complaints',
       label: 'My Complaints',
       Icon: ClipboardDocumentListIcon,
-      onPress: () => { onClose(); router.push('/home'); },
+      onPress: () => { 
+        onClose(); 
+        if (onSelectTab) onSelectTab('complaints');
+        else router.push('/home'); 
+      },
     },
     {
       id: 'updates',

@@ -128,6 +128,7 @@ export default function HomeScreen() {
         <MenuDrawer
           visible={drawerOpen}
           onClose={() => setDrawerOpen(false)}
+          onSelectTab={(tab) => setActiveTab(tab as TabType)}
         />
       </View>
     </SafeAreaView>
