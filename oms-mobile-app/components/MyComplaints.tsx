@@ -52,11 +52,11 @@ export function MyComplaints() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const allComplaints = useMemo(() => {
-    // Merge mock complaints with user-submitted complaints dynamically
-    return [...submittedComplaints, ...MOCK_COMPLAINTS];
+    const submittedIds = new Set(submittedComplaints.map((c) => c.ticketId));
+    const uniqueMocks = MOCK_COMPLAINTS.filter((c) => !submittedIds.has(c.ticketId));
+    return [...submittedComplaints, ...uniqueMocks];
   }, [submittedComplaints]);
 
-  // Compute counts for each status dynamically
   const counts = useMemo(() => {
     return {
       All: allComplaints.length,
