@@ -1,5 +1,5 @@
 export const colors = {
-  primary: '#ffba01',
+  primary: '#f4c237',
   secondary: '#0f766e',
   background: '#f8fafc',
   surface: '#ffffff',
@@ -11,6 +11,6 @@ export const colors = {
   border: '#e2e8f0',
   checkmark: '#1f2937',
   white: '#ffffff',
-  headerBg: '#1A3B5C',
+  headerBg: '#11274c',
   iconMuted: '#a5a4bf',
 };

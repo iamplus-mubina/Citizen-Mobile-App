@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --color-primary: #ffba01;
+    --color-primary: #f4c237;
     --color-background: #f0f0f0;
     --color-surface: #ffffff;
     --color-text: #1f2937;
@@ -20,7 +20,7 @@
     --color-success: #10b981;
     --color-warning: #f59e0b;
     --color-teal: #0f766e;
-    --color-header-bg: #1A3B5C;
+    --color-header-bg: #11274c;
     --color-icon-muted: #a5a4bf;
   }
 }
