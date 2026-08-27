@@ -69,7 +69,7 @@ export default function HomeScreen() {
                   variant="quick"
                   title="Help & Support" 
                   Icon={QuestionMarkCircleIcon} 
-                  onPress={() => console.log('Help pressed')}
+                  onPress={() => router.push('/help' as any)}
                 />
                 <Card 
                   variant="quick"

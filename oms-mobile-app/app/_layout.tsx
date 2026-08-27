@@ -43,6 +43,9 @@ export default function RootLayout() {
       <Stack.Screen name="complaint/attachments" options={{ headerShown: false }} />
       <Stack.Screen name="complaint/review" options={{ headerShown: false }} />
       <Stack.Screen name="complaint/success" options={{ headerShown: false }} />
+      <Stack.Screen name="help" options={{ headerShown: false }} />
+      <Stack.Screen name="no-internet" options={{ headerShown: false }} />
+      <Stack.Screen name="error" options={{ headerShown: false }} />
     </Stack>
   );
 }

@@ -107,7 +107,7 @@ export function MenuDrawer({ visible, onClose, onSelectTab }: MenuDrawerProps) {
       id: 'help',
       label: 'Help & Support',
       Icon: QuestionMarkCircleIcon,
-      onPress: () => { onClose(); },
+      onPress: () => { onClose(); router.push('/help' as never); },
     },
     {
       id: 'signout',
