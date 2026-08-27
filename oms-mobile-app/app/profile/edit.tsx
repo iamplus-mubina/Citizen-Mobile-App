@@ -14,12 +14,25 @@ export default function EditProfileScreen() {
   const [email, setEmail] = useState(store.profileEmail);
   const [address, setAddress] = useState(store.profileAddress);
   const [pincode, setPincode] = useState(store.profilePincode);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background h-screen overflow-hidden"
     : "flex-1 bg-background";
 
   const handleSave = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!name.trim()) newErrors.name = 'Name is required';
+    if (!email.trim() || !/^\S+@\S+\.\S+$/.test(email)) newErrors.email = 'Enter a valid email address';
+    if (!address.trim()) newErrors.address = 'Address is required';
+    if (pincode.length !== 6) newErrors.pincode = 'Pincode must be 6 digits';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     store.setProfile(name, email, address, pincode);
     router.back();
   };
@@ -47,7 +60,11 @@ export default function EditProfileScreen() {
                 <Input
                   placeholder="Enter full name"
                   value={name}
-                  onChangeText={setName}
+                  onChangeText={(text) => {
+                    setName(text);
+                    if (text.trim()) setErrors(prev => ({ ...prev, name: '' }));
+                  }}
+                  error={errors.name}
                 />
               </View>
 
@@ -56,8 +73,12 @@ export default function EditProfileScreen() {
                 <Input
                   placeholder="Enter email address"
                   value={email}
-                  onChangeText={setEmail}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    if (/^\S+@\S+\.\S+$/.test(text)) setErrors(prev => ({ ...prev, email: '' }));
+                  }}
                   keyboardType="email-address"
+                  error={errors.email}
                 />
               </View>
 
@@ -66,9 +87,13 @@ export default function EditProfileScreen() {
                 <Input
                   placeholder="Enter address"
                   value={address}
-                  onChangeText={setAddress}
+                  onChangeText={(text) => {
+                    setAddress(text);
+                    if (text.trim()) setErrors(prev => ({ ...prev, address: '' }));
+                  }}
                   multiline
                   numberOfLines={2}
+                  error={errors.address}
                 />
               </View>
 
@@ -77,9 +102,14 @@ export default function EditProfileScreen() {
                 <Input
                   placeholder="Enter pincode"
                   value={pincode}
-                  onChangeText={setPincode}
+                  onChangeText={(text) => {
+                    const cleanText = text.replace(/[^0-9]/g, '');
+                    setPincode(cleanText);
+                    if (cleanText.length === 6) setErrors(prev => ({ ...prev, pincode: '' }));
+                  }}
                   keyboardType="number-pad"
                   maxLength={6}
+                  error={errors.pincode}
                 />
               </View>
 

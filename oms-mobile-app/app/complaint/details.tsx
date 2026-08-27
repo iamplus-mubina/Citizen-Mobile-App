@@ -17,11 +17,30 @@ export default function DetailsScreen() {
   const [priority, setPriority] = useState('Medium');
   const setDetails = useComplaintStore((s) => s.setDetails);
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background"
     : "flex-1 bg-background";
 
-  const isFormValid = title.trim().length > 0 && description.trim().length > 0;
+  const handleNext = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!title.trim() || title.trim().length < 5) {
+      newErrors.title = 'Title must be at least 5 characters';
+    }
+    if (!description.trim() || description.trim().length < 10) {
+      newErrors.description = 'Please provide more details (min 10 characters)';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setDetails(title, description, priority);
+    router.push('/complaint/location');
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -45,16 +64,24 @@ export default function DetailsScreen() {
               label="Complaint Title"
               placeholder="Enter short title"
               value={title}
-              onChangeText={setTitle}
+              onChangeText={(text) => {
+                setTitle(text);
+                if (text.trim().length >= 5) setErrors(prev => ({ ...prev, title: '' }));
+              }}
+              error={errors.title}
             />
 
             <Input 
               label="Description"
               placeholder="Describe your complaint in detail..."
               value={description}
-              onChangeText={setDescription}
+              onChangeText={(text) => {
+                setDescription(text);
+                if (text.trim().length >= 10) setErrors(prev => ({ ...prev, description: '' }));
+              }}
               multiline={true}
               numberOfLines={4}
+              error={errors.description}
             />
           </View>
 
@@ -94,12 +121,7 @@ export default function DetailsScreen() {
         <View className="px-6 py-4 pb-8 border-t border-border bg-background">
           <Button 
             title="Next" 
-            onPress={() => {
-              setDetails(title, description, priority);
-              router.push('/complaint/location');
-            }}
-            disabled={!isFormValid}
-            className={!isFormValid ? 'opacity-50' : ''}
+            onPress={handleNext}
           />
         </View>
 

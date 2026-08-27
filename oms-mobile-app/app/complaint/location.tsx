@@ -26,11 +26,28 @@ export default function LocationScreen() {
   const [pincode, setPincode] = useState('');
   const setLocation = useComplaintStore((s) => s.setLocation);
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background"
     : "flex-1 bg-background";
 
-  const isFormValid = address.trim().length > 0 && area.trim().length > 0 && ward !== '' && pincode.trim().length > 0;
+  const handleNext = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!address.trim()) newErrors.address = 'Address is required';
+    if (!area.trim()) newErrors.area = 'Area/Locality is required';
+    if (!ward) newErrors.ward = 'Please select a ward';
+    if (pincode.length !== 6) newErrors.pincode = 'Pincode must be 6 digits';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setLocation(address, area, ward, pincode);
+    router.push('/complaint/attachments');
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
@@ -54,14 +71,22 @@ export default function LocationScreen() {
               label="Address"
               placeholder="Enter full address"
               value={address}
-              onChangeText={setAddress}
+              onChangeText={(text) => {
+                setAddress(text);
+                if (text.trim()) setErrors(prev => ({ ...prev, address: '' }));
+              }}
+              error={errors.address}
             />
 
             <Input 
               label="Area / Locality"
               placeholder="Enter area"
               value={area}
-              onChangeText={setArea}
+              onChangeText={(text) => {
+                setArea(text);
+                if (text.trim()) setErrors(prev => ({ ...prev, area: '' }));
+              }}
+              error={errors.area}
             />
 
             <Dropdown 
@@ -69,16 +94,25 @@ export default function LocationScreen() {
               placeholder="Select ward"
               options={WARDS}
               value={ward}
-              onSelect={setWard}
+              onSelect={(val) => {
+                setWard(val);
+                if (val) setErrors(prev => ({ ...prev, ward: '' }));
+              }}
+              error={errors.ward}
             />
 
             <Input 
               label="Pincode"
               placeholder="Enter pincode"
               value={pincode}
-              onChangeText={setPincode}
+              onChangeText={(text) => {
+                const cleanText = text.replace(/[^0-9]/g, '');
+                setPincode(cleanText);
+                if (cleanText.length === 6) setErrors(prev => ({ ...prev, pincode: '' }));
+              }}
               keyboardType="numeric"
               maxLength={6}
+              error={errors.pincode}
             />
 
             <Button 
@@ -95,12 +129,7 @@ export default function LocationScreen() {
         <View className="px-6 py-4 pb-8 border-t border-border bg-background">
           <Button 
             title="Next" 
-            onPress={() => {
-              setLocation(address, area, ward, pincode);
-              router.push('/complaint/attachments');
-            }}
-            disabled={!isFormValid}
-            className={!isFormValid ? 'opacity-50' : ''}
+            onPress={handleNext}
           />
         </View>
 

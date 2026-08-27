@@ -31,7 +31,7 @@ export default function RegisterScreen() {
   const [address, setAddress] = useState('');
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
   
 
   const [otp, setOtp] = useState('');
@@ -49,25 +49,28 @@ export default function RegisterScreen() {
   const handleMobileChange = (text: string) => {
     const numericText = text.replace(/[^0-9]/g, '');
     setMobile(numericText);
-    if (numericText.length === 10) setError('');
+    if (numericText.length === 10) setErrors(prev => ({ ...prev, mobile: '' }));
   };
 
   const handleNext = () => {
-    if (!fullName.trim()) {
-      setError('Please enter your full name');
-      return;
-    }
-    if (mobile.length < 10) {
-      setError('Please enter a valid 10-digit mobile number');
-      return;
-    }
-    if (!address.trim()) {
-      setError('Please enter your address');
-      return;
-    }
-    
+    const newErrors: Record<string, string> = {};
 
-    setError('');
+    if (!fullName.trim() || fullName.trim().length < 3) {
+      newErrors.fullName = 'Please enter a valid full name (min 3 characters)';
+    }
+    if (mobile.length !== 10) {
+      newErrors.mobile = 'Please enter a valid 10-digit mobile number';
+    }
+    if (!address.trim() || address.trim().length < 5) {
+      newErrors.address = 'Please enter your complete address';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
     setStep('otp');
     setOtp('');
     setTimeLeft(45);
@@ -78,11 +81,11 @@ export default function RegisterScreen() {
 
   const handleVerifyOtp = () => {
     if (otp.length < 6) {
-      setError('Please enter a 6-digit OTP');
+      setErrors({ otp: 'Please enter a 6-digit OTP' });
     } else if (otp !== '123456') {
-      setError('Incorrect OTP. Please use 123456');
+      setErrors({ otp: 'Incorrect OTP. Please use 123456' });
     } else {
-      setError('');
+      setErrors({});
       console.log('Registration Data:', { fullName, mobile, email, address, profilePhoto });
       router.push('/pending-approval');
     }
@@ -91,7 +94,7 @@ export default function RegisterScreen() {
   const handleResendOtp = () => {
     if (timeLeft === 0) {
       setOtp('');
-      setError('');
+      setErrors({});
       setTimeLeft(45);
       setTimeout(() => {
         otpRef.current?.focus();
@@ -112,7 +115,7 @@ export default function RegisterScreen() {
           onPress={() => {
             if (step === 'otp') {
               setStep('details');
-              setError('');
+              setErrors({});
             } else {
               router.back();
             }
@@ -160,7 +163,11 @@ export default function RegisterScreen() {
               label="Full Name *"
               placeholder="Enter full name"
               value={fullName}
-              onChangeText={setFullName}
+              onChangeText={(text) => {
+                setFullName(text);
+                if (text.trim().length >= 3) setErrors(prev => ({ ...prev, fullName: '' }));
+              }}
+              error={errors.fullName}
             />
 
             <Input
@@ -171,6 +178,7 @@ export default function RegisterScreen() {
               onChangeText={handleMobileChange}
               maxLength={10}
               leftIcon={<PhoneIcon size={20} color={colors.muted} />}
+              error={errors.mobile}
             />
 
             <Input
@@ -186,15 +194,15 @@ export default function RegisterScreen() {
               label="Address *"
               placeholder="Enter your residential address"
               value={address}
-              onChangeText={setAddress}
+              onChangeText={(text) => {
+                setAddress(text);
+                if (text.trim().length >= 5) setErrors(prev => ({ ...prev, address: '' }));
+              }}
               multiline={true}
               numberOfLines={4}
               style={{ minHeight: 100, textAlignVertical: 'top' }}
+              error={errors.address}
             />
-
-            {error && step === 'details' ? (
-              <Text className="text-error text-sm font-inter mt-2">{error}</Text>
-            ) : null}
 
             <View className="mt-8">
               <Button title="Next" onPress={handleNext} />
@@ -227,7 +235,7 @@ export default function RegisterScreen() {
               onChangeText={(text) => {
                 const cleanText = text.replace(/[^0-9]/g, '');
                 setOtp(cleanText);
-                if (cleanText.length === 6) setError('');
+                if (cleanText.length === 6) setErrors({});
               }}
               maxLength={6}
               keyboardType="number-pad"
@@ -242,8 +250,8 @@ export default function RegisterScreen() {
               autoFocus
             />
 
-            {error && step === 'otp' ? (
-              <Text className="text-error text-sm font-inter mb-6 self-start">{error}</Text>
+            {errors.otp && step === 'otp' ? (
+              <Text className="text-error text-sm font-inter mb-6 self-start">{errors.otp}</Text>
             ) : null}
 
             <View className="items-center mb-8">
