@@ -1,17 +1,19 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { 
   HomeIcon as HomeOutline, 
-  DocumentTextIcon as DocumentOutline, 
-  BellIcon as BellOutline
+  DocumentTextIcon as DocumentOutline,
+  MegaphoneIcon as MegaphoneOutline,
+  UserIcon as UserOutline,
 } from 'react-native-heroicons/outline';
 import { 
   HomeIcon as HomeSolid, 
-  DocumentTextIcon as DocumentSolid, 
-  BellIcon as BellSolid
+  DocumentTextIcon as DocumentSolid,
+  MegaphoneIcon as MegaphoneSolid,
+  UserIcon as UserSolid,
 } from 'react-native-heroicons/solid';
 import { colors } from '@/constants/Colors';
 
-export type TabType = 'home' | 'complaints' | 'notifications';
+export type TabType = 'home' | 'complaints' | 'updates' | 'profile';
 
 interface BottomNavigationProps {
   activeTab: TabType;
@@ -22,7 +24,8 @@ export function BottomNavigation({ activeTab, onTabPress }: BottomNavigationProp
   const tabs = [
     { id: 'home' as TabType, label: 'Home', OutlineIcon: HomeOutline, SolidIcon: HomeSolid },
     { id: 'complaints' as TabType, label: 'Complaints', OutlineIcon: DocumentOutline, SolidIcon: DocumentSolid },
-    { id: 'notifications' as TabType, label: 'Notifications', OutlineIcon: BellOutline, SolidIcon: BellSolid },
+    { id: 'updates' as TabType, label: 'Updates', OutlineIcon: MegaphoneOutline, SolidIcon: MegaphoneSolid },
+    { id: 'profile' as TabType, label: 'Profile', OutlineIcon: UserOutline, SolidIcon: UserSolid },
   ];
 
   return (

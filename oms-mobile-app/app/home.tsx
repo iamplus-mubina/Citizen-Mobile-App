@@ -5,7 +5,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/Header';
 import { BottomNavigation, TabType } from '@/components/BottomNavigation';
 import { Card } from '@/components/Card';
-import { MenuDrawer } from '@/components/MenuDrawer';
 import { 
   ClipboardDocumentListIcon,
   BellIcon,
@@ -16,23 +15,13 @@ import {
 } from 'react-native-heroicons/outline';
 import { MyComplaints } from '@/components/MyComplaints';
 import { Notifications } from '@/components/Notifications';
+import { Profile } from '@/components/Profile';
 import { useComplaintStore } from '@/store/useComplaintStore';
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<TabType>('home');
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const router = useRouter();
   const { submittedComplaints, profilePhoto } = useComplaintStore();
-
-  const getFormattedDate = () => {
-    const date = new Date();
-    const day = date.getDate();
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    return `${day} ${months[date.getMonth()]} ${date.getFullYear()}`;
-  };
 
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background justify-between h-screen overflow-hidden"
@@ -71,7 +60,7 @@ export default function HomeScreen() {
                   variant="quick"
                   title="Notifications" 
                   Icon={BellIcon} 
-                  onPress={() => setActiveTab('notifications')}
+                  onPress={() => router.push('/updates' as any)}
                 />
                 <Card 
                   variant="quick"
@@ -83,13 +72,13 @@ export default function HomeScreen() {
                   variant="quick"
                   title="Updates" 
                   Icon={MegaphoneIcon} 
-                  onPress={() => router.push('/updates' as any)}
+                  onPress={() => setActiveTab('updates')}
                 />
                 <Card 
                   variant="quick"
                   title="My Profile" 
                   Icon={UserIcon} 
-                  onPress={() => router.push('/profile' as any)}
+                  onPress={() => setActiveTab('profile')}
                 />
               </View>
             </View>
@@ -119,8 +108,10 @@ export default function HomeScreen() {
         );
       case 'complaints':
         return <MyComplaints />;
-      case 'notifications':
+      case 'updates':
         return <Notifications />;
+      case 'profile':
+        return <Profile />;
       default:
         return null;
     }
@@ -132,18 +123,12 @@ export default function HomeScreen() {
         <View className="flex-1">
           <Header
             avatarUrl={profilePhoto || undefined}
-            onMenuPress={() => setDrawerOpen(true)}
+            onNotificationPress={() => setActiveTab('updates')}
           />
           {renderTabContent()}
         </View>
         
         <BottomNavigation activeTab={activeTab} onTabPress={setActiveTab} />
-        
-        <MenuDrawer
-          visible={drawerOpen}
-          onClose={() => setDrawerOpen(false)}
-          onSelectTab={(tab) => setActiveTab(tab as TabType)}
-        />
       </View>
     </SafeAreaView>
   );

@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { UserCircleIcon } from 'react-native-heroicons/solid';
-import { ArrowLeftIcon, Bars3Icon } from 'react-native-heroicons/outline';
+import { ArrowLeftIcon, BellIcon } from 'react-native-heroicons/outline';
 import { useRouter } from 'expo-router';
 import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
@@ -9,16 +9,16 @@ interface HeaderProps {
   className?: string;
   avatarUrl?: string;
   showBack?: boolean;
-  onMenuPress?: () => void;
+  onNotificationPress?: () => void;
 }
 
-export function Header({ className = '', avatarUrl, showBack, onMenuPress }: HeaderProps) {
+export function Header({ className = '', avatarUrl, showBack, onNotificationPress }: HeaderProps) {
   const router = useRouter();
   const { profileName } = useComplaintStore();
   const displayName = profileName || 'Rahul Sharma';
 
   return (
-    <View 
+    <View
       className={`px-4 pt-4 pb-4 bg-header-bg z-10 ${className}`}
       style={{
         shadowColor: '#000',
@@ -31,7 +31,7 @@ export function Header({ className = '', avatarUrl, showBack, onMenuPress }: Hea
       {showBack ? (
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center">
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => router.back()}
               className="p-2 -ml-3 mr-1 rounded-full"
               activeOpacity={0.7}
@@ -40,13 +40,13 @@ export function Header({ className = '', avatarUrl, showBack, onMenuPress }: Hea
             </TouchableOpacity>
             <Text className="text-xl font-inter-bold text-white">OMS Citizen</Text>
           </View>
-          <TouchableOpacity 
+          <TouchableOpacity
             activeOpacity={0.7}
             className="p-1 -mr-1"
           >
             {avatarUrl ? (
-              <Image 
-                source={{ uri: avatarUrl }} 
+              <Image
+                source={{ uri: avatarUrl }}
                 className="w-10 h-10 rounded-full border-2 border-white/20"
                 resizeMode="cover"
               />
@@ -57,12 +57,12 @@ export function Header({ className = '', avatarUrl, showBack, onMenuPress }: Hea
         </View>
       ) : (
         <View className="justify-center pt-2">
-          {/* Top Row: Logo, Titles, Menu */}
+
           <View className="flex-row items-center justify-between mb-4">
             <View className="flex-row items-center flex-1">
               <View className="w-12 h-12 bg-white rounded-full items-center justify-center mr-3 shadow-sm border-2 border-white/10 overflow-hidden">
-                <Image 
-                  source={require('../assets/images/oms_logo.png')} 
+                <Image
+                  source={require('../assets/images/oms_logo.png')}
                   style={{ width: '100%', height: '100%' }}
                   resizeMode="cover"
                 />
@@ -72,19 +72,19 @@ export function Header({ className = '', avatarUrl, showBack, onMenuPress }: Hea
                 <Text className="text-xs font-inter-semibold text-white/70">OMS Citizen</Text>
               </View>
             </View>
-            <TouchableOpacity 
+            <TouchableOpacity
               activeOpacity={0.7}
               className="p-2 ml-2 rounded-full"
-              onPress={onMenuPress}
+              onPress={onNotificationPress}
             >
-              <Bars3Icon size={28} color={colors.white} />
+              <BellIcon size={26} color={colors.white} />
             </TouchableOpacity>
           </View>
-          
-          {/* Bottom Row: Dark Welcome Box matching old app feel */}
+
+
           <View className="bg-black/20 border border-black/10 rounded-md px-3 py-2.5 flex-row items-center">
-             <UserCircleIcon size={18} color={colors.white} />
-             <Text className="text-xs font-inter-medium text-white/90 ml-2">Welcome, {displayName}</Text>
+            <UserCircleIcon size={18} color={colors.white} />
+            <Text className="text-xs font-inter-medium text-white/90 ml-2">Welcome, {displayName}</Text>
           </View>
         </View>
       )}
