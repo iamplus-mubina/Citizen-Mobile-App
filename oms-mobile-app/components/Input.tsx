@@ -17,7 +17,7 @@ export function Input({ label, error, leftIcon, className = '', ...props }: Inpu
       <TouchableOpacity
         activeOpacity={1}
         onPress={() => inputRef.current?.focus()}
-        className={`flex-row w-full bg-input-bg border ${error ? 'border-error' : 'border-border'} rounded-xl px-4 py-3 ${props.multiline ? 'items-start min-h-[120px]' : 'items-center'}`}
+        className={`flex-row w-full bg-surface border ${error ? 'border-error' : 'border-border'} rounded-md px-4 py-3 ${props.multiline ? 'items-start min-h-[120px]' : 'items-center'}`}
       >
         {leftIcon && <View className="mr-3">{leftIcon}</View>}
         <TextInput

@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Button } from '@/components/Button';
 import { Header } from '@/components/Header';
+import { FormStepper } from '@/components/FormStepper';
 import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
 
@@ -65,11 +66,13 @@ export default function ReviewScreen() {
       <View className={containerClass}>
 
         <Header showBack />
-        <View className="px-6 pb-2">
-          <Text className="text-lg font-inter-bold text-dark">Review Your Complaint</Text>
-        </View>
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
+          <View className="mb-4">
+            <Text className="text-2xl font-inter-bold text-dark mb-4 mt-2">Register Complaint</Text>
+            <FormStepper currentStep={5} totalSteps={5} />
+            <Text className="text-base font-inter-bold text-dark mb-3 mt-2">Review & Submit</Text>
+          </View>
           <View className="mb-4">
             <ReviewRow label="Category" value={category || '-'} />
             <ReviewRow label="Title" value={title || '-'} />
@@ -80,8 +83,13 @@ export default function ReviewScreen() {
           </View>
         </ScrollView>
 
-        <View className="px-6 py-4 border-t border-border bg-background">
-          <Button title="Submit Complaint" onPress={handleSubmit} />
+        <View className="px-6 py-4 border-t border-border bg-background flex-row gap-x-3">
+          <View className="flex-1">
+            <Button title="Back" onPress={() => router.back()} variant="secondary" />
+          </View>
+          <View className="flex-[1.5]">
+            <Button title="Submit" onPress={handleSubmit} variant="primary" />
+          </View>
         </View>
 
         {Platform.OS === 'web' && (
@@ -92,17 +100,23 @@ export default function ReviewScreen() {
             onRequestClose={() => setShowWebModal(false)}
           >
             <View className="flex-1 bg-black/50 justify-center items-center">
-              <View className="bg-background w-11/12 max-w-sm rounded-xl p-6 shadow-lg">
+              <View className="bg-surface w-11/12 max-w-sm rounded-lg p-6 border border-border">
                 <Text className="text-xl font-inter-bold text-dark mb-2">Submit Complaint</Text>
                 <Text className="text-base font-inter text-muted mb-8">Are you sure you want to submit this complaint?</Text>
                 
-                <View className="flex-row justify-end gap-6">
-                  <TouchableOpacity onPress={() => setShowWebModal(false)}>
-                    <Text className="text-primary font-inter-semibold">CANCEL</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={confirmSubmit}>
-                    <Text className="text-primary font-inter-semibold">SUBMIT</Text>
-                  </TouchableOpacity>
+                <View className="flex-row justify-end gap-3 mt-2">
+                  <Button 
+                    title="Cancel" 
+                    variant="outline" 
+                    onPress={() => setShowWebModal(false)} 
+                    className="flex-1"
+                  />
+                  <Button 
+                    title="Submit" 
+                    variant="primary" 
+                    onPress={confirmSubmit} 
+                    className="flex-1"
+                  />
                 </View>
               </View>
             </View>

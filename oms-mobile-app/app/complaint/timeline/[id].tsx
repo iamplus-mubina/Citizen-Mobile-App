@@ -20,43 +20,26 @@ const getComplaintHistory = (id: string | string[]): StepperStep[] => {
       title: 'Pending Verification',
       description: 'Office admin is verifying your complaint.',
       date: '13 May 2024 11:15 AM',
-      status: 'completed',
-      theme: 'success'
+      status: 'current',
+      theme: 'primary'
     },
     {
       id: 'step-3',
       title: 'Assigned',
       description: 'Yet to be assigned',
-      status: 'completed',
-      theme: 'warning'
+      status: 'future'
     },
     {
       id: 'step-4',
       title: 'In Progress',
       description: 'Work is in progress',
-      status: 'completed',
-      theme: 'warning'
+      status: 'future'
     },
     {
       id: 'step-5',
       title: 'Resolved',
       description: 'Work has been completed',
-      status: 'completed',
-      theme: 'secondary'
-    },
-    {
-      id: 'step-6',
-      title: 'Rejected',
-      description: 'Complaint could not be processed',
-      status: 'completed',
-      theme: 'error'
-    },
-    {
-      id: 'step-7',
-      title: 'Completed',
-      description: 'Complaint closed',
-      status: 'completed',
-      theme: 'success'
+      status: 'future'
     }
   ];
 };

@@ -10,7 +10,9 @@ import {
   ClipboardDocumentListIcon,
   BellIcon,
   QuestionMarkCircleIcon,
-  MegaphoneIcon
+  MegaphoneIcon,
+  MagnifyingGlassIcon,
+  UserIcon
 } from 'react-native-heroicons/outline';
 import { MyComplaints } from '@/components/MyComplaints';
 import { Notifications } from '@/components/Notifications';
@@ -61,6 +63,12 @@ export default function HomeScreen() {
                 />
                 <Card 
                   variant="quick"
+                  title="Track Status" 
+                  Icon={MagnifyingGlassIcon} 
+                  onPress={() => router.push({ pathname: '/complaint/timeline/[id]', params: { id: 'CMP-1025' } })}
+                />
+                <Card 
+                  variant="quick"
                   title="Notifications" 
                   Icon={BellIcon} 
                   onPress={() => setActiveTab('notifications')}
@@ -76,6 +84,12 @@ export default function HomeScreen() {
                   title="Updates" 
                   Icon={MegaphoneIcon} 
                   onPress={() => router.push('/updates' as any)}
+                />
+                <Card 
+                  variant="quick"
+                  title="My Profile" 
+                  Icon={UserIcon} 
+                  onPress={() => router.push('/profile' as any)}
                 />
               </View>
             </View>

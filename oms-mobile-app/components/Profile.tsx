@@ -61,7 +61,7 @@ export function Profile() {
               )}
             </View>
             <View className="absolute bottom-0 right-0 bg-primary w-8 h-8 rounded-full items-center justify-center border-2 border-background">
-              <CameraIcon size={16} color={colors.white} />
+              <CameraIcon size={16} color={colors.dark} />
             </View>
           </TouchableOpacity>
           <Text className="text-xl font-inter-bold text-dark mt-4 mb-1">
@@ -78,7 +78,7 @@ export function Profile() {
             <TouchableOpacity 
               onPress={() => router.push('/profile/edit')} 
               activeOpacity={0.7}
-              className="p-1.5 rounded-full bg-primary/10"
+              className="p-1.5 rounded-full bg-primary-light"
             >
               <PencilIcon size={16} color={colors.primary} />
             </TouchableOpacity>
@@ -95,7 +95,7 @@ export function Profile() {
           <Button 
             title="Logout" 
             onPress={handleLogout} 
-            variant="primary"
+            variant="danger-outline"
           />
         </View>
 
@@ -123,7 +123,7 @@ function DetailRow({
 }) {
   return (
     <View className="flex-row items-center py-2.5">
-      <View className="w-9 h-9 rounded-xl items-center justify-center mr-3">
+      <View className="w-9 h-9 rounded-lg items-center justify-center mr-3">
         <IconComponent size={18} color={colors.dark} />
       </View>
       <View className="flex-1">

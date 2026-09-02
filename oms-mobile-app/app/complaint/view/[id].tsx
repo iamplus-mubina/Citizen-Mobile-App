@@ -39,35 +39,35 @@ export default function ComplaintDetailsViewScreen() {
         <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
           <View className="flex-row justify-between items-center mb-6 py-2">
             <Text className="text-base font-inter-bold text-dark">{complaint.id}</Text>
-            <View className="bg-secondary px-3 py-1 rounded-md border border-border">
-              <Text className="text-xs font-inter-semibold text-dark">{complaint.status}</Text>
+            <View className="bg-warning-light px-3 py-1 rounded-md border border-warning/20">
+              <Text className="text-xs font-inter-semibold text-warning">{complaint.status}</Text>
             </View>
           </View>
 
           <View>
             <View className="mb-6">
-              <Text className="text-sm font-inter-bold text-dark mb-1">Category</Text>
-              <Text className="text-sm font-inter text-muted">{complaint.category}</Text>
+              <Text className="text-xs font-inter-semibold text-muted mb-1">Category</Text>
+              <Text className="text-sm font-inter-bold text-dark">{complaint.category}</Text>
             </View>
 
             <View className="mb-6">
-              <Text className="text-sm font-inter-bold text-dark mb-1">Title</Text>
-              <Text className="text-sm font-inter text-muted">{complaint.title}</Text>
+              <Text className="text-xs font-inter-semibold text-muted mb-1">Title</Text>
+              <Text className="text-sm font-inter-bold text-dark">{complaint.title}</Text>
             </View>
 
             <View className="mb-6">
-              <Text className="text-sm font-inter-bold text-dark mb-1">Description</Text>
-              <Text className="text-sm font-inter text-muted leading-5">{complaint.description}</Text>
+              <Text className="text-xs font-inter-semibold text-muted mb-1">Description</Text>
+              <Text className="text-sm font-inter-bold text-dark leading-5">{complaint.description}</Text>
             </View>
 
             <View className="mb-6">
-              <Text className="text-sm font-inter-bold text-dark mb-1">Address</Text>
-              <Text className="text-sm font-inter text-muted leading-5">{complaint.address}</Text>
+              <Text className="text-xs font-inter-semibold text-muted mb-1">Address</Text>
+              <Text className="text-sm font-inter-bold text-dark leading-5">{complaint.address}</Text>
             </View>
 
             <View className="mb-8">
-              <Text className="text-sm font-inter-bold text-dark mb-1">Priority</Text>
-              <Text className="text-sm font-inter text-muted">{complaint.priority}</Text>
+              <Text className="text-xs font-inter-semibold text-muted mb-1">Priority</Text>
+              <Text className="text-sm font-inter-bold text-dark">{complaint.priority}</Text>
             </View>
           </View>
         </ScrollView>

@@ -110,8 +110,8 @@ export function MenuDrawer({ visible, onClose, onSelectTab }: MenuDrawerProps) {
       onPress: () => { onClose(); router.push('/help' as never); },
     },
     {
-      id: 'signout',
-      label: 'Sign Out',
+      id: 'logout',
+      label: 'Logout',
       Icon: ArrowRightOnRectangleIcon,
       onPress: () => { onClose(); router.replace('/login'); },
       danger: true,
@@ -191,7 +191,7 @@ export function MenuDrawer({ visible, onClose, onSelectTab }: MenuDrawerProps) {
               <TouchableOpacity
                 onPress={item.onPress}
                 activeOpacity={0.7}
-                className="flex-row items-center px-4 py-4 rounded-xl"
+                className="flex-row items-center px-4 py-4 rounded-md"
               >
                 <item.Icon
                   size={20}

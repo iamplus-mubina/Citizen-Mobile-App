@@ -36,12 +36,12 @@ export function Tabs<T extends string>({
             className={`px-4 py-2.5 rounded-lg border ${
               isActive 
                 ? 'bg-primary border-primary' 
-                : 'bg-white border-slate-300'
+                : 'bg-surface border-border'
             }`}
           >
             <Text 
               className={`text-sm font-inter-semibold ${
-                isActive ? 'text-black' : 'text-dark'
+                isActive ? 'text-dark' : 'text-muted'
               }`}
             >
               {displayLabel}

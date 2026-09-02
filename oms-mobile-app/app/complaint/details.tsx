@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Button } from '@/components/Button';
 import { Header } from '@/components/Header';
+import { FormStepper } from '@/components/FormStepper';
 import { Input } from '@/components/Input';
 import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
@@ -49,19 +50,15 @@ export default function DetailsScreen() {
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
           
-          <View className="mb-8">
-            <View className="items-center mb-2">
-              <Text className="text-lg font-inter-bold text-dark">Register Complaint</Text>
-            </View>
-            <View className="items-end mb-2">
-              <Text className="text-sm font-inter-semibold text-dark">2 of 4</Text>
-            </View>
+          <View className="mb-4">
+            <Text className="text-2xl font-inter-bold text-dark mb-4 mt-2">Register Complaint</Text>
+            <FormStepper currentStep={2} totalSteps={5} />
           </View>
 
           
           <View className="mb-6">
             <Input 
-              label="Complaint Title"
+              label="Complaint Title *"
               placeholder="Enter short title"
               value={title}
               onChangeText={(text) => {
@@ -72,7 +69,7 @@ export default function DetailsScreen() {
             />
 
             <Input 
-              label="Description"
+              label="Description *"
               placeholder="Describe your complaint in detail..."
               value={description}
               onChangeText={(text) => {
@@ -87,8 +84,8 @@ export default function DetailsScreen() {
 
           
           <View className="mb-8">
-            <Text className="text-dark font-inter-semibold mb-4">Priority</Text>
-            <View className="space-y-4">
+            <Text className="text-dark font-inter-semibold mb-2">Priority <Text className="text-error">*</Text></Text>
+            <View className="space-y-3">
               {PRIORITIES.map((p) => {
                 const isSelected = priority === p;
                 return (

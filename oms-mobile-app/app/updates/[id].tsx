@@ -22,8 +22,8 @@ export default function UpdateDetailScreen() {
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View className="w-full h-56 bg-border items-center justify-center relative">
-            <View className="w-16 h-16 bg-muted rounded-full items-center justify-center">
-              <PlayIcon size={32} color={colors.white} />
+            <View className="w-16 h-16 bg-primary rounded-full items-center justify-center shadow-md elevation-2">
+              <PlayIcon size={32} color={colors.dark} />
             </View>
             <View className="absolute bottom-2 right-2 bg-text px-2 py-1 rounded">
               <Text className="text-surface text-xs font-inter-medium">0:45</Text>
@@ -31,8 +31,8 @@ export default function UpdateDetailScreen() {
           </View>
 
           <View className="p-6">
-            <View className="bg-secondary self-start px-3 py-1 rounded-full mb-3">
-              <Text className="text-xs font-inter-bold text-primary">Official Notice</Text>
+            <View className="bg-primary self-start px-3 py-1 rounded-full mb-3">
+              <Text className="text-xs font-inter-bold text-on-primary">Official Notice</Text>
             </View>
             
             <Text className="text-2xl font-inter-bold text-dark mb-2">
@@ -51,7 +51,7 @@ export default function UpdateDetailScreen() {
               The project is expected to last for approximately 3 days. During this time, heavy machinery will be operating in the area, and traffic diversions will be in place.
             </Text>
 
-            <View className="bg-background p-4 rounded-xl border border-border mt-2">
+            <View className="bg-surface p-4 rounded-lg border border-border mt-2">
               <Text className="text-sm font-inter-bold text-dark mb-1">Action Required:</Text>
               <Text className="text-sm font-inter text-muted leading-5">
                 Please use the alternative routes via Green Park Avenue. We regret the temporary inconvenience and appreciate your cooperation in building a better city infrastructure.

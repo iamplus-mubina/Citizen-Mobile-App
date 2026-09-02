@@ -17,7 +17,7 @@ export default function ErrorScreen() {
       <Stack.Screen options={{ headerShown: false }} />
       <View className={containerClass}>
         <View className="items-center mb-10">
-          <View className="w-24 h-24 rounded-full bg-border items-center justify-center mb-6">
+          <View className="w-24 h-24 rounded-full bg-[#fee2e2] items-center justify-center mb-6">
             <ExclamationTriangleIcon size={44} color={colors.error} />
           </View>
           <Text className="text-2xl font-inter-bold text-dark mb-3 text-center">

@@ -27,7 +27,7 @@ const menuItems = [
   {
     id: 'contact',
     label: 'Contact Office',
-    hasArrow: false,
+    hasArrow: true,
     onPress: () => Linking.openURL('tel:+911234567890'),
   },
   {
@@ -39,7 +39,7 @@ const menuItems = [
   {
     id: 'privacy',
     label: 'Privacy Policy',
-    hasArrow: false,
+    hasArrow: true,
     onPress: () => {},
   },
 ];
@@ -60,7 +60,7 @@ export default function HelpSupportScreen() {
         </View>
 
         <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
-          <View className="bg-surface rounded-2xl border border-border overflow-hidden mb-8">
+          <View className="bg-surface rounded-lg border border-border overflow-hidden mb-8">
             {menuItems.map((item, index) => (
               <View key={item.id}>
                 <TouchableOpacity

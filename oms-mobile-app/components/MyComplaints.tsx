@@ -117,7 +117,8 @@ export function MyComplaints() {
               key={complaint.ticketId}
               variant="recent"
               ticketId={complaint.ticketId}
-              title={complaint.title}
+              title={complaint.ticketId}
+              description={complaint.title}
               date={complaint.date}
               status={complaint.status}
               onPress={() => router.push({ pathname: '/complaint/view/[id]', params: { id: complaint.ticketId } })}

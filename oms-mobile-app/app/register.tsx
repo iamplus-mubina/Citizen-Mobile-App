@@ -219,7 +219,7 @@ export default function RegisterScreen() {
                 return (
                   <View
                     key={index}
-                    className={`w-12 h-14 border-2 rounded-xl justify-center items-center bg-input-bg ${isFocused ? 'border-primary' : 'border-border'}`}
+                    className={`w-12 h-14 border rounded-md justify-center items-center bg-surface ${isFocused ? 'border-primary' : 'border-border'}`}
                   >
                     <Text className="text-xl font-inter-semibold text-dark">
                       {digit}

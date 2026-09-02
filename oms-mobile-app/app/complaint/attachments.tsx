@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { ChevronLeftIcon, PhotoIcon, DocumentIcon, XMarkIcon, ArrowUpTrayIcon } from 'react-native-heroicons/outline';
 import { Button } from '@/components/Button';
 import { Header } from '@/components/Header';
+import { FormStepper } from '@/components/FormStepper';
 import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
 import { UploadModal } from '@/components/UploadModal';
@@ -60,25 +61,21 @@ export default function AttachmentsScreen() {
         <Header showBack />
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
-          <View className="mb-8">
-            <View className="items-center mb-2">
-              <Text className="text-lg font-inter-bold text-dark">Register Complaint</Text>
-            </View>
-            <View className="items-end mb-2">
-              <Text className="text-sm font-inter-semibold text-dark">4 of 4</Text>
-            </View>
+          <View className="mb-4">
+            <Text className="text-2xl font-inter-bold text-dark mb-4 mt-2">Register Complaint</Text>
+            <FormStepper currentStep={4} totalSteps={5} />
           </View>
 
           <View className="mb-8">
             <TouchableOpacity onPress={handleAddPhoto} activeOpacity={0.7} className="self-start">
-              <Text className="text-dark font-inter-semibold mb-4">Upload Photos (Optional)</Text>
+              <Text className="text-dark font-inter-semibold mb-2">Upload Photos (Optional)</Text>
             </TouchableOpacity>
 
             {photos.length === 0 ? (
               <TouchableOpacity
                 onPress={handleAddPhoto}
                 activeOpacity={0.7}
-                className="w-full border-2 border-dashed border-border bg-input-bg rounded-2xl py-10 items-center justify-center mb-4"
+                className="w-full border-2 border-dashed border-border bg-surface rounded-lg py-10 items-center justify-center mb-4"
               >
                 <View className="w-12 h-12 rounded-full bg-primary/10 justify-center items-center mb-3">
                   <ArrowUpTrayIcon size={24} color={colors.primary} />
@@ -89,7 +86,7 @@ export default function AttachmentsScreen() {
               <>
                 <View className="flex-row flex-wrap gap-3 mb-4">
                   {photos.map((uri, index) => (
-                    <View key={index} className="w-24 h-24 rounded-xl overflow-hidden border border-border relative">
+                    <View key={index} className="w-24 h-24 rounded-md overflow-hidden border border-border relative">
                       <Image source={{ uri }} className="w-full h-full" resizeMode="cover" />
                       <TouchableOpacity
                         onPress={() => handleRemovePhoto(index)}
@@ -112,12 +109,12 @@ export default function AttachmentsScreen() {
           </View>
 
           <View className="mb-8">
-            <Text className="text-dark font-inter-semibold mb-4">Upload Documents (Optional)</Text>
+            <Text className="text-dark font-inter-semibold mb-2">Upload Documents (Optional)</Text>
 
             {documents.length > 0 && (
               <View className="mb-4 space-y-3">
                 {documents.map((doc, index) => (
-                  <View key={index} className="flex-row items-center justify-between bg-input-bg border border-border rounded-xl px-4 py-3">
+                  <View key={index} className="flex-row items-center justify-between bg-surface border border-border rounded-md px-4 py-3">
                     <View className="flex-row items-center flex-1 mr-2">
                       <DocumentIcon size={20} color={colors.primary} />
                       <Text className="ml-2 text-sm font-inter text-dark flex-1" numberOfLines={1}>{doc.name}</Text>

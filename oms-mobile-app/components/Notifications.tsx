@@ -67,7 +67,7 @@ export function Notifications() {
             {filteredNotifications.map((notif) => (
               <View 
                 key={notif.id} 
-                className="bg-white border border-border rounded-xl p-4 mb-4"
+                className="bg-surface border border-border rounded-lg p-4 mb-4"
               >
                 <View className="flex-row items-center justify-between mb-1">
                   <Text className="text-base font-inter-bold text-dark">{notif.title}</Text>

@@ -21,7 +21,7 @@ export default function PendingApprovalScreen() {
           Your account is awaiting approval by Office Admin.
         </Text>
 
-        <View className="w-full border-2 border-dashed border-primary rounded-2xl py-6 px-4 items-center mb-10">
+        <View className="w-full border-2 border-dashed border-primary rounded-lg py-6 px-4 items-center mb-10">
           <Text className="text-muted text-base font-inter-medium mb-1">
             Status
           </Text>

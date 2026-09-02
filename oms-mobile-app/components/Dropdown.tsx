@@ -32,7 +32,7 @@ export function Dropdown({
       <TouchableOpacity 
         activeOpacity={0.7}
         onPress={() => setIsOpen(!isOpen)}
-        className={`flex-row items-center justify-between w-full bg-input-bg border ${error ? 'border-error' : (isOpen ? 'border-primary' : 'border-border')} rounded-xl px-4 py-3`}
+        className={`flex-row items-center justify-between w-full bg-surface border ${error ? 'border-error' : (isOpen ? 'border-primary' : 'border-border')} rounded-md px-4 py-3`}
       >
         <Text className={`text-base font-inter ${value ? 'text-dark' : 'text-muted'}`}>
           {value || placeholder}
@@ -45,9 +45,9 @@ export function Dropdown({
       
       {isOpen && (
         <View 
-          className="absolute top-[80px] left-0 right-0 bg-background border border-border rounded-xl shadow-lg z-50 overflow-hidden"
+          className="absolute top-[80px] left-0 right-0 bg-surface border border-border rounded-md shadow-sm z-50 overflow-hidden"
         >
-          <ScrollView nestedScrollEnabled className="max-h-[200px]">
+          <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false} className="max-h-[200px]">
             {options.map((item) => {
               const isSelected = item === value;
               return (

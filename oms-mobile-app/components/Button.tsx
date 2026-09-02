@@ -2,27 +2,30 @@ import { TouchableOpacity, Text, TouchableOpacityProps, View } from 'react-nativ
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger-outline';
   leftIcon?: React.ReactNode;
 }
 
 export function Button({ title, variant = 'primary', leftIcon, className = '', ...props }: ButtonProps) {
   let bgClass = 'bg-primary';
-  let textClass = 'text-white';
+  let textClass = 'text-on-primary'; // Using dark text for better contrast on yellow
   const hasRoundedClass = className.includes('rounded-');
-  const roundedClass = hasRoundedClass ? '' : 'rounded-xl';
+  const roundedClass = hasRoundedClass ? '' : 'rounded-md';
 
   if (variant === 'secondary') {
     bgClass = 'bg-secondary';
     textClass = 'text-secondary-text';
   } else if (variant === 'outline') {
-    bgClass = 'bg-transparent border-2 border-border';
+    bgClass = 'bg-transparent border border-border';
     textClass = 'text-dark';
+  } else if (variant === 'danger-outline') {
+    bgClass = 'bg-transparent border border-error/50';
+    textClass = 'text-error';
   }
 
   return (
     <TouchableOpacity 
-      className={`py-4 px-6 ${roundedClass} flex-row items-center justify-center ${bgClass} ${className}`}
+      className={`py-3 px-5 ${roundedClass} flex-row items-center justify-center ${bgClass} ${className}`}
       activeOpacity={0.8}
       {...props}
     >

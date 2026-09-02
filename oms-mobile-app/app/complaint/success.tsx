@@ -15,25 +15,25 @@ export default function SuccessScreen() {
           <CheckIcon size={48} color={colors.surface} />
         </View>
 
-        <Text className="text-3xl font-inter-bold text-primary mb-10 text-center">
+        <Text className="text-2xl font-inter-bold text-primary mb-10 text-center">
           Complaint Submitted{"\n"}Successfully!
         </Text>
 
         <View className="w-full space-y-4 mb-10">
-          <View className="w-full border-2 border-dashed border-primary rounded-2xl py-4 px-4 items-center">
-            <Text className="text-muted text-base font-inter-medium mb-1">
+          <View className="w-full bg-surface border border-border rounded-lg py-4 px-4 items-center shadow-sm">
+            <Text className="text-muted text-sm font-inter-medium mb-1">
               Complaint ID
             </Text>
-            <Text className="text-primary text-2xl font-inter-bold">
+            <Text className="text-dark text-xl font-inter-bold">
               CMP-1025
             </Text>
           </View>
           
-          <View className="w-full border-2 border-dashed border-primary rounded-2xl py-4 px-4 items-center mt-4">
-            <Text className="text-muted text-base font-inter-medium mb-1">
+          <View className="w-full bg-surface border border-border rounded-lg py-4 px-4 items-center mt-3 shadow-sm">
+            <Text className="text-muted text-sm font-inter-medium mb-1">
               Status
             </Text>
-            <Text className="text-primary text-2xl font-inter-bold">
+            <Text className="text-primary text-xl font-inter-bold">
               Pending Verification
             </Text>
           </View>
@@ -43,14 +43,14 @@ export default function SuccessScreen() {
       <View className="w-full mt-4 space-y-3">
         <Button 
           title="Track Complaint" 
-          variant="secondary"
+          variant="primary"
           onPress={() => console.log('Track Complaint')} 
           className="w-full"
         />
         <View className="mt-3">
           <Button 
             title="Back to Home" 
-            variant="secondary" 
+            variant="outline" 
             onPress={() => router.replace('/home')} 
             className="w-full"
           />

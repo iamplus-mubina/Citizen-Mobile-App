@@ -18,9 +18,18 @@ export function Header({ className = '', avatarUrl, showBack, onMenuPress }: Hea
   const displayName = profileName || 'Rahul Sharma';
 
   return (
-    <View className={`h-36 justify-between px-6 pt-4 pb-5 bg-header-bg ${className}`}>
+    <View 
+      className={`px-4 pt-4 pb-4 bg-header-bg z-10 ${className}`}
+      style={{
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 3.84,
+        elevation: 5,
+      }}
+    >
       {showBack ? (
-        <View className="flex-row items-center justify-between flex-1">
+        <View className="flex-row items-center justify-between">
           <View className="flex-row items-center">
             <TouchableOpacity 
               onPress={() => router.back()}
@@ -38,7 +47,7 @@ export function Header({ className = '', avatarUrl, showBack, onMenuPress }: Hea
             {avatarUrl ? (
               <Image 
                 source={{ uri: avatarUrl }} 
-                className="w-10 h-10 rounded-full"
+                className="w-10 h-10 rounded-full border-2 border-white/20"
                 resizeMode="cover"
               />
             ) : (
@@ -47,44 +56,35 @@ export function Header({ className = '', avatarUrl, showBack, onMenuPress }: Hea
           </TouchableOpacity>
         </View>
       ) : (
-        <View className="flex-1 justify-between">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center">
-              <TouchableOpacity 
-                activeOpacity={0.7}
-                className="p-0.5 rounded-full border border-white/20 mr-3"
-              >
-                {avatarUrl ? (
-                  <Image 
-                    source={{ uri: avatarUrl }} 
-                    className="w-11 h-11 rounded-full"
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <UserCircleIcon size={44} color={colors.white} />
-                )}
-              </TouchableOpacity>
-              <View>
-                <Text className="text-xs font-inter text-white/70 mb-0.5">Welcome,</Text>
-                <Text className="text-base font-inter-bold text-white leading-5">{displayName}</Text>
+        <View className="justify-center pt-2">
+          {/* Top Row: Logo, Titles, Menu */}
+          <View className="flex-row items-center justify-between mb-4">
+            <View className="flex-row items-center flex-1">
+              <View className="w-12 h-12 bg-white rounded-full items-center justify-center mr-3 shadow-sm border-2 border-white/10 overflow-hidden">
+                <Image 
+                  source={require('../assets/images/oms_logo.png')} 
+                  style={{ width: '100%', height: '100%' }}
+                  resizeMode="cover"
+                />
+              </View>
+              <View className="flex-1">
+                <Text className="text-base font-inter-bold text-white tracking-wide" numberOfLines={1}>Office Management System</Text>
+                <Text className="text-xs font-inter-semibold text-white/70">OMS Citizen</Text>
               </View>
             </View>
-            <View className="flex-row items-center">
-              <Text className="text-sm font-inter-bold text-white/80 mr-3">OMS Citizen</Text>
-              <TouchableOpacity 
-                activeOpacity={0.7}
-                className="p-1 -mr-1 rounded-full"
-                onPress={onMenuPress}
-              >
-                <Bars3Icon size={24} color={colors.white} />
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity 
+              activeOpacity={0.7}
+              className="p-2 ml-2 rounded-full"
+              onPress={onMenuPress}
+            >
+              <Bars3Icon size={28} color={colors.white} />
+            </TouchableOpacity>
           </View>
-
-          <View className="bg-black/20 rounded-xl px-4 py-2.5 flex-row items-center">
-            <Text className="text-xs font-inter-semibold text-white/90">
-              User from : Office Management System
-            </Text>
+          
+          {/* Bottom Row: Dark Welcome Box matching old app feel */}
+          <View className="bg-black/20 border border-black/10 rounded-md px-3 py-2.5 flex-row items-center">
+             <UserCircleIcon size={18} color={colors.white} />
+             <Text className="text-xs font-inter-medium text-white/90 ml-2">Welcome, {displayName}</Text>
           </View>
         </View>
       )}

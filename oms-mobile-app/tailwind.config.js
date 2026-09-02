@@ -25,6 +25,8 @@ module.exports = {
         teal: 'var(--color-teal)',
         'header-bg': 'var(--color-header-bg)',
         'icon-muted': 'var(--color-icon-muted)',
+        'primary-light': 'var(--color-primary-light)',
+        'warning-light': 'var(--color-warning-light)',
       },
       fontFamily: {
         sans: ["Inter_400Regular"],

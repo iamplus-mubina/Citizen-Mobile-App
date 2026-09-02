@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { MapPinIcon } from 'react-native-heroicons/outline';
 import { Button } from '@/components/Button';
 import { Header } from '@/components/Header';
+import { FormStepper } from '@/components/FormStepper';
 import { Input } from '@/components/Input';
 import { Dropdown } from '@/components/Dropdown';
 import { colors } from '@/constants/Colors';
@@ -56,19 +57,15 @@ export default function LocationScreen() {
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
           
-          <View className="mb-8">
-            <View className="items-center mb-2">
-              <Text className="text-lg font-inter-bold text-dark">Register Complaint</Text>
-            </View>
-            <View className="items-end mb-2">
-              <Text className="text-sm font-inter-semibold text-dark">3 of 4</Text>
-            </View>
+          <View className="mb-4">
+            <Text className="text-2xl font-inter-bold text-dark mb-4 mt-2">Register Complaint</Text>
+            <FormStepper currentStep={3} totalSteps={5} />
           </View>
 
           
           <View className="mb-8">
             <Input 
-              label="Address"
+              label="Address *"
               placeholder="Enter full address"
               value={address}
               onChangeText={(text) => {
@@ -79,7 +76,7 @@ export default function LocationScreen() {
             />
 
             <Input 
-              label="Area / Locality"
+              label="Area / Locality *"
               placeholder="Enter area"
               value={area}
               onChangeText={(text) => {
@@ -90,7 +87,7 @@ export default function LocationScreen() {
             />
 
             <Dropdown 
-              label="Ward"
+              label="Ward *"
               placeholder="Select ward"
               options={WARDS}
               value={ward}
@@ -102,7 +99,7 @@ export default function LocationScreen() {
             />
 
             <Input 
-              label="Pincode"
+              label="Pincode *"
               placeholder="Enter pincode"
               value={pincode}
               onChangeText={(text) => {
