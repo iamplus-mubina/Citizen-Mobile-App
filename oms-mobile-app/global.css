@@ -26,3 +26,14 @@
     --color-warning-light: #fff4cc;
   }
 }
+
+@layer base {
+  input, textarea, select {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+}
