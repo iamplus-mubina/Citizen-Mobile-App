@@ -37,7 +37,7 @@ export default function LocationScreen() {
     const newErrors: Record<string, string> = {};
 
     if (!address.trim()) newErrors.address = 'Address is required';
-    if (!area.trim()) newErrors.area = 'Area/Locality is required';
+    if (!area.trim()) newErrors.area = 'Area or Locality is required';
     if (!ward) newErrors.ward = 'Please select a ward';
     if (pincode.length !== 6) newErrors.pincode = 'Pincode must be 6 digits';
 
@@ -76,7 +76,7 @@ export default function LocationScreen() {
             />
 
             <Input 
-              label="Area / Locality *"
+              label="Area or Locality *"
               placeholder="Enter area"
               value={area}
               onChangeText={(text) => {
@@ -115,7 +115,7 @@ export default function LocationScreen() {
             <Button 
               title="Use Current Location" 
               variant="outline"
-              leftIcon={<MapPinIcon size={20} color={colors.dark} />}
+              leftIcon={<MapPinIcon size={20} color={colors.primary} />}
               onPress={() => console.log('Fetch location...')}
               className="mt-2"
             />

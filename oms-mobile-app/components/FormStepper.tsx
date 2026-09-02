@@ -14,8 +14,11 @@ export function FormStepper({ currentStep, totalSteps = 4 }: FormStepperProps) {
 
   return (
     <View className="mb-4 w-full">
+      <Text className="text-xs font-inter-semibold text-primary mb-3">
+        Step {currentStep} of {totalSteps} · {currentLabel}
+      </Text>
 
-      {/* Circles + connector lines */}
+
       <View className="flex-row items-center mb-2">
         {Array.from({ length: totalSteps }).map((_, index) => {
           const stepNumber = index + 1;

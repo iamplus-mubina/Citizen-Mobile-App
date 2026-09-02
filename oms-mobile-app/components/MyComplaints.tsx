@@ -16,30 +16,40 @@ const MOCK_COMPLAINTS = [
   {
     ticketId: 'CMP-1025',
     title: 'Pipeline Leakage',
+    category: 'Water Supply',
+    ward: 'Ward 2',
     status: 'Pending Verification',
     date: '12 May 2024',
   },
   {
     ticketId: 'CMP-1024',
     title: 'Road Repair',
+    category: 'Roads & Potholes',
+    ward: 'Ward 1',
     status: 'In Progress',
     date: '12 May 2024',
   },
   {
     ticketId: 'CMP-1023',
     title: 'Street Light Not Working',
+    category: 'Street Lighting',
+    ward: 'Ward 3',
     status: 'Resolved',
     date: '10 May 2024',
   },
   {
     ticketId: 'CMP-1022',
     title: 'Garbage Collection Issue',
+    category: 'Sanitation',
+    ward: 'Ward 5',
     status: 'Pending Verification',
     date: '08 May 2024',
   },
   {
     ticketId: 'CMP-1021',
     title: 'Drainage Blockage',
+    category: 'Sewerage',
+    ward: 'Ward 4',
     status: 'In Progress',
     date: '05 May 2024',
   },
@@ -117,11 +127,11 @@ export function MyComplaints() {
               key={complaint.ticketId}
               variant="recent"
               ticketId={complaint.ticketId}
-              title={complaint.ticketId}
-              description={complaint.title}
+              title={complaint.title}
+              description={(complaint as any).category ? `${(complaint as any).category} · ${(complaint as any).ward || 'Ward 1'}` : undefined}
               date={complaint.date}
               status={complaint.status}
-              onPress={() => router.push({ pathname: '/complaint/view/[id]', params: { id: complaint.ticketId } })}
+              onPress={() => router.push(`/complaint/timeline/${complaint.ticketId}` as any)}
             />
           ))
         ) : (

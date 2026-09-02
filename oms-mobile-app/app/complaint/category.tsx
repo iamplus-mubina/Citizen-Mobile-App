@@ -7,14 +7,24 @@ import { Header } from '@/components/Header';
 import { FormStepper } from '@/components/FormStepper';
 import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
+import { 
+  MapIcon, 
+  TrashIcon, 
+  LightBulbIcon,
+  BeakerIcon,
+  FunnelIcon,
+  BuildingStorefrontIcon,
+  ExclamationTriangleIcon
+} from 'react-native-heroicons/outline';
 
 const CATEGORIES = [
-  'Road',
-  'Water Supply',
-  'Electricity',
-  'Drainage',
-  'Sanitation',
-  'Other'
+  { id: 'Roads & Potholes', title: 'Roads & Potholes', subtitle: '48 hour service target', Icon: MapIcon },
+  { id: 'Garbage / Solid Waste', title: 'Garbage / Solid Waste', subtitle: '24 hour service target', Icon: TrashIcon },
+  { id: 'Street Lighting', title: 'Street Lighting', subtitle: '48 hour service target', Icon: LightBulbIcon },
+  { id: 'Water Supply', title: 'Water Supply', subtitle: '24 hour service target', Icon: BeakerIcon },
+  { id: 'Drainage / Sewerage', title: 'Drainage / Sewerage', subtitle: '24 hour service target', Icon: FunnelIcon },
+  { id: 'Public Sanitation', title: 'Public Sanitation', subtitle: '24 hour service target', Icon: BuildingStorefrontIcon },
+  { id: 'Encroachment', title: 'Encroachment', subtitle: 'Variable service target', Icon: ExclamationTriangleIcon }
 ];
 
 export default function CategoryScreen() {
@@ -23,52 +33,67 @@ export default function CategoryScreen() {
   const setCategory = useComplaintStore((s) => s.setCategory);
 
   const containerClass = Platform.OS === 'web'
-    ? "flex-1 w-full max-w-md mx-auto bg-background"
+    ? "flex-1 w-full max-w-md mx-auto bg-background h-screen overflow-hidden"
     : "flex-1 bg-background";
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
       <View className={containerClass}>
         <Header showBack />
 
-        <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
+        <ScrollView className="flex-1 px-6 pt-4" showsVerticalScrollIndicator={false}>
           <View className="mb-4">
-            <Text className="text-2xl font-inter-bold text-dark mb-4 mt-2">Register Complaint</Text>
-            <FormStepper currentStep={1} totalSteps={5} />
+            <FormStepper currentStep={1} totalSteps={6} />
           </View>
 
-          <Text className="text-sm font-inter-semibold text-dark mb-3 mt-2">Select Category <Text className="text-error">*</Text></Text>
+          <Text className="text-2xl font-inter-bold text-dark mb-2">What needs attention?</Text>
+          <Text className="text-sm font-inter text-muted mb-6">
+            Choose the category that best matches the civic issue.
+          </Text>
 
-          <View className="space-y-4 mb-8">
+          <View className="space-y-3 mb-8">
             {CATEGORIES.map((category) => {
-              const isSelected = selectedCategory === category;
+              const isSelected = selectedCategory === category.id;
               return (
                 <TouchableOpacity
-                  key={category}
+                  key={category.id}
                   activeOpacity={0.7}
-                  onPress={() => setSelectedCategory(category)}
-                  className="flex-row items-center py-3"
+                  onPress={() => setSelectedCategory(category.id)}
+                  className={`flex-row items-center justify-between p-4 rounded-lg border ${
+                    isSelected ? 'border-primary' : 'border-border bg-surface'
+                  }`}
+                  style={isSelected ? { backgroundColor: 'rgba(244, 194, 55, 0.1)' } : undefined}
                 >
+                  <View className="flex-row items-center flex-1">
+                    <category.Icon size={24} color={colors.primary} />
+                    <View className="ml-4 flex-1">
+                      <Text className="text-base font-inter-semibold text-dark">
+                        {category.title}
+                      </Text>
+                      <Text className="text-xs font-inter text-muted mt-0.5">
+                        {category.subtitle}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Custom Radio Button on the right */}
                   <View 
-                    className={`w-5 h-5 rounded-full border-2 items-center justify-center mr-4 bg-surface 
+                    className={`w-5 h-5 rounded-full border-2 items-center justify-center ml-4 
                       ${isSelected ? 'border-primary' : 'border-muted'}`}
                   >
                     {isSelected && (
                       <View className="w-2.5 h-2.5 rounded-full bg-primary" />
                     )}
                   </View>
-                  <Text className="text-base font-inter-medium text-dark">
-                    {category}
-                  </Text>
                 </TouchableOpacity>
               );
             })}
           </View>
         </ScrollView>
 
-        <View className="px-6 py-4 pb-8 border-t border-border bg-background">
+        <View className="px-6 py-4 border-t border-border bg-background">
           <Button 
-            title="Next" 
+            title="Continue" 
             onPress={() => {
               if (selectedCategory) {
                 setCategory(selectedCategory);

@@ -59,7 +59,7 @@ export default function ReviewScreen() {
   const attachmentSummary = [
     photoCount > 0 ? `${photoCount} Photo${photoCount > 1 ? 's' : ''}` : null,
     documentCount > 0 ? `${documentCount} Document${documentCount > 1 ? 's' : ''}` : null,
-  ].filter(Boolean).join(', ') || 'None';
+  ].filter(Boolean).join(', ') || 'No files attached';
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
@@ -68,27 +68,55 @@ export default function ReviewScreen() {
         <Header showBack />
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
-          <View className="mb-4">
-            <Text className="text-2xl font-inter-bold text-dark mb-4 mt-2">Register Complaint</Text>
+          <View className="mb-2">
+            <Text className="text-2xl font-inter-bold text-dark mb-4 mt-2">Raise a complaint</Text>
             <FormStepper currentStep={5} totalSteps={5} />
-            <Text className="text-base font-inter-bold text-dark mb-3 mt-2">Review & Submit</Text>
+            <Text className="text-2xl font-inter-bold text-dark mt-6 mb-2">Review your complaint</Text>
+            <Text className="text-sm font-inter text-muted mb-6">
+              Check the information before sending it to the Municipal Corporation.
+            </Text>
           </View>
-          <View className="mb-4">
-            <ReviewRow label="Category" value={category || '-'} />
-            <ReviewRow label="Title" value={title || '-'} />
-            <ReviewRow label="Description" value={description || '-'} />
-            <ReviewRow label="Address" value={fullAddress || '-'} />
-            <ReviewRow label="Priority" value={priority || '-'} />
-            <ReviewRow label="Attachments" value={attachmentSummary} isLast />
+
+          <View className="mb-6">
+
+            <View className="bg-surface border border-border rounded-xl p-4 mb-4">
+              <Text className="text-sm font-inter-bold text-header-bg mb-2">Issue</Text>
+              <Text className="text-base font-inter text-dark mb-1">{category || '-'}</Text>
+              <Text className="text-sm font-inter text-dark mb-1">{title || '-'}</Text>
+              <Text className="text-sm font-inter text-muted">{description || '-'}</Text>
+            </View>
+
+
+            <View className="bg-surface border border-border rounded-xl p-4 mb-4">
+              <Text className="text-sm font-inter-bold text-header-bg mb-2">Location</Text>
+              <Text className="text-base font-inter text-dark mb-1">{address || '-'}</Text>
+              <Text className="text-sm font-inter text-dark mb-1">{area || '-'}</Text>
+              <Text className="text-sm font-inter text-dark mb-1">{ward || '-'}</Text>
+              <Text className="text-sm font-inter text-muted">{pincode || '-'}</Text>
+            </View>
+
+
+            <View className="bg-surface border border-border rounded-xl p-4 mb-4">
+              <Text className="text-sm font-inter-bold text-header-bg mb-2">Evidence</Text>
+              <Text className="text-base font-inter text-dark">{attachmentSummary}</Text>
+            </View>
+
+
+            <View className="p-4 rounded-xl mb-4" style={{ backgroundColor: 'rgba(244, 194, 55, 0.1)' }}>
+              <Text className="font-inter-bold text-dark text-[15px] mb-1">What happens next</Text>
+              <Text className="font-inter text-dark/80 text-sm leading-5">
+                Your complaint will enter Pending verification. You can track every public status change.
+              </Text>
+            </View>
           </View>
         </ScrollView>
 
         <View className="px-6 py-4 border-t border-border bg-background flex-row gap-x-3">
-          <View className="flex-1">
-            <Button title="Back" onPress={() => router.back()} variant="secondary" />
+          <View className="flex-[0.8]">
+            <Button title="Back" onPress={() => router.back()} variant="outline" />
           </View>
-          <View className="flex-[1.5]">
-            <Button title="Submit" onPress={handleSubmit} variant="primary" />
+          <View className="flex-[1.2]">
+            <Button title="Submit complaint" onPress={handleSubmit} variant="primary" />
           </View>
         </View>
 
@@ -103,18 +131,18 @@ export default function ReviewScreen() {
               <View className="bg-surface w-11/12 max-w-sm rounded-lg p-6 border border-border">
                 <Text className="text-xl font-inter-bold text-dark mb-2">Submit Complaint</Text>
                 <Text className="text-base font-inter text-muted mb-8">Are you sure you want to submit this complaint?</Text>
-                
+
                 <View className="flex-row justify-end gap-3 mt-2">
-                  <Button 
-                    title="Cancel" 
-                    variant="outline" 
-                    onPress={() => setShowWebModal(false)} 
+                  <Button
+                    title="Cancel"
+                    variant="outline"
+                    onPress={() => setShowWebModal(false)}
                     className="flex-1"
                   />
-                  <Button 
-                    title="Submit" 
-                    variant="primary" 
-                    onPress={confirmSubmit} 
+                  <Button
+                    title="Submit"
+                    variant="primary"
+                    onPress={confirmSubmit}
                     className="flex-1"
                   />
                 </View>
@@ -128,11 +156,3 @@ export default function ReviewScreen() {
   );
 }
 
-function ReviewRow({ label, value, isLast = false }: { label: string; value: string; isLast?: boolean }) {
-  return (
-    <View className={`py-4 ${!isLast ? 'border-b border-border' : ''}`}>
-      <Text className="text-xs font-inter-semibold text-muted mb-1">{label}</Text>
-      <Text className="text-base font-inter text-dark">{value}</Text>
-    </View>
-  );
-}

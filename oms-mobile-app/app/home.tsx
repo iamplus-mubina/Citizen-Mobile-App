@@ -31,16 +31,20 @@ export default function HomeScreen() {
     switch (activeTab) {
       case 'home':
         return (
-          <ScrollView className="flex-1 px-6 pt-8" showsVerticalScrollIndicator={false}>
+          <ScrollView 
+            className="flex-1 px-5 pt-6" 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 40 }}
+          >
 
             <Card 
               variant="complaint"
-              title="Register Complaint"
-              description="Raise a new complaint"
+              title="Raise a complaint"
+              description="Report a civic issue in six clear steps. You can add location and evidence."
               onPress={() => router.push('/complaint/category')}
             />
 
-            <View className="mb-8">
+            <View className="mb-2 mt-6">
               <Text className="text-lg font-inter-bold text-dark mb-4">Quick Actions</Text>
               
               <View className="flex-row flex-wrap -mx-[1%]">
@@ -84,10 +88,44 @@ export default function HomeScreen() {
             </View>
 
             <View className="mb-8">
+              <Text className="text-lg font-inter-bold text-dark mb-4">Your complaint position</Text>
+              
+              <View className="flex-row justify-between mx-[-4px]">
+                {(() => {
+                  const totalCount = submittedComplaints.length;
+                  const openCount = submittedComplaints.filter(c => c.status.toLowerCase().includes('pending')).length;
+                  const inProgressCount = submittedComplaints.filter(c => c.status.toLowerCase().includes('progress') || c.status.toLowerCase().includes('assign')).length;
+                  const resolvedCount = submittedComplaints.filter(c => c.status.toLowerCase().includes('resolv') || c.status.toLowerCase().includes('complet')).length;
+
+                  return (
+                    <>
+                      <View className="flex-1 bg-surface border border-border rounded-xl p-2 mx-1">
+                        <Text className="text-xl font-inter-bold text-dark mb-2">{totalCount}</Text>
+                        <Text className="text-[10px] font-inter text-dark" numberOfLines={1} adjustsFontSizeToFit>Total</Text>
+                      </View>
+                      <View className="flex-1 bg-surface border border-border rounded-xl p-2 mx-1">
+                        <Text className="text-xl font-inter-bold text-dark mb-2">{openCount}</Text>
+                        <Text className="text-[10px] font-inter text-dark" numberOfLines={1} adjustsFontSizeToFit>Open</Text>
+                      </View>
+                      <View className="flex-1 bg-surface border border-border rounded-xl p-2 mx-1">
+                        <Text className="text-xl font-inter-bold text-dark mb-2">{inProgressCount}</Text>
+                        <Text className="text-[10px] font-inter text-dark" numberOfLines={1} adjustsFontSizeToFit>In progress</Text>
+                      </View>
+                      <View className="flex-1 bg-surface border border-border rounded-xl p-2 mx-1">
+                        <Text className="text-xl font-inter-bold text-dark mb-2">{resolvedCount}</Text>
+                        <Text className="text-[10px] font-inter text-dark" numberOfLines={1} adjustsFontSizeToFit>Resolved</Text>
+                      </View>
+                    </>
+                  );
+                })()}
+              </View>
+            </View>
+
+            <View className="mb-8">
               <View className="flex-row justify-between items-center mb-4">
-                <Text className="text-lg font-inter-bold text-dark">Recent Complaints</Text>
+                <Text className="text-lg font-inter-bold text-dark">Recent activity</Text>
                 <TouchableOpacity onPress={() => setActiveTab('complaints')}>
-                  <Text className="text-sm font-inter-semibold text-primary underline">View All</Text>
+                  <Text className="text-sm font-inter text-primary">View all</Text>
                 </TouchableOpacity>
               </View>
 
@@ -96,10 +134,11 @@ export default function HomeScreen() {
                   <Card 
                     variant="recent"
                     ticketId={item.ticketId}
-                    title={item.ticketId}
-                    description={item.title}
+                    title={item.title}
+                    description={item.category ? `${item.category} · ${item.ward || 'Ward 1'}` : undefined}
                     date={item.date}
                     status={item.status}
+                    onPress={() => router.push(`/complaint/timeline/${item.ticketId}`)}
                   />
                 </View>
               ))}

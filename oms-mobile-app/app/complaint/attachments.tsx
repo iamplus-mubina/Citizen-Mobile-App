@@ -75,7 +75,8 @@ export default function AttachmentsScreen() {
               <TouchableOpacity
                 onPress={handleAddPhoto}
                 activeOpacity={0.7}
-                className="w-full border-2 border-dashed border-border bg-surface rounded-lg py-10 items-center justify-center mb-4"
+                className="w-full border-2 border-dashed border-primary rounded-xl py-10 items-center justify-center mb-4"
+                style={{ backgroundColor: 'rgba(244, 194, 55, 0.05)' }}
               >
                 <View className="w-12 h-12 rounded-full bg-primary/10 justify-center items-center mb-3">
                   <ArrowUpTrayIcon size={24} color={colors.primary} />
@@ -132,6 +133,16 @@ export default function AttachmentsScreen() {
               variant="outline"
               onPress={handleChooseFile}
             />
+          </View>
+
+          <View 
+            className="mb-8 p-4 rounded-xl"
+            style={{ backgroundColor: 'rgba(15, 118, 110, 0.08)' }}
+          >
+            <Text className="font-inter-bold text-dark text-[15px] mb-1">Evidence is optional</Text>
+            <Text className="font-inter text-muted text-sm leading-5">
+              You can continue without an attachment. Files remain private behind signed-in access.
+            </Text>
           </View>
         </ScrollView>
 
