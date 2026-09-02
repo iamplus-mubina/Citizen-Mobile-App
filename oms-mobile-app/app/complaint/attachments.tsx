@@ -58,11 +58,11 @@ export default function AttachmentsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
       <View className={containerClass}>
-        <Header showBack />
+        <Header showBack title="Raise a complaint" />
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
           <View className="mb-4">
-            <Text className="text-2xl font-inter-bold text-dark mb-4 mt-2">Register Complaint</Text>
+            <View className="mt-2" />
             <FormStepper currentStep={4} totalSteps={5} />
           </View>
 
@@ -75,8 +75,7 @@ export default function AttachmentsScreen() {
               <TouchableOpacity
                 onPress={handleAddPhoto}
                 activeOpacity={0.7}
-                className="w-full border-2 border-dashed border-primary rounded-xl py-10 items-center justify-center mb-4"
-                style={{ backgroundColor: 'rgba(244, 194, 55, 0.05)' }}
+                className="w-full border-2 border-dashed border-primary rounded-xl py-10 items-center justify-center mb-4 bg-primary/5"
               >
                 <View className="w-12 h-12 rounded-full bg-primary/10 justify-center items-center mb-3">
                   <ArrowUpTrayIcon size={24} color={colors.primary} />
@@ -135,9 +134,8 @@ export default function AttachmentsScreen() {
             />
           </View>
 
-          <View 
-            className="mb-8 p-4 rounded-xl"
-            style={{ backgroundColor: 'rgba(15, 118, 110, 0.08)' }}
+          <View
+            className="mb-8 p-4 rounded-xl bg-secondary/10"
           >
             <Text className="font-inter-bold text-dark text-[15px] mb-1">Evidence is optional</Text>
             <Text className="font-inter text-muted text-sm leading-5">

@@ -10,6 +10,7 @@ interface CardProps {
   date?: string;
   status?: string;
   Icon?: React.ComponentType<{ size: number; color: string }>;
+  badgeCount?: number;
   onPress?: () => void;
 }
 
@@ -37,6 +38,7 @@ export function Card({
   ticketId, 
   date, 
   status,
+  badgeCount,
   Icon, 
   onPress 
 }: CardProps) {
@@ -67,8 +69,13 @@ export function Card({
         activeOpacity={0.7}
         className="w-[31%] mx-[1%] rounded-lg p-3 mb-4 bg-surface border border-border items-center"
       >
-        <View className="w-10 h-10 rounded-full justify-center items-center mb-2 bg-primary-light">
+        <View className="w-10 h-10 rounded-full justify-center items-center mb-2 bg-primary-light relative">
           {Icon && <Icon size={20} color={colors.primary} />}
+          {badgeCount !== undefined && badgeCount > 0 && (
+            <View className="absolute -top-1 -right-1 bg-red-500 rounded-full min-w-[18px] h-[18px] px-[3px] items-center justify-center border-2 border-surface">
+              <Text className="text-[10px] font-inter-bold text-white leading-none text-center">{badgeCount}</Text>
+            </View>
+          )}
         </View>
         <Text className="text-xs font-inter-semibold text-dark text-center leading-tight" numberOfLines={2}>
           {title}

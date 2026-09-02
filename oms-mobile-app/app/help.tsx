@@ -2,45 +2,59 @@ import { View, Text, ScrollView, TouchableOpacity, Platform, Linking } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { Header } from '@/components/Header';
-import { ChevronRightIcon } from 'react-native-heroicons/outline';
+import {
+  ChevronRightIcon,
+  QuestionMarkCircleIcon,
+  DocumentPlusIcon,
+  MagnifyingGlassIcon,
+  PhoneIcon,
+  DocumentTextIcon,
+  ShieldCheckIcon
+} from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 
 const menuItems = [
   {
     id: 'faqs',
     label: 'FAQs',
+    icon: QuestionMarkCircleIcon,
     hasArrow: true,
-    onPress: () => {},
+    onPress: () => { },
   },
   {
     id: 'how-to-register',
     label: 'How to Register Complaint',
+    icon: DocumentPlusIcon,
     hasArrow: true,
-    onPress: () => {},
+    onPress: () => { },
   },
   {
     id: 'how-to-track',
     label: 'How to Track Complaint',
+    icon: MagnifyingGlassIcon,
     hasArrow: true,
-    onPress: () => {},
+    onPress: () => { },
   },
   {
     id: 'contact',
     label: 'Contact Office',
+    icon: PhoneIcon,
     hasArrow: true,
     onPress: () => Linking.openURL('tel:+911234567890'),
   },
   {
     id: 'terms',
     label: 'Terms & Conditions',
+    icon: DocumentTextIcon,
     hasArrow: true,
-    onPress: () => {},
+    onPress: () => { },
   },
   {
     id: 'privacy',
     label: 'Privacy Policy',
+    icon: ShieldCheckIcon,
     hasArrow: true,
-    onPress: () => {},
+    onPress: () => { },
   },
 ];
 
@@ -53,35 +67,43 @@ export default function HelpSupportScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
       <Stack.Screen options={{ headerShown: false }} />
       <View className={containerClass}>
-        <Header showBack />
+        <Header showBack title="Help & Support" />
 
-        <View className="px-6 pb-4 pt-2">
-          <Text className="text-lg font-inter-bold text-dark">Help & Support</Text>
-        </View>
-
-        <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
-          <View className="bg-surface rounded-lg border border-border overflow-hidden mb-8">
-            {menuItems.map((item, index) => (
-              <View key={item.id}>
+        <ScrollView className="flex-1 px-5 pt-6" showsVerticalScrollIndicator={false}>
+          <View className="mb-8">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              return (
                 <TouchableOpacity
+                  key={item.id}
                   activeOpacity={0.7}
                   onPress={item.onPress}
-                  className="flex-row items-center justify-between px-4 py-4"
+                  className="bg-surface border border-border rounded-xl p-4 mb-3 flex-row items-center justify-between"
+                  style={{
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.05,
+                    shadowRadius: 3.5,
+                    elevation: 2,
+                  }}
                 >
-                  <Text className="text-sm font-inter-medium text-dark">{item.label}</Text>
+                  <View className="flex-row items-center flex-1">
+                    <View className="w-12 h-12 rounded-full bg-primary-light items-center justify-center mr-4">
+                      <Icon size={24} color={colors.primary} />
+                    </View>
+                    <Text className="text-base font-inter-bold text-dark flex-1 pr-2">{item.label}</Text>
+                  </View>
                   {item.hasArrow && (
-                    <ChevronRightIcon size={18} color={colors.muted} />
+                    <ChevronRightIcon size={20} color={colors.muted} />
                   )}
                 </TouchableOpacity>
-                {index < menuItems.length - 1 && (
-                  <View className="h-px bg-border mx-4" />
-                )}
-              </View>
-            ))}
+              );
+            })}
           </View>
 
-          <View className="items-center pb-8">
-            <Text className="text-xs font-inter text-muted">Version 1.0.0</Text>
+          <View className="items-center pb-8 mt-4">
+            <Text className="text-xs font-inter-semibold text-muted">Version 1.0.0</Text>
+            <Text className="text-[10px] font-inter text-muted mt-1">OMS Citizen App</Text>
           </View>
         </ScrollView>
       </View>

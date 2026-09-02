@@ -65,11 +65,11 @@ export default function ReviewScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
       <View className={containerClass}>
 
-        <Header showBack />
+        <Header showBack title="Raise a complaint" />
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
           <View className="mb-2">
-            <Text className="text-2xl font-inter-bold text-dark mb-4 mt-2">Raise a complaint</Text>
+            <View className="mt-2" />
             <FormStepper currentStep={5} totalSteps={5} />
             <Text className="text-2xl font-inter-bold text-dark mt-6 mb-2">Review your complaint</Text>
             <Text className="text-sm font-inter text-muted mb-6">
@@ -102,7 +102,7 @@ export default function ReviewScreen() {
             </View>
 
 
-            <View className="p-4 rounded-xl mb-4" style={{ backgroundColor: 'rgba(244, 194, 55, 0.1)' }}>
+            <View className="p-4 rounded-xl mb-4 bg-primary/10">
               <Text className="font-inter-bold text-dark text-[15px] mb-1">What happens next</Text>
               <Text className="font-inter text-dark/80 text-sm leading-5">
                 Your complaint will enter Pending verification. You can track every public status change.

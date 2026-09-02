@@ -12,18 +12,21 @@ const MOCK_UPDATES = [
     title: 'Road Construction Notice: Ward 5',
     date: '14 May 2024 • 09:00 AM',
     summary: 'Main road construction will begin tomorrow. Please use alternate routes to avoid traffic.',
+    read: false,
   },
   {
     id: 'upd-2',
     title: 'Water Supply Disruption',
     date: '12 May 2024 • 04:30 PM',
     summary: 'Water supply in Zone A will be disrupted for maintenance between 10 AM to 2 PM.',
+    read: false,
   },
   {
     id: 'upd-3',
     title: 'New Public Park Inauguration',
     date: '10 May 2024 • 11:00 AM',
     summary: 'Join us for the inauguration of the new Eco Park by the Honorable Mayor this Sunday.',
+    read: true,
   }
 ];
 
@@ -39,12 +42,9 @@ export default function UpdatesListScreen() {
       <Stack.Screen options={{ headerShown: false }} />
       <View className={containerClass}>
         
-        <Header showBack />
+        <Header showBack title="City Updates" />
 
-        <View className="px-6 pb-2 pt-2 border-b border-border mb-4">
-          <Text className="text-xl font-inter-bold text-dark">City Updates</Text>
-          <Text className="text-sm font-inter text-muted mt-1">Official announcements & news</Text>
-        </View>
+        <View className="h-4" />
 
         <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
           {MOCK_UPDATES.map((update) => (
@@ -59,9 +59,14 @@ export default function UpdatesListScreen() {
               </View>
               
               <View className="flex-1">
-                <Text className="text-base font-inter-bold text-dark mb-1" numberOfLines={2}>
-                  {update.title}
-                </Text>
+                <View className="flex-row items-start justify-between">
+                  <Text className="text-base font-inter-bold text-dark mb-1 flex-1 pr-2" numberOfLines={2}>
+                    {update.title}
+                  </Text>
+                  {!update.read && (
+                    <View className="w-2.5 h-2.5 rounded-full bg-primary mt-1.5" />
+                  )}
+                </View>
                 <Text className="text-xs font-inter-medium text-muted mb-2">
                   {update.date}
                 </Text>

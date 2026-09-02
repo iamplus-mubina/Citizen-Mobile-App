@@ -16,6 +16,7 @@ import {
 import { MyComplaints } from '@/components/MyComplaints';
 import { Notifications } from '@/components/Notifications';
 import { Profile } from '@/components/Profile';
+
 import { useComplaintStore } from '@/store/useComplaintStore';
 
 export default function HomeScreen() {
@@ -64,7 +65,8 @@ export default function HomeScreen() {
                   variant="quick"
                   title="Notifications" 
                   Icon={BellIcon} 
-                  onPress={() => router.push('/updates' as any)}
+                  badgeCount={3}
+                  onPress={() => setActiveTab('notifications')}
                 />
                 <Card 
                   variant="quick"
@@ -76,7 +78,8 @@ export default function HomeScreen() {
                   variant="quick"
                   title="Updates" 
                   Icon={MegaphoneIcon} 
-                  onPress={() => setActiveTab('updates')}
+                  badgeCount={2}
+                  onPress={() => router.push('/updates' as any)}
                 />
                 <Card 
                   variant="quick"
@@ -148,10 +151,10 @@ export default function HomeScreen() {
       case 'complaints':
         return <MyComplaints />;
       case 'updates':
+      case 'notifications':
         return <Notifications />;
       case 'profile':
         return <Profile />;
-      default:
         return null;
     }
   };
@@ -162,12 +165,23 @@ export default function HomeScreen() {
         <View className="flex-1">
           <Header
             avatarUrl={profilePhoto || undefined}
-            onNotificationPress={() => setActiveTab('updates')}
+            notificationCount={3}
+            onNotificationPress={() => setActiveTab('notifications')}
           />
           {renderTabContent()}
         </View>
         
-        <BottomNavigation activeTab={activeTab} onTabPress={setActiveTab} />
+        <BottomNavigation 
+          activeTab={activeTab} 
+          onTabPress={(tab) => {
+            if (tab === 'updates') {
+              router.push('/updates' as any);
+            } else {
+              setActiveTab(tab);
+            }
+          }} 
+          updatesBadgeCount={2}
+        />
       </View>
     </SafeAreaView>
   );

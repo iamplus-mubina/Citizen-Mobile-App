@@ -7,9 +7,9 @@ import { Header } from '@/components/Header';
 import { FormStepper } from '@/components/FormStepper';
 import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
-import { 
-  MapIcon, 
-  TrashIcon, 
+import {
+  MapIcon,
+  TrashIcon,
   LightBulbIcon,
   BeakerIcon,
   FunnelIcon,
@@ -39,7 +39,7 @@ export default function CategoryScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
       <View className={containerClass}>
-        <Header showBack />
+        <Header showBack title="Raise a complaint" />
 
         <ScrollView className="flex-1 px-6 pt-4" showsVerticalScrollIndicator={false}>
           <View className="mb-4">
@@ -59,10 +59,8 @@ export default function CategoryScreen() {
                   key={category.id}
                   activeOpacity={0.7}
                   onPress={() => setSelectedCategory(category.id)}
-                  className={`flex-row items-center justify-between p-4 rounded-lg border ${
-                    isSelected ? 'border-primary' : 'border-border bg-surface'
-                  }`}
-                  style={isSelected ? { backgroundColor: 'rgba(244, 194, 55, 0.1)' } : undefined}
+                  className={`flex-row items-center justify-between p-4 rounded-lg border ${isSelected ? 'border-primary bg-primary/10' : 'border-border bg-surface'
+                    }`}
                 >
                   <View className="flex-row items-center flex-1">
                     <category.Icon size={24} color={colors.primary} />
@@ -76,8 +74,8 @@ export default function CategoryScreen() {
                     </View>
                   </View>
 
-                  {/* Custom Radio Button on the right */}
-                  <View 
+
+                  <View
                     className={`w-5 h-5 rounded-full border-2 items-center justify-center ml-4 
                       ${isSelected ? 'border-primary' : 'border-muted'}`}
                   >
@@ -92,8 +90,8 @@ export default function CategoryScreen() {
         </ScrollView>
 
         <View className="px-6 py-4 border-t border-border bg-background">
-          <Button 
-            title="Continue" 
+          <Button
+            title="Continue"
             onPress={() => {
               if (selectedCategory) {
                 setCategory(selectedCategory);

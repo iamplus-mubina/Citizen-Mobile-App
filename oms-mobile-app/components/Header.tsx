@@ -9,10 +9,12 @@ interface HeaderProps {
   className?: string;
   avatarUrl?: string;
   showBack?: boolean;
+  title?: string;
+  notificationCount?: number;
   onNotificationPress?: () => void;
 }
 
-export function Header({ className = '', avatarUrl, showBack, onNotificationPress }: HeaderProps) {
+export function Header({ className = '', avatarUrl, showBack, title, notificationCount, onNotificationPress }: HeaderProps) {
   const router = useRouter();
   const { profileName } = useComplaintStore();
   const displayName = profileName || 'Rahul Sharma';
@@ -38,7 +40,7 @@ export function Header({ className = '', avatarUrl, showBack, onNotificationPres
             >
               <ArrowLeftIcon size={24} color={colors.white} />
             </TouchableOpacity>
-            <Text className="text-xl font-inter-bold text-white">OMS Citizen</Text>
+            <Text className="text-xl font-inter-bold text-white">{title || 'OMS Citizen'}</Text>
           </View>
           <TouchableOpacity
             activeOpacity={0.7}
@@ -74,10 +76,15 @@ export function Header({ className = '', avatarUrl, showBack, onNotificationPres
             </View>
             <TouchableOpacity
               activeOpacity={0.7}
-              className="p-2 ml-2 rounded-full"
+              className="p-2 ml-2 rounded-full relative"
               onPress={onNotificationPress}
             >
               <BellIcon size={26} color={colors.white} />
+              {notificationCount !== undefined && notificationCount > 0 && (
+                <View className="absolute top-1.5 right-1.5 bg-red-500 rounded-full min-w-[16px] h-[16px] px-[3px] items-center justify-center border-[1.5px] border-header-bg">
+                  <Text className="text-[9px] font-inter-bold text-white leading-none text-center">{notificationCount}</Text>
+                </View>
+              )}
             </TouchableOpacity>
           </View>
 

@@ -69,10 +69,10 @@ export function Notifications() {
                 key={notif.id} 
                 className="bg-surface border border-border rounded-lg p-4 mb-4"
               >
-                <View className="flex-row items-center justify-between mb-1">
-                  <Text className="text-base font-inter-bold text-dark">{notif.title}</Text>
+                <View className="flex-row items-start justify-between mb-1">
+                  <Text className="text-base font-inter-bold text-dark flex-1 pr-2">{notif.title}</Text>
                   {!notif.read && (
-                    <View className="w-2 h-2 rounded-full bg-primary" />
+                    <View className="w-2.5 h-2.5 rounded-full bg-primary mt-1.5" />
                   )}
                 </View>
                 <Text className="text-sm font-inter text-dark mb-3 leading-5">

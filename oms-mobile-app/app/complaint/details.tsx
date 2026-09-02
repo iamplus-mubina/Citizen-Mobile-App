@@ -46,12 +46,12 @@ export default function DetailsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className={containerClass}>
-        <Header showBack />
+        <Header showBack title="Raise a complaint" />
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
           
           <View className="mb-4">
-            <Text className="text-2xl font-inter-bold text-dark mb-4 mt-2">Register Complaint</Text>
+            <View className="mt-2" />
             <FormStepper currentStep={2} totalSteps={5} />
           </View>
 

@@ -8,7 +8,7 @@ interface ButtonProps extends TouchableOpacityProps {
 
 export function Button({ title, variant = 'primary', leftIcon, className = '', ...props }: ButtonProps) {
   let bgClass = 'bg-primary';
-  let textClass = 'text-on-primary'; // Using dark text for better contrast on yellow
+  let textClass = 'text-on-primary';
   const hasRoundedClass = className.includes('rounded-');
   const roundedClass = hasRoundedClass ? '' : 'rounded-md';
 

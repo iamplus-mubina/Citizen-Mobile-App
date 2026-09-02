@@ -18,7 +18,7 @@ export default function UpdateDetailScreen() {
       <Stack.Screen options={{ headerShown: false }} />
       <View className={containerClass}>
         
-        <Header showBack />
+        <Header showBack title="City Updates" />
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View className="w-full h-56 bg-border items-center justify-center relative">

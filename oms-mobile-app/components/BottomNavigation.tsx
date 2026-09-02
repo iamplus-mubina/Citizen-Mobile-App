@@ -13,18 +13,19 @@ import {
 } from 'react-native-heroicons/solid';
 import { colors } from '@/constants/Colors';
 
-export type TabType = 'home' | 'complaints' | 'updates' | 'profile';
+export type TabType = 'home' | 'complaints' | 'updates' | 'profile' | 'notifications';
 
 interface BottomNavigationProps {
   activeTab: TabType;
   onTabPress: (tab: TabType) => void;
+  updatesBadgeCount?: number;
 }
 
-export function BottomNavigation({ activeTab, onTabPress }: BottomNavigationProps) {
+export function BottomNavigation({ activeTab, onTabPress, updatesBadgeCount }: BottomNavigationProps) {
   const tabs = [
     { id: 'home' as TabType, label: 'Home', OutlineIcon: HomeOutline, SolidIcon: HomeSolid },
     { id: 'complaints' as TabType, label: 'Complaints', OutlineIcon: DocumentOutline, SolidIcon: DocumentSolid },
-    { id: 'updates' as TabType, label: 'Updates', OutlineIcon: MegaphoneOutline, SolidIcon: MegaphoneSolid },
+    { id: 'updates' as TabType, label: 'Updates', OutlineIcon: MegaphoneOutline, SolidIcon: MegaphoneSolid, badge: updatesBadgeCount },
     { id: 'profile' as TabType, label: 'Profile', OutlineIcon: UserOutline, SolidIcon: UserSolid },
   ];
 
@@ -43,7 +44,14 @@ export function BottomNavigation({ activeTab, onTabPress }: BottomNavigationProp
             activeOpacity={0.7}
             className="items-center justify-center flex-1 py-2"
           >
-            <Icon size={24} color={color} />
+            <View className="relative">
+              <Icon size={24} color={color} />
+              {tab.badge !== undefined && tab.badge > 0 && (
+                <View className="absolute -top-1 -right-2 bg-red-500 rounded-full min-w-[16px] h-[16px] px-[3px] items-center justify-center border-[1.5px] border-background z-10">
+                  <Text className="text-[9px] font-inter-bold text-white leading-none text-center">{tab.badge}</Text>
+                </View>
+              )}
+            </View>
             <Text 
               className={`text-xs mt-1 ${fontClass}`} 
               style={{ color }}
