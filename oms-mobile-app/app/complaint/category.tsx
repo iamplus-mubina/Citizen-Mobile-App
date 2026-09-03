@@ -46,12 +46,7 @@ export default function CategoryScreen() {
             <FormStepper currentStep={1} totalSteps={6} />
           </View>
 
-          <Text className="text-2xl font-inter-bold text-dark mb-2">What needs attention?</Text>
-          <Text className="text-sm font-inter text-muted mb-6">
-            Choose the category that best matches the civic issue.
-          </Text>
-
-          <View className="space-y-3 mb-8">
+          <View className="mb-8 mt-4">
             {CATEGORIES.map((category) => {
               const isSelected = selectedCategory === category.id;
               return (
@@ -59,7 +54,7 @@ export default function CategoryScreen() {
                   key={category.id}
                   activeOpacity={0.7}
                   onPress={() => setSelectedCategory(category.id)}
-                  className={`flex-row items-center justify-between p-4 rounded-lg border ${isSelected ? 'border-primary bg-primary/10' : 'border-border bg-surface'
+                  className={`flex-row items-center justify-between p-4 mb-4 rounded-lg border ${isSelected ? 'border-primary bg-primary/10' : 'border-border bg-surface'
                     }`}
                 >
                   <View className="flex-row items-center flex-1">
