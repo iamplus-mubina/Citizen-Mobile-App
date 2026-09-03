@@ -18,6 +18,8 @@ import { PhoneIcon, ArrowLeftIcon } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 import omsLogo from '../assets/images/oms_logo.png';
 import { useComplaintStore } from '@/store/useComplaintStore';
+import { api } from '@/services/api';
+import { AlertModal } from '@/components/AlertModal';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -27,6 +29,9 @@ export default function LoginScreen() {
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [timeLeft, setTimeLeft] = useState(45);
+
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({ title: '', message: '', type: 'error' as 'error' | 'success' });
 
   const otpRef = useRef<TextInput>(null);
   const touchStartX = useRef(0);
@@ -49,44 +54,66 @@ export default function LoginScreen() {
     }
   };
 
-  const handleSendOtp = () => {
+  const handleSendOtp = async () => {
     if (mobile.length === 0) {
       setError('Mobile number is required');
     } else if (mobile.length < 10) {
       setError('Mobile number must be exactly 10 digits');
     } else {
       setError('');
-      setStep('otp');
-      setOtp('');
-      setTimeLeft(45);
-      setTimeout(() => {
-        otpRef.current?.focus();
-      }, 100);
+      try {
+        await api.post('/citizen/auth/request-otp', { phone: mobile });
+        setStep('otp');
+        setOtp('');
+        setTimeLeft(45);
+        setTimeout(() => {
+          otpRef.current?.focus();
+        }, 100);
+      } catch (err: any) {
+        console.error('Request OTP Error:', err);
+        const errorMessage = err.response?.data?.message || 'Failed to send OTP. Please try again.';
+        setAlertConfig({ title: 'Error', message: errorMessage, type: 'error' });
+        setAlertVisible(true);
+      }
     }
   };
 
-  const handleVerifyOtp = () => {
+  const handleVerifyOtp = async () => {
     if (otp.length < 6) {
       setError('Please enter a 6-digit OTP');
-    } else if (otp !== '123456') {
-      setError('Incorrect OTP. Please use 123456');
     } else {
       setError('');
-      setPhoneNumber(`+91 ${mobile}`);
-      console.log('Login successful with mobile:', mobile);
-      router.replace('/home');
+      try {
+        await api.post('/citizen/auth/verify-otp', { phone: mobile, otpCode: otp });
+        setPhoneNumber(`+91 ${mobile}`);
+        console.log('Login successful with mobile:', mobile);
+        router.replace('/home');
+      } catch (err: any) {
+        console.error('Verify OTP Error:', err);
+        const errorMessage = err.response?.data?.message || 'Invalid OTP. Please try again.';
+        setAlertConfig({ title: 'Verification Failed', message: errorMessage, type: 'error' });
+        setAlertVisible(true);
+      }
     }
   };
 
-  const handleResendOtp = () => {
+  const handleResendOtp = async () => {
     if (timeLeft === 0) {
       setOtp('');
       setError('');
-      setTimeLeft(45);
-      setTimeout(() => {
-        otpRef.current?.focus();
-      }, 100);
-      console.log('OTP Resent to:', mobile);
+      try {
+        await api.post('/citizen/auth/request-otp', { phone: mobile });
+        setTimeLeft(45);
+        setTimeout(() => {
+          otpRef.current?.focus();
+        }, 100);
+        console.log('OTP Resent to:', mobile);
+      } catch (err: any) {
+        console.error('Resend OTP Error:', err);
+        const errorMessage = err.response?.data?.message || 'Failed to resend OTP.';
+        setAlertConfig({ title: 'Error', message: errorMessage, type: 'error' });
+        setAlertVisible(true);
+      }
     }
   };
 
@@ -293,6 +320,13 @@ export default function LoginScreen() {
             </View>
           )}
         </View>
+        <AlertModal 
+          visible={alertVisible}
+          onClose={() => setAlertVisible(false)}
+          title={alertConfig.title}
+          message={alertConfig.message}
+          type={alertConfig.type}
+        />
       </View>
     );
   };

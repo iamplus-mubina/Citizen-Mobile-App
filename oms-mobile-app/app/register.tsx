@@ -17,7 +17,9 @@ import { Input } from '@/components/Input';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeftIcon, CameraIcon, UserIcon, PhoneIcon } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
-import { UploadModal } from '@/components/UploadModal';
+import { Dropdown } from '@/components/Dropdown';
+import { AlertModal } from '@/components/AlertModal';
+import { api } from '@/services/api';
 import omsLogo from '../assets/images/oms_logo.png';
 
 export default function RegisterScreen() {
@@ -25,13 +27,17 @@ export default function RegisterScreen() {
   
 
   const [step, setStep] = useState<'details' | 'otp'>('details');
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [middleName, setMiddleName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [gender, setGender] = useState('');
   const [mobile, setMobile] = useState('');
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
-  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({ title: '', message: '', type: 'error' as 'error' | 'success' });
   
 
   const [otp, setOtp] = useState('');
@@ -52,15 +58,13 @@ export default function RegisterScreen() {
     if (numericText.length === 10) setErrors(prev => ({ ...prev, mobile: '' }));
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const newErrors: Record<string, string> = {};
 
-    if (!fullName.trim() || fullName.trim().length < 3) {
-      newErrors.fullName = 'Please enter a valid full name (min 3 characters)';
-    }
-    if (mobile.length !== 10) {
-      newErrors.mobile = 'Please enter a valid 10-digit mobile number';
-    }
+    if (!firstName.trim()) newErrors.firstName = 'First name is required';
+    if (!lastName.trim()) newErrors.lastName = 'Last name is required';
+    if (mobile.length !== 10) newErrors.mobile = 'Please enter a valid 10-digit mobile number';
+    if (!gender) newErrors.gender = 'Please select your gender';
     if (!address.trim() || address.trim().length < 5) {
       newErrors.address = 'Please enter your complete address';
     }
@@ -71,12 +75,32 @@ export default function RegisterScreen() {
     }
 
     setErrors({});
-    setStep('otp');
-    setOtp('');
-    setTimeLeft(45);
-    setTimeout(() => {
-      otpRef.current?.focus();
-    }, 100);
+
+    try {
+      // Call the API
+      const payload = {
+        firstName,
+        middleName,
+        lastName,
+        phone: mobile,
+        email,
+        gender
+      };
+      
+      await api.post('/citizen/onboard', payload);
+      
+      setStep('otp');
+      setOtp('');
+      setTimeLeft(45);
+      setTimeout(() => {
+        otpRef.current?.focus();
+      }, 100);
+    } catch (error: any) {
+      console.error('API Error:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to register. Please try again.';
+      setAlertConfig({ title: 'Registration Failed', message: errorMessage, type: 'error' });
+      setAlertVisible(true);
+    }
   };
 
   const handleVerifyOtp = () => {
@@ -86,7 +110,7 @@ export default function RegisterScreen() {
       setErrors({ otp: 'Incorrect OTP. Please use 123456' });
     } else {
       setErrors({});
-      console.log('Registration Data:', { fullName, mobile, email, address, profilePhoto });
+      console.log('OTP Verified for:', { firstName, lastName, mobile, email });
       router.push('/pending-approval');
     }
   };
@@ -159,15 +183,50 @@ export default function RegisterScreen() {
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
 
 
+            <View className="flex-row gap-x-3">
+              <View className="flex-1">
+                <Input
+                  label="First Name *"
+                  placeholder="First name"
+                  value={firstName}
+                  onChangeText={(text) => {
+                    setFirstName(text);
+                    if (text.trim()) setErrors(prev => ({ ...prev, firstName: '' }));
+                  }}
+                  error={errors.firstName}
+                />
+              </View>
+              <View className="flex-1">
+                <Input
+                  label="Last Name *"
+                  placeholder="Last name"
+                  value={lastName}
+                  onChangeText={(text) => {
+                    setLastName(text);
+                    if (text.trim()) setErrors(prev => ({ ...prev, lastName: '' }));
+                  }}
+                  error={errors.lastName}
+                />
+              </View>
+            </View>
+
             <Input
-              label="Full Name *"
-              placeholder="Enter full name"
-              value={fullName}
-              onChangeText={(text) => {
-                setFullName(text);
-                if (text.trim().length >= 3) setErrors(prev => ({ ...prev, fullName: '' }));
+              label="Middle Name (Optional)"
+              placeholder="Middle name"
+              value={middleName}
+              onChangeText={setMiddleName}
+            />
+
+            <Dropdown
+              label="Gender *"
+              value={gender}
+              options={['MALE', 'FEMALE', 'OTHER']}
+              placeholder="Select Gender"
+              onSelect={(val) => {
+                setGender(val);
+                setErrors(prev => ({ ...prev, gender: '' }));
               }}
-              error={errors.fullName}
+              error={errors.gender}
             />
 
             <Input
@@ -279,6 +338,13 @@ export default function RegisterScreen() {
       </View>
 
 
+      <AlertModal 
+        visible={alertVisible}
+        onClose={() => setAlertVisible(false)}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+      />
     </View>
   );
 
