@@ -79,13 +79,6 @@ export default function HelpSupportScreen() {
                   activeOpacity={0.7}
                   onPress={item.onPress}
                   className="bg-surface border border-border rounded-xl p-4 mb-3 flex-row items-center justify-between"
-                  style={{
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.05,
-                    shadowRadius: 3.5,
-                    elevation: 2,
-                  }}
                 >
                   <View className="flex-row items-center flex-1">
                     <View className="w-12 h-12 rounded-full bg-primary-light items-center justify-center mr-4">

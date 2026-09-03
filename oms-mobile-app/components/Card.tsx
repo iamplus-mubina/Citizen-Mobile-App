@@ -91,7 +91,7 @@ export function Card({
       <TouchableOpacity 
         onPress={onPress}
         activeOpacity={onPress ? 0.7 : 1}
-        className="bg-surface border border-border p-4 rounded-xl mb-3 shadow-sm"
+        className="bg-surface border border-border p-4 rounded-xl mb-3"
       >
         <View className="flex-row justify-between items-center mb-2">
           <Text className="text-sm font-inter-bold text-header-bg">{ticketId}</Text>

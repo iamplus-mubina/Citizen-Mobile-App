@@ -48,7 +48,6 @@ export function Profile() {
 
         <View
           className="bg-surface border border-border rounded-xl mb-4"
-          style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 3.5, elevation: 2 }}
         >
           <View className="flex-row justify-between items-center px-4 pt-4 pb-3 border-b border-border">
             <Text className="text-sm font-inter-bold text-dark">Contact and address</Text>
@@ -69,7 +68,6 @@ export function Profile() {
 
         <View
           className="bg-surface border border-border rounded-xl mb-8"
-          style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 3.5, elevation: 2 }}
         >
           <Text className="text-sm font-inter-bold text-dark px-4 pt-4 pb-3 border-b border-border">Preferences</Text>
 
@@ -108,7 +106,6 @@ export function Profile() {
           activeOpacity={0.8}
           onPress={handleLogout}
           className="flex-row items-center justify-center border border-primary rounded-xl py-4 mb-8 bg-surface"
-          style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 3.5, elevation: 2 }}
         >
           <ArrowRightStartOnRectangleIcon size={20} color={colors.primary} />
           <Text className="text-base font-inter-bold text-primary ml-2">Log out</Text>

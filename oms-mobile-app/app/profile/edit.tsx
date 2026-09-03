@@ -48,7 +48,7 @@ export default function EditProfileScreen() {
           
           <Header showBack title="Edit Profile" />
 
-          <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
+          <ScrollView className="flex-1 px-6 pt-6" showsVerticalScrollIndicator={false}>
             <View>
               
               <View className="mb-6">

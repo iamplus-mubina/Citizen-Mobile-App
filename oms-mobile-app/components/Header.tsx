@@ -22,13 +22,6 @@ export function Header({ className = '', avatarUrl, showBack, title, notificatio
   return (
     <View
       className={`px-4 pt-4 pb-4 bg-header-bg z-10 ${className}`}
-      style={{
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 3.84,
-        elevation: 5,
-      }}
     >
       {showBack ? (
         <View className="flex-row items-center justify-between">
@@ -62,7 +55,7 @@ export function Header({ className = '', avatarUrl, showBack, title, notificatio
 
           <View className="flex-row items-center justify-between mb-4">
             <View className="flex-row items-center flex-1">
-              <View className="w-12 h-12 bg-white rounded-full items-center justify-center mr-3 shadow-sm border-2 border-white/10 overflow-hidden">
+              <View className="w-12 h-12 bg-white rounded-full items-center justify-center mr-3 border-2 border-white/10 overflow-hidden">
                 <Image
                   source={require('../assets/images/oms_logo.png')}
                   style={{ width: '100%', height: '100%' }}

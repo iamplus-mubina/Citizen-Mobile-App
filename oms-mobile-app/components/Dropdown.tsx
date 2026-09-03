@@ -74,7 +74,6 @@ export function Dropdown({
       {isOpen && (
         <View 
           className="absolute top-[80px] left-0 right-0 bg-surface border border-border rounded-md z-50 overflow-hidden"
-          style={{ elevation: 8, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 8 }}
         >
           <View className="px-3 py-2 border-b border-border">
             <View className="flex-row items-center bg-background rounded-md px-3 py-2">

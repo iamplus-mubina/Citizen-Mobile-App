@@ -22,7 +22,7 @@ export default function UpdateDetailScreen() {
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View className="w-full h-56 bg-border items-center justify-center relative">
-            <View className="w-16 h-16 bg-primary rounded-full items-center justify-center shadow-md elevation-2">
+            <View className="w-16 h-16 bg-primary rounded-full items-center justify-center">
               <PlayIcon size={32} color={colors.dark} />
             </View>
             <View className="absolute bottom-2 right-2 bg-text px-2 py-1 rounded">
