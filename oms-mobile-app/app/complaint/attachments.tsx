@@ -10,6 +10,7 @@ import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
 import { UploadModal } from '@/components/UploadModal';
 import * as DocumentPicker from 'expo-document-picker';
+import { api } from '@/services/api';
 
 export default function AttachmentsScreen() {
   const router = useRouter();
@@ -26,8 +27,22 @@ export default function AttachmentsScreen() {
     setModalVisible(true);
   };
 
-  const handleImagePicked = (uri: string) => {
+  const handleImagePicked = async (uri: string) => {
     setPhotos((prev) => [...prev, uri]);
+    try {
+      const formData = new FormData();
+      const filename = uri.split('/').pop() || 'photo.jpg';
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : 'image/jpeg';
+      formData.append('file', { uri, name: filename, type } as any);
+
+      await api.post('/file-uploader/upload2?entityName=citizen-complaints', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      console.log('Photo uploaded via /file-uploader/upload2');
+    } catch (err) {
+      console.log('Photo upload handler:', err);
+    }
   };
 
   const handleChooseFile = async () => {
@@ -40,6 +55,22 @@ export default function AttachmentsScreen() {
       if (!result.canceled && result.assets?.[0]) {
         const file = result.assets[0];
         setDocuments((prev) => [...prev, { name: file.name }]);
+
+        try {
+          const formData = new FormData();
+          formData.append('file', {
+            uri: file.uri,
+            name: file.name,
+            type: file.mimeType || 'application/pdf',
+          } as any);
+
+          await api.post('/file-uploader/upload2?entityName=citizen-complaints', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+          console.log('Document uploaded via /file-uploader/upload2');
+        } catch (err) {
+          console.log('Document upload handler:', err);
+        }
       }
     } catch (e) {
       console.log('Error picking document:', e);
