@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -10,6 +10,7 @@ import { Input } from '@/components/Input';
 import { Dropdown } from '@/components/Dropdown';
 import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
+import { api } from '@/services/api';
 
 const WARDS = [
   'Ward A',
@@ -28,6 +29,36 @@ export default function LocationScreen() {
   const setLocation = useComplaintStore((s) => s.setLocation);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+
+  useEffect(() => {
+    const fetchLocationData = async () => {
+      try {
+        const [deptRes, assemblyRes, gaonRes, ganRes, gatRes, prabhagRes, prabhagAreaRes, districtRes] = await Promise.allSettled([
+          api.get('/department'),
+          api.get('/assembly'),
+          api.get('/gaon'),
+          api.get('/ganNo'),
+          api.get('/gatNo'),
+          api.get('/prabhag'),
+          api.get('/prabhagArea'),
+          api.get('/district'),
+        ]);
+
+        if (deptRes.status === 'fulfilled') console.log('Departments:', deptRes.value.data?.length);
+        if (assemblyRes.status === 'fulfilled') console.log('Assemblies:', assemblyRes.value.data?.length);
+        if (gaonRes.status === 'fulfilled') console.log('Gaon:', gaonRes.value.data?.length);
+        if (ganRes.status === 'fulfilled') console.log('Gan:', ganRes.value.data?.length);
+        if (gatRes.status === 'fulfilled') console.log('Gat:', gatRes.value.data?.length);
+        if (prabhagRes.status === 'fulfilled') console.log('Prabhag:', prabhagRes.value.data?.length);
+        if (prabhagAreaRes.status === 'fulfilled') console.log('PrabhagArea:', prabhagAreaRes.value.data?.length);
+        if (districtRes.status === 'fulfilled') console.log('Districts:', districtRes.value.data?.length);
+      } catch (error) {
+        console.error('Error fetching location data:', error);
+      }
+    };
+    fetchLocationData();
+  }, []);
 
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background"
@@ -56,16 +87,16 @@ export default function LocationScreen() {
         <Header showBack title="Raise a complaint" />
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
-          
+
           <View className="mb-2">
             <View className="mt-2" />
             <FormStepper currentStep={3} totalSteps={5} />
             <Text className="text-base font-inter-semibold text-dark mt-6 mb-2">Pinpoint the issue location</Text>
           </View>
 
-          
+
           <View className="mb-8">
-            <Input 
+            <Input
               label="Address *"
               placeholder="Enter full address"
               value={address}
@@ -76,7 +107,7 @@ export default function LocationScreen() {
               error={errors.address}
             />
 
-            <Input 
+            <Input
               label="Area or Locality *"
               placeholder="Enter area"
               value={area}
@@ -87,7 +118,7 @@ export default function LocationScreen() {
               error={errors.area}
             />
 
-            <Dropdown 
+            <Dropdown
               label="Ward *"
               placeholder="Select ward"
               options={WARDS}
@@ -99,7 +130,7 @@ export default function LocationScreen() {
               error={errors.ward}
             />
 
-            <Input 
+            <Input
               label="Pincode *"
               placeholder="Enter pincode"
               value={pincode}
@@ -113,8 +144,8 @@ export default function LocationScreen() {
               error={errors.pincode}
             />
 
-            <Button 
-              title="Use Current Location" 
+            <Button
+              title="Use Current Location"
               variant="outline"
               leftIcon={<MapPinIcon size={20} color={colors.primary} />}
               onPress={() => console.log('Fetch location...')}
@@ -123,10 +154,10 @@ export default function LocationScreen() {
           </View>
         </ScrollView>
 
-        
+
         <View className="px-6 py-4 pb-8 border-t border-border bg-background">
-          <Button 
-            title="Next" 
+          <Button
+            title="Next"
             onPress={handleNext}
           />
         </View>

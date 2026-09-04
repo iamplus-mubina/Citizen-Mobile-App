@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   Text,
@@ -18,7 +19,7 @@ import { PhoneIcon, ArrowLeftIcon } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 import omsLogo from '../assets/images/oms_logo.png';
 import { useComplaintStore } from '@/store/useComplaintStore';
-import { api } from '@/services/api';
+import { api, setStoredToken } from '@/services/api';
 import { AlertModal } from '@/components/AlertModal';
 
 export default function LoginScreen() {
@@ -72,8 +73,13 @@ export default function LoginScreen() {
       } catch (err: any) {
         console.error('Request OTP Error:', err);
         const errorMessage = err.response?.data?.message || 'Failed to send OTP. Please try again.';
-        setAlertConfig({ title: 'Error', message: errorMessage, type: 'error' });
-        setAlertVisible(true);
+        
+        if (errorMessage.includes('Account not found') || errorMessage.includes('onboarding')) {
+          router.push('/pending-approval');
+        } else {
+          setAlertConfig({ title: 'Error', message: errorMessage, type: 'error' });
+          setAlertVisible(true);
+        }
       }
     }
   };
@@ -84,7 +90,13 @@ export default function LoginScreen() {
     } else {
       setError('');
       try {
-        await api.post('/citizen/auth/verify-otp', { phone: mobile, otpCode: otp });
+        const response = await api.post('/citizen/auth/verify-otp', { phone: mobile, otpCode: otp });
+        
+        const token = response.data.accessToken;
+        if (token) {
+          await setStoredToken(token);
+        }
+
         setPhoneNumber(`+91 ${mobile}`);
         console.log('Login successful with mobile:', mobile);
         router.replace('/home');

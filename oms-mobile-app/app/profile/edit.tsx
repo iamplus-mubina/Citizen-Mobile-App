@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Platform, KeyboardAvoidingView } from 'react-native';
+import { View, Text, ScrollView, Platform, KeyboardAvoidingView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { Header } from '@/components/Header';
 import { Input } from '@/components/Input';
 import { Button } from '@/components/Button';
 import { useComplaintStore } from '@/store/useComplaintStore';
+import { api } from '@/services/api';
 
 export default function EditProfileScreen() {
   const router = useRouter();
@@ -33,8 +34,29 @@ export default function EditProfileScreen() {
       return;
     }
 
-    store.setProfile(name, email, address, pincode);
-    router.back();
+    const updateProfile = async () => {
+      try {
+        const nameParts = name.trim().split(' ');
+        const firstName = nameParts[0];
+        const lastName = nameParts.slice(1).join(' ');
+
+        await api.put('/citizen/profile', {
+          firstName,
+          lastName,
+          email,
+          address,
+          pincode
+        });
+
+        store.setProfile(name, email, address, pincode);
+        router.back();
+      } catch (err: any) {
+        console.error('Failed to update profile:', err);
+        Alert.alert('Error', err.response?.data?.message || 'Failed to update profile. Please try again.');
+      }
+    };
+
+    updateProfile();
   };
 
   return (

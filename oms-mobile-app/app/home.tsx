@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, Platform, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,11 +18,48 @@ import { Notifications } from '@/components/Notifications';
 import { Profile } from '@/components/Profile';
 
 import { useComplaintStore } from '@/store/useComplaintStore';
+import { api } from '@/services/api';
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const router = useRouter();
-  const { submittedComplaints, profilePhoto } = useComplaintStore();
+  const { submittedComplaints, profilePhoto, setProfile, setComplaints } = useComplaintStore();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await api.get('/citizen/profile');
+        const data = res.data;
+        if (data) {
+          const fullName = [data.firstName, data.lastName].filter(Boolean).join(' ');
+          setProfile(fullName, data.email || '', data.address || '', '');
+        }
+      } catch (err) {
+        console.error('Failed to fetch profile:', err);
+      }
+    };
+
+    const fetchComplaints = async () => {
+      try {
+        const res = await api.post('/citizen/complaints/my-complaints', {
+          page: { number: 0, size: 10 },
+          status: ''
+        });
+        // Response is [[...complaints], totalCount]
+        const data = res.data;
+        const complaintsList = Array.isArray(data) ? (Array.isArray(data[0]) ? data[0] : data) : [];
+        if (setComplaints) {
+          setComplaints(complaintsList);
+        }
+        console.log('My complaints fetched:', complaintsList.length);
+      } catch (err) {
+        console.error('Failed to fetch complaints:', err);
+      }
+    };
+
+    fetchProfile();
+    fetchComplaints();
+  }, []);
 
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background justify-between h-screen overflow-hidden"
@@ -59,7 +96,13 @@ export default function HomeScreen() {
                   variant="quick"
                   title="Track Status" 
                   Icon={MagnifyingGlassIcon} 
-                  onPress={() => router.push({ pathname: '/complaint/timeline/[id]', params: { id: 'CMP-1025' } })}
+                  onPress={() => {
+                    if (submittedComplaints && submittedComplaints.length > 0) {
+                      router.push({ pathname: '/complaint/timeline/[id]', params: { id: submittedComplaints[0].ticketId } });
+                    } else {
+                      setActiveTab('complaints');
+                    }
+                  }}
                 />
                 <Card 
                   variant="quick"
@@ -155,7 +198,6 @@ export default function HomeScreen() {
         return <Notifications />;
       case 'profile':
         return <Profile />;
-        return null;
     }
   };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, ScrollView, Platform, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, Stack } from 'expo-router';
@@ -7,6 +7,7 @@ import { Stepper, StepperStep } from '@/components/Stepper';
 import { MapPinIcon, BuildingOfficeIcon, IdentificationIcon, CheckIcon } from 'react-native-heroicons/outline';
 import { useComplaintStore } from '@/store/useComplaintStore';
 import { colors } from '@/constants/Colors';
+import { api } from '@/services/api';
 
 const getStatusStyles = (status: string) => {
   const s = status.toLowerCase();
@@ -63,19 +64,57 @@ const getComplaintHistory = (status: string): StepperStep[] => {
 
 export default function TimelineScreen() {
   const { id } = useLocalSearchParams();
-  const ticketId = (id as string) || 'CMP-1025';
+  const ticketId = (id as string) || 'REQ-1';
 
   const submittedComplaints = useComplaintStore(state => state.submittedComplaints);
-  const complaint = submittedComplaints.find(c => c.ticketId === ticketId) || {
-    ticketId: ticketId,
-    title: 'Road Repair Request',
-    category: 'Roads & Potholes',
-    date: '13 May 2024, 10:30 AM',
-    status: 'Pending verification',
-    area: 'Shivajinagar',
-    ward: 'Ward 5',
-    description: 'A large pothole on the main road needs urgent repair to prevent accidents.'
+  
+  const foundComplaint = submittedComplaints.find(
+    c => c.ticketId === ticketId || 
+         c.ticketId === `REQ-${ticketId}` || 
+         (ticketId.replace(/\D/g, '') !== '' && c.ticketId.replace(/\D/g, '') === ticketId.replace(/\D/g, ''))
+  );
+
+  const initialComplaint = foundComplaint || {
+    ticketId: ticketId.startsWith('REQ-') || ticketId.startsWith('CMP-') ? ticketId : `REQ-${ticketId}`,
+    title: 'Complaint Details',
+    category: 'General',
+    date: '3 Sep 2026',
+    status: 'Pending Approval',
+    area: '',
+    ward: '',
+    description: 'Complaint description...'
   };
+
+  const [complaint, setComplaint] = useState<any>(initialComplaint);
+
+  useEffect(() => {
+    // If complaint is already in store or is a local CMP- ID, use store data and bypass backend call
+    if (foundComplaint || ticketId.startsWith('CMP-')) {
+      if (foundComplaint) setComplaint(foundComplaint);
+      return;
+    }
+
+    const numericId = parseInt(ticketId.replace(/\D/g, ''), 10);
+    if (!isNaN(numericId) && numericId > 0) {
+      const fetchDetails = async () => {
+        try {
+          const res = await api.get(`/complainbox/mobile/${numericId}`);
+          if (res.data) {
+            setComplaint((prev: any) => ({
+              ...prev,
+              title: res.data.description?.substring(0, 50) || prev.title,
+              description: res.data.description || prev.description,
+              status: res.data.status || prev.status,
+              category: res.data.category?.name || prev.category,
+            }));
+          }
+        } catch (err) {
+          console.log('Background fetch for complaint details (optional endpoint):', err);
+        }
+      };
+      fetchDetails();
+    }
+  }, [ticketId, foundComplaint]);
 
   const historySteps = getComplaintHistory(complaint.status);
   const statusStyle = getStatusStyles(complaint.status);

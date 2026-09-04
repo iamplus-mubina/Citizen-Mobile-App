@@ -7,6 +7,7 @@ import { Header } from '@/components/Header';
 import { FormStepper } from '@/components/FormStepper';
 import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
+import { api } from '@/services/api';
 
 export default function ReviewScreen() {
   const router = useRouter();
@@ -30,11 +31,64 @@ export default function ReviewScreen() {
     ? "flex-1 w-full max-w-md mx-auto bg-background relative"
     : "flex-1 bg-background";
 
-  const confirmSubmit = () => {
+  const confirmSubmit = async () => {
     setShowWebModal(false);
-    submitComplaint();
-    resetForm();
-    router.replace('/complaint/success');
+    try {
+
+      let catId = 1;
+      let tId = 10;
+      const catName = (category || '').toLowerCase();
+      if (catName.includes('road')) {
+        catId = 3; // रस्ते
+        tId = 10;
+      } else if (catName.includes('garbage') || catName.includes('waste') || catName.includes('sanitation')) {
+        catId = 4; // कचरा व्यवस्थापन
+        tId = 10;
+      } else if (catName.includes('light') || catName.includes('street')) {
+        catId = 7; // इतर / Street Light
+        tId = 10;
+      } else if (catName.includes('water') || catName.includes('drainage')) {
+        catId = 1; // पाणी व्यवस्थापन
+        tId = 10;
+      }
+
+      const payload: any = {
+        categoryId: catId,
+        typeId: tId,
+        departmentId: 2,
+        description: description || 'Testing complaint from mobile app',
+        address: {
+          line1: [address, area, ward].filter(Boolean).join(', ') || 'Main Street',
+          locality: pincode || 'Pune'
+        },
+      };
+
+      const response = await api.post('/citizen/complaints/submit', payload);
+      const requestId = response.data?.requestId;
+      console.log('Complaint submitted, requestId:', requestId);
+
+      // Fetch fresh complaints from API
+      try {
+        const res = await api.post('/citizen/complaints/my-complaints', { page: { number: 0, size: 10 }, status: '' });
+        const complaintsList = Array.isArray(res.data) ? (Array.isArray(res.data[0]) ? res.data[0] : res.data) : [];
+        const setComplaints = useComplaintStore.getState().setComplaints;
+        if (setComplaints) setComplaints(complaintsList);
+      } catch (e) {
+        console.error('Error refreshing complaints:', e);
+      }
+
+      resetForm();
+      router.replace('/complaint/success');
+    } catch (err: any) {
+      console.error('Submit complaint error:', err);
+      let errorMsg = 'Failed to submit complaint. Please try again.';
+      if (err.response?.data?.message) {
+        errorMsg = Array.isArray(err.response.data.message)
+          ? err.response.data.message.join(', ')
+          : err.response.data.message;
+      }
+      Alert.alert('Backend Error', errorMsg);
+    }
   };
 
   const handleSubmit = () => {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -16,6 +16,7 @@ import {
   BuildingStorefrontIcon,
   ExclamationTriangleIcon
 } from 'react-native-heroicons/outline';
+import { api } from '@/services/api';
 
 const CATEGORIES = [
   { id: 'Roads & Potholes', title: 'Roads & Potholes', subtitle: '48 hour service target', Icon: MapIcon },
@@ -31,6 +32,20 @@ export default function CategoryScreen() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const setCategory = useComplaintStore((s) => s.setCategory);
+
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await api.get('/complainbox/categories');
+        console.log('Categories from API:', response.data);
+
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background h-screen overflow-hidden"

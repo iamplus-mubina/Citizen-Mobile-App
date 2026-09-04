@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, ScrollView, TouchableOpacity, Image, Switch, Modal, TouchableWithoutFeedback } from 'react-native';
 import { UserIcon, CameraIcon, PencilIcon, PhoneIcon, EnvelopeIcon, MapPinIcon, MapIcon, ArrowRightStartOnRectangleIcon, GlobeAltIcon, BellIcon } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { UploadModal } from '@/components/UploadModal';
 import { useComplaintStore } from '@/store/useComplaintStore';
+import { api, removeStoredToken } from '@/services/api';
 
 export function Profile() {
   const router = useRouter();
@@ -16,8 +18,16 @@ export function Profile() {
 
   const LANGUAGES = ['English', 'हिंदी', 'मराठी'];
 
-  const handleLogout = () => {
-    router.replace('/login');
+  const handleLogout = async () => {
+    try {
+      await api.post('/citizen/auth/logout', {});
+    } catch (error) {
+      console.error('Logout API error:', error);
+    } finally {
+      // Always clear token and redirect, even if API fails
+      await removeStoredToken();
+      router.replace('/login');
+    }
   };
 
   return (
