@@ -25,7 +25,7 @@ export function Header({ className = '', avatarUrl, showBack, title, notificatio
     >
       {showBack ? (
         <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center">
+          <View className="flex-row items-center flex-1">
             <TouchableOpacity
               onPress={() => router.back()}
               className="p-2 -ml-3 mr-1 rounded-full"
@@ -33,22 +33,8 @@ export function Header({ className = '', avatarUrl, showBack, title, notificatio
             >
               <ArrowLeftIcon size={24} color={colors.white} />
             </TouchableOpacity>
-            <Text className="text-xl font-inter-bold text-white">{title || 'OMS Citizen'}</Text>
+            <Text className="text-xl font-inter-bold text-white flex-1" numberOfLines={1}>{title || 'OMS Citizen'}</Text>
           </View>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            className="p-1 -mr-1"
-          >
-            {avatarUrl ? (
-              <Image
-                source={{ uri: avatarUrl }}
-                className="w-10 h-10 rounded-full border-2 border-white/20"
-                resizeMode="cover"
-              />
-            ) : (
-              <UserCircleIcon size={36} color={colors.white} />
-            )}
-          </TouchableOpacity>
         </View>
       ) : (
         <View className="justify-center pt-2">
