@@ -207,8 +207,6 @@ export default function HomeScreen() {
         <View className="flex-1">
           <Header
             avatarUrl={profilePhoto || undefined}
-            notificationCount={3}
-            onNotificationPress={() => setActiveTab('notifications')}
           />
           {renderTabContent()}
         </View>

@@ -67,18 +67,6 @@ export function Header({ className = '', avatarUrl, showBack, title, notificatio
                 <Text className="text-xs font-inter-semibold text-white/70">OMS Citizen</Text>
               </View>
             </View>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              className="p-2 ml-2 rounded-full relative"
-              onPress={onNotificationPress}
-            >
-              <BellIcon size={26} color={colors.white} />
-              {notificationCount !== undefined && notificationCount > 0 && (
-                <View className="absolute top-1.5 right-1.5 bg-red-500 rounded-full min-w-[16px] h-[16px] px-[3px] items-center justify-center border-[1.5px] border-header-bg">
-                  <Text className="text-[9px] font-inter-bold text-white leading-none text-center">{notificationCount}</Text>
-                </View>
-              )}
-            </TouchableOpacity>
           </View>
 
 
