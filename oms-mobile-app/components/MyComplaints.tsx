@@ -12,49 +12,6 @@ type FilterTab = 'All' | 'Unsolved' | 'In-Progress' | 'Solved';
 
 const TABS: FilterTab[] = ['All', 'Unsolved', 'In-Progress', 'Solved'];
 
-const MOCK_COMPLAINTS = [
-  {
-    ticketId: 'CMP-1025',
-    title: 'Pipeline Leakage',
-    category: 'Water Supply',
-    ward: 'Ward 2',
-    status: 'Pending Verification',
-    date: '12 May 2024',
-  },
-  {
-    ticketId: 'CMP-1024',
-    title: 'Road Repair',
-    category: 'Roads & Potholes',
-    ward: 'Ward 1',
-    status: 'In Progress',
-    date: '12 May 2024',
-  },
-  {
-    ticketId: 'CMP-1023',
-    title: 'Street Light Not Working',
-    category: 'Street Lighting',
-    ward: 'Ward 3',
-    status: 'Resolved',
-    date: '10 May 2024',
-  },
-  {
-    ticketId: 'CMP-1022',
-    title: 'Garbage Collection Issue',
-    category: 'Sanitation',
-    ward: 'Ward 5',
-    status: 'Pending Verification',
-    date: '08 May 2024',
-  },
-  {
-    ticketId: 'CMP-1021',
-    title: 'Drainage Blockage',
-    category: 'Sewerage',
-    ward: 'Ward 4',
-    status: 'In Progress',
-    date: '05 May 2024',
-  },
-];
-
 export function MyComplaints() {
   const router = useRouter();
   const { submittedComplaints } = useComplaintStore();
@@ -62,9 +19,7 @@ export function MyComplaints() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const allComplaints = useMemo(() => {
-    const submittedIds = new Set(submittedComplaints.map((c) => c.ticketId));
-    const uniqueMocks = MOCK_COMPLAINTS.filter((c) => !submittedIds.has(c.ticketId));
-    return [...submittedComplaints, ...uniqueMocks];
+    return submittedComplaints;
   }, [submittedComplaints]);
 
   const counts = useMemo(() => {

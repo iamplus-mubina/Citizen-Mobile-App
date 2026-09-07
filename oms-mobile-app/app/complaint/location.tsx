@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import { View, Text, ScrollView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { MapPinIcon } from 'react-native-heroicons/outline';
 import { Button } from '@/components/Button';
 import { Header } from '@/components/Header';
 import { FormStepper } from '@/components/FormStepper';
@@ -12,13 +11,7 @@ import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
 import { api } from '@/services/api';
 
-const WARDS = [
-  'Ward A',
-  'Ward B',
-  'Ward C',
-  'Ward D',
-  'Ward E'
-];
+const FALLBACK_WARDS = ['Ward A', 'Ward B', 'Ward C', 'Ward D', 'Ward E'];
 
 export default function LocationScreen() {
   const router = useRouter();
@@ -26,10 +19,10 @@ export default function LocationScreen() {
   const [area, setArea] = useState('');
   const [ward, setWard] = useState('');
   const [pincode, setPincode] = useState('');
+  const [wardOptions, setWardOptions] = useState<string[]>(FALLBACK_WARDS);
   const setLocation = useComplaintStore((s) => s.setLocation);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-
 
   useEffect(() => {
     const fetchLocationData = async () => {
@@ -45,14 +38,11 @@ export default function LocationScreen() {
           api.get('/district'),
         ]);
 
-        if (deptRes.status === 'fulfilled') console.log('Departments:', deptRes.value.data?.length);
-        if (assemblyRes.status === 'fulfilled') console.log('Assemblies:', assemblyRes.value.data?.length);
-        if (gaonRes.status === 'fulfilled') console.log('Gaon:', gaonRes.value.data?.length);
-        if (ganRes.status === 'fulfilled') console.log('Gan:', ganRes.value.data?.length);
-        if (gatRes.status === 'fulfilled') console.log('Gat:', gatRes.value.data?.length);
-        if (prabhagRes.status === 'fulfilled') console.log('Prabhag:', prabhagRes.value.data?.length);
-        if (prabhagAreaRes.status === 'fulfilled') console.log('PrabhagArea:', prabhagAreaRes.value.data?.length);
-        if (districtRes.status === 'fulfilled') console.log('Districts:', districtRes.value.data?.length);
+        if (prabhagRes.status === 'fulfilled' && Array.isArray(prabhagRes.value.data) && prabhagRes.value.data.length > 0) {
+          const prabhagList = prabhagRes.value.data.map((p: any) => p.name || `Prabhag ${p.id}`);
+          setWardOptions(prabhagList);
+          console.log('Prabhag/Ward options dynamically loaded:', prabhagList.length);
+        }
       } catch (error) {
         console.error('Error fetching location data:', error);
       }
@@ -121,7 +111,7 @@ export default function LocationScreen() {
             <Dropdown
               label="Ward *"
               placeholder="Select ward"
-              options={WARDS}
+              options={wardOptions}
               value={ward}
               onSelect={(val) => {
                 setWard(val);

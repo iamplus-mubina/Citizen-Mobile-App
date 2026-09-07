@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { Tabs } from '@/components/Tabs';
+import { useComplaintStore, SubmittedComplaint } from '@/store/useComplaintStore';
 
 type NotificationTab = 'All' | 'Unread';
 
@@ -14,42 +15,30 @@ interface NotificationItem {
   read: boolean;
 }
 
-const MOCK_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: 'notif-1',
-    title: 'Complaint Submitted',
-    message: 'Your complaint CMP-1025 has been submitted successfully.',
-    time: '13 May 2024 • 10:30 AM',
-    read: false,
-  },
-  {
-    id: 'notif-2',
-    title: 'Complaint Under Review',
-    message: 'Your complaint CMP-1025 is under review.',
-    time: '13 May 2024 • 11:15 AM',
-    read: true,
-  },
-  {
-    id: 'notif-3',
-    title: 'System Notification',
-    message: 'New update available in the app.',
-    time: '12 May 2024 • 08:00 AM',
-    read: true,
-  },
-];
-
 export function Notifications() {
   const [activeTab, setActiveTab] = useState<NotificationTab>('All');
+  const { submittedComplaints } = useComplaintStore();
+
+  const notificationsList: NotificationItem[] = useMemo(() => {
+    if (submittedComplaints.length === 0) return [];
+    return submittedComplaints.map((c: SubmittedComplaint, index: number) => ({
+      id: `notif-${c.ticketId}`,
+      title: `Complaint Status: ${c.status}`,
+      message: `Your complaint ${c.ticketId} (${c.title}) status is currently ${c.status}.`,
+      time: `${c.date} • Submitted`,
+      read: index > 0,
+    }));
+  }, [submittedComplaints]);
 
   const counts = useMemo(() => ({
-    All: MOCK_NOTIFICATIONS.length,
-    Unread: MOCK_NOTIFICATIONS.filter((n) => !n.read).length,
-  }), []);
+    All: notificationsList.length,
+    Unread: notificationsList.filter((n: NotificationItem) => !n.read).length,
+  }), [notificationsList]);
 
   const filteredNotifications = useMemo(() =>
-    MOCK_NOTIFICATIONS.filter(
-      (notif) => activeTab === 'All' || !notif.read
-    ), [activeTab]);
+    notificationsList.filter(
+      (notif: NotificationItem) => activeTab === 'All' || !notif.read
+    ), [notificationsList, activeTab]);
 
   return (
     <View className="flex-1 w-full bg-background pt-2">
@@ -64,7 +53,7 @@ export function Notifications() {
       <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
         {filteredNotifications.length > 0 ? (
           <View className="pb-24">
-            {filteredNotifications.map((notif) => (
+            {filteredNotifications.map((notif: NotificationItem) => (
               <View 
                 key={notif.id} 
                 className="bg-surface border border-border rounded-lg p-4 mb-4"
