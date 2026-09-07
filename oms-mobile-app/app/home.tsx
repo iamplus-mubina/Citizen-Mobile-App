@@ -10,7 +10,6 @@ import {
   BellIcon,
   QuestionMarkCircleIcon,
   MegaphoneIcon,
-  MagnifyingGlassIcon,
   UserIcon
 } from 'react-native-heroicons/outline';
 import { MyComplaints } from '@/components/MyComplaints';
@@ -91,18 +90,6 @@ export default function HomeScreen() {
                   title="My Complaints" 
                   Icon={ClipboardDocumentListIcon} 
                   onPress={() => setActiveTab('complaints')}
-                />
-                <Card 
-                  variant="quick"
-                  title="Track Status" 
-                  Icon={MagnifyingGlassIcon} 
-                  onPress={() => {
-                    if (submittedComplaints && submittedComplaints.length > 0) {
-                      router.push({ pathname: '/complaint/timeline/[id]', params: { id: submittedComplaints[0].ticketId } });
-                    } else {
-                      setActiveTab('complaints');
-                    }
-                  }}
                 />
                 <Card 
                   variant="quick"
