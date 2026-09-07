@@ -144,13 +144,13 @@ export default function LocationScreen() {
               error={errors.pincode}
             />
 
-            <Button
+            {/* <Button
               title="Use Current Location"
               variant="outline"
               leftIcon={<MapPinIcon size={20} color={colors.primary} />}
               onPress={() => console.log('Fetch location...')}
               className="mt-2"
-            />
+            /> */}
           </View>
         </ScrollView>
 
