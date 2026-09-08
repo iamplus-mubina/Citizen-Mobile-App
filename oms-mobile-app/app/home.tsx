@@ -43,7 +43,12 @@ export default function HomeScreen() {
         const data = res.data;
         if (data) {
           const fullName = [data.firstName, data.lastName].filter(Boolean).join(' ');
-          setProfile(fullName, data.email || '', data.address || '', '');
+          setProfile({
+            profileName: fullName,
+            profileEmail: data.email || '',
+            profileAddress: data.address || '',
+            profilePincode: ''
+          });
           const photo = data.profileImage || data.photoUrl || data.avatarUrl || data.profilePhoto;
           if (photo) {
             setProfilePhoto(photo);

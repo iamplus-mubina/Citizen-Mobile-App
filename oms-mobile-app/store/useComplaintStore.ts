@@ -34,6 +34,21 @@ interface ComplaintFormState {
   profileEmail: string;
   profileAddress: string;
   profilePincode: string;
+  dob: string;
+  age: string;
+  education: string;
+  occupation: string;
+  aadharCard: string;
+  panCard: string;
+  voterId: string;
+  rationCard: string;
+  caste: string;
+  subCaste: string;
+  voterAccountNumber: string;
+  voterPartNumber: string;
+  voterSectionNumber: string;
+  voterSlnNumber: string;
+  ourVoter: boolean;
   setCategory: (value: string) => void;
   setDetails: (title: string, description: string, priority: string) => void;
   setLocation: (address: string, area: string, ward: string, pincode: string) => void;
@@ -42,7 +57,7 @@ interface ComplaintFormState {
   setComplaints: (complaints: any[]) => void;
   setProfilePhoto: (uri: string | null) => void;
   setPhoneNumber: (phone: string) => void;
-  setProfile: (profileName: string, profileEmail: string, profileAddress: string, profilePincode: string) => void;
+  setProfile: (profileData: Partial<ComplaintFormState>) => void;
   resetForm: () => void;
 }
 
@@ -70,13 +85,28 @@ export const useComplaintStore = create<ComplaintFormState>((set) => ({
   profileEmail: '',
   profileAddress: '',
   profilePincode: '',
+  dob: '',
+  age: '',
+  education: '',
+  occupation: '',
+  aadharCard: '',
+  panCard: '',
+  voterId: '',
+  rationCard: '',
+  caste: '',
+  subCaste: '',
+  voterAccountNumber: '',
+  voterPartNumber: '',
+  voterSectionNumber: '',
+  voterSlnNumber: '',
+  ourVoter: false,
   setCategory: (category) => set({ category }),
   setDetails: (title, description, priority) => set({ title, description, priority }),
   setLocation: (address, area, ward, pincode) => set({ address, area, ward, pincode }),
   setAttachments: (photoCount, documentCount) => set({ photoCount, documentCount }),
   setProfilePhoto: (profilePhoto) => set({ profilePhoto }),
   setPhoneNumber: (phoneNumber) => set({ phoneNumber }),
-  setProfile: (profileName, profileEmail, profileAddress, profilePincode) => set({ profileName, profileEmail, profileAddress, profilePincode }),
+  setProfile: (profileData) => set((state) => ({ ...state, ...profileData })),
   setComplaints: (complaints) => set({
     submittedComplaints: complaints.map((c: any) => ({
       ticketId: c.tokenNumber || `REQ-${c.requestId || c.id}`,

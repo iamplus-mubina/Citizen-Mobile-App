@@ -165,21 +165,20 @@ export default function CategoryScreen() {
                 );
               })}
           </View>
+          <View className="mb-8">
+            <Button
+              title="Continue"
+              onPress={() => {
+                if (selectedCategory) {
+                  setCategory(selectedCategory);
+                  router.push('/complaint/details');
+                }
+              }}
+              disabled={!selectedCategory}
+              className={!selectedCategory ? 'opacity-50' : ''}
+            />
+          </View>
         </ScrollView>
-
-        <View className="px-6 py-4 border-t border-border bg-background">
-          <Button
-            title="Continue"
-            onPress={() => {
-              if (selectedCategory) {
-                setCategory(selectedCategory);
-                router.push('/complaint/details');
-              }
-            }}
-            disabled={!selectedCategory}
-            className={!selectedCategory ? 'opacity-50' : ''}
-          />
-        </View>
 
       </View>
     </SafeAreaView>

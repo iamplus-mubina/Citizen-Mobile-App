@@ -173,17 +173,16 @@ export default function AttachmentsScreen() {
               You can continue without an attachment. Files remain private behind signed-in access.
             </Text>
           </View>
+          <View className="mb-8 mt-4">
+            <Button
+              title="Next"
+              onPress={() => {
+                setAttachments(photos.length, documents.length);
+                router.push('/complaint/review');
+              }}
+            />
+          </View>
         </ScrollView>
-
-        <View className="px-6 py-4 border-t border-border bg-background">
-          <Button
-            title="Next"
-            onPress={() => {
-              setAttachments(photos.length, documents.length);
-              router.push('/complaint/review');
-            }}
-          />
-        </View>
 
         <UploadModal
           visible={modalVisible}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, ScrollView, TouchableOpacity, Image, Switch, Modal, TouchableWithoutFeedback } from 'react-native';
-import { UserIcon, CameraIcon, PencilIcon, PhoneIcon, EnvelopeIcon, MapPinIcon, MapIcon, ArrowRightStartOnRectangleIcon, GlobeAltIcon, BellIcon } from 'react-native-heroicons/outline';
+import { UserIcon, CameraIcon, PencilIcon, PhoneIcon, EnvelopeIcon, MapPinIcon, MapIcon, ArrowRightStartOnRectangleIcon, GlobeAltIcon, BellIcon, IdentificationIcon, AcademicCapIcon, BriefcaseIcon, CakeIcon, TagIcon } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { UploadModal } from '@/components/UploadModal';
@@ -10,7 +10,11 @@ import { api, removeStoredToken } from '@/services/api';
 
 export function Profile() {
   const router = useRouter();
-  const { profilePhoto, setProfilePhoto, phoneNumber, profileName, profileEmail, profileAddress, profilePincode } = useComplaintStore();
+  const { 
+    profilePhoto, setProfilePhoto, phoneNumber, profileName, profileEmail, profileAddress, profilePincode,
+    dob, age, education, occupation, aadharCard, panCard, voterId, rationCard,
+    caste, subCaste, voterAccountNumber, voterPartNumber, voterSectionNumber, voterSlnNumber, ourVoter
+  } = useComplaintStore();
   const [modalVisible, setModalVisible] = useState(false);
   const [notifEnabled, setNotifEnabled] = useState(true);
   const [langModalVisible, setLangModalVisible] = useState(false);
@@ -73,6 +77,35 @@ export function Profile() {
           <DetailRow icon={EnvelopeIcon} label="Email" value={profileEmail} />
           <DetailRow icon={MapPinIcon} label="Address" value={profileAddress} />
           <DetailRow icon={MapIcon} label="Ward / Pincode" value={profilePincode} isLast />
+        </View>
+
+        <View
+          className="bg-surface border border-border rounded-xl mb-4"
+        >
+          <View className="flex-row justify-between items-center px-4 pt-4 pb-3 border-b border-border">
+            <Text className="text-sm font-inter-bold text-dark">Identity & Personal Details</Text>
+          </View>
+
+          <DetailRow icon={CakeIcon} label="Date of Birth / Age" value={dob || age ? `${dob || '-'} / ${age ? age + ' yrs' : '-'}` : ''} />
+          <DetailRow icon={AcademicCapIcon} label="Education" value={education} />
+          <DetailRow icon={BriefcaseIcon} label="Occupation" value={occupation} />
+          <DetailRow icon={IdentificationIcon} label="Aadhar Card" value={aadharCard} />
+          <DetailRow icon={IdentificationIcon} label="PAN Card" value={panCard} />
+          <DetailRow icon={TagIcon} label="Caste / Sub-caste" value={caste || subCaste ? `${caste || '-'} / ${subCaste || '-'}` : ''} />
+          <DetailRow icon={IdentificationIcon} label="Ration Card" value={rationCard} isLast />
+        </View>
+
+        <View
+          className="bg-surface border border-border rounded-xl mb-4"
+        >
+          <View className="flex-row justify-between items-center px-4 pt-4 pb-3 border-b border-border">
+            <Text className="text-sm font-inter-bold text-dark">Voter Information</Text>
+          </View>
+
+          <DetailRow icon={IdentificationIcon} label="Voter ID" value={voterId} />
+          <DetailRow icon={UserIcon} label="Our Voter" value={ourVoter ? 'Yes' : 'No'} />
+          <DetailRow icon={TagIcon} label="Account / Part No." value={voterAccountNumber || voterPartNumber ? `${voterAccountNumber || '-'} / ${voterPartNumber || '-'}` : ''} />
+          <DetailRow icon={TagIcon} label="Section / SLN No." value={voterSectionNumber || voterSlnNumber ? `${voterSectionNumber || '-'} / ${voterSlnNumber || '-'}` : ''} isLast />
         </View>
 
 

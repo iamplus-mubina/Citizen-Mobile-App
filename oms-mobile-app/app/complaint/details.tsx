@@ -80,17 +80,15 @@ export default function DetailsScreen() {
               numberOfLines={4}
               error={errors.description}
             />
+            <View className="mt-4 mb-8">
+              <Button 
+                title="Next" 
+                onPress={handleNext}
+              />
+            </View>
+
           </View>
-
         </ScrollView>
-
-        
-        <View className="px-6 py-4 pb-8 border-t border-border bg-background">
-          <Button 
-            title="Next" 
-            onPress={handleNext}
-          />
-        </View>
 
       </View>
     </SafeAreaView>

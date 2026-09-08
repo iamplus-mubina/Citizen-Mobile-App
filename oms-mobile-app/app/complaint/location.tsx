@@ -16,7 +16,6 @@ const FALLBACK_WARDS = ['Ward A', 'Ward B', 'Ward C', 'Ward D', 'Ward E'];
 export default function LocationScreen() {
   const router = useRouter();
   const [address, setAddress] = useState('');
-  const [area, setArea] = useState('');
   const [ward, setWard] = useState('');
   const [pincode, setPincode] = useState('');
   const [wardOptions, setWardOptions] = useState<string[]>(FALLBACK_WARDS);
@@ -58,7 +57,6 @@ export default function LocationScreen() {
     const newErrors: Record<string, string> = {};
 
     if (!address.trim()) newErrors.address = 'Address is required';
-    if (!area.trim()) newErrors.area = 'Area or Locality is required';
     if (pincode.length !== 6) newErrors.pincode = 'Pincode must be 6 digits';
 
     if (Object.keys(newErrors).length > 0) {
@@ -66,7 +64,7 @@ export default function LocationScreen() {
       return;
     }
 
-    setLocation(address, area, ward, pincode);
+    setLocation(address, '', ward, pincode);
     router.push('/complaint/attachments');
   };
 
@@ -96,18 +94,6 @@ export default function LocationScreen() {
               error={errors.address}
             />
 
-            <Input
-              label="Area or Locality *"
-              placeholder="Enter area"
-              value={area}
-              onChangeText={(text) => {
-                setArea(text);
-                if (text.trim()) setErrors(prev => ({ ...prev, area: '' }));
-              }}
-              error={errors.area}
-            />
-
-
 
             <Input
               label="Pincode *"
@@ -130,16 +116,14 @@ export default function LocationScreen() {
               onPress={() => console.log('Fetch location...')}
               className="mt-2"
             /> */}
+            <View className="mt-4 mb-8">
+              <Button
+                title="Next"
+                onPress={handleNext}
+              />
+            </View>
           </View>
         </ScrollView>
-
-
-        <View className="px-6 py-4 pb-8 border-t border-border bg-background">
-          <Button
-            title="Next"
-            onPress={handleNext}
-          />
-        </View>
 
       </View>
     </SafeAreaView>
