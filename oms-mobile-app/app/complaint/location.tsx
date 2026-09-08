@@ -59,7 +59,6 @@ export default function LocationScreen() {
 
     if (!address.trim()) newErrors.address = 'Address is required';
     if (!area.trim()) newErrors.area = 'Area or Locality is required';
-    if (!ward) newErrors.ward = 'Please select a ward';
     if (pincode.length !== 6) newErrors.pincode = 'Pincode must be 6 digits';
 
     if (Object.keys(newErrors).length > 0) {
@@ -108,17 +107,7 @@ export default function LocationScreen() {
               error={errors.area}
             />
 
-            <Dropdown
-              label="Ward *"
-              placeholder="Select ward"
-              options={wardOptions}
-              value={ward}
-              onSelect={(val) => {
-                setWard(val);
-                if (val) setErrors(prev => ({ ...prev, ward: '' }));
-              }}
-              error={errors.ward}
-            />
+
 
             <Input
               label="Pincode *"

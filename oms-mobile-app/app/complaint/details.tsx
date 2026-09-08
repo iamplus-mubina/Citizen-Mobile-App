@@ -82,36 +82,6 @@ export default function DetailsScreen() {
             />
           </View>
 
-          
-          <View className="mb-8">
-            <Text className="text-dark font-inter-semibold mb-2">Priority <Text className="text-error">*</Text></Text>
-            <View className="space-y-3">
-              {PRIORITIES.map((p) => {
-                const isSelected = priority === p;
-                return (
-                  <TouchableOpacity
-                    key={p}
-                    activeOpacity={0.7}
-                    onPress={() => setPriority(p)}
-                    className="flex-row items-center py-2"
-                  >
-                    <View 
-                      className={`w-5 h-5 rounded-full border-2 items-center justify-center mr-3 
-                        ${isSelected ? 'border-primary' : 'border-muted'}`}
-                    >
-                      {isSelected && (
-                        <View className="w-2.5 h-2.5 rounded-full bg-primary" />
-                      )}
-                    </View>
-                    <Text className={`text-base font-inter ${isSelected ? 'text-dark font-inter-semibold' : 'text-dark'}`}>
-                      {p}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          </View>
-
         </ScrollView>
 
         
