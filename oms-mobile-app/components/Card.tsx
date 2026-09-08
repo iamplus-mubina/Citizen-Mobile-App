@@ -16,13 +16,13 @@ interface CardProps {
 
 const getStatusStyles = (status: string) => {
   const s = status.toLowerCase();
-  if (s.includes('pending')) {
+  if (s.includes('pending') || s.includes('unsolved')) {
     return { bg: 'bg-amber-100', border: 'border-amber-200', text: 'text-amber-700' };
   }
   if (s.includes('progress') || s.includes('assigned')) {
     return { bg: 'bg-blue-100', border: 'border-blue-200', text: 'text-blue-700' };
   }
-  if (s.includes('resolved') || s.includes('completed') || s.includes('solved')) {
+  if (s.includes('resolved') || s.includes('completed') || (s.includes('solved') && !s.includes('unsolved'))) {
     return { bg: 'bg-emerald-100', border: 'border-emerald-200', text: 'text-emerald-700' };
   }
   if (s.includes('reject') || s.includes('closed') || s.includes('fail')) {
