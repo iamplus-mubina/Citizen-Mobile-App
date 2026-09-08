@@ -1,14 +1,72 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+Format: `[Date] - Commit message — Files changed`
 
-## [Unreleased]
+---
+
+## [08 Sep 2026]
+
+### Removed
+- Removed **Priority selection** (Low / Medium / High radio buttons) from Complaint Details step (`app/complaint/details.tsx`) to simplify the complaint form.
+- Removed **Ward dropdown** from Complaint Location step (`app/complaint/location.tsx`) to simplify the form; ward validation also removed from `handleNext`.
+
+### Changed
+- Removed `UserCircleIcon` from header welcome strip (`components/Header.tsx`). Welcome text now displays without any icon for a cleaner look.
+- Profile photo picked in Profile tab is now persisted to `AsyncStorage` (`user_profile_photo` key) so it survives app restarts (`components/Profile.tsx`).
+
+---
+
+## [07 Sep 2026]
+
+### Added
+- Integrated **City Updates List API** (`GET /updates/citizen/list`) into `app/updates/index.tsx`:
+  - Fetches real updates from backend with a multi-endpoint fallback strategy.
+  - Shows thumbnail image from API if available; falls back to a `MegaphoneIcon` placeholder.
+  - Formatted date display (e.g., `07 Sep 2026`).
+  - Passes `imageUrl` to detail screen via router params to eliminate transition flicker.
+- Integrated **City Update Detail API** (`GET /updates/:id`) into `app/updates/[id].tsx`:
+  - Full-page paging image carousel with `1/N` counter badge and pagination dot indicator.
+  - Fullscreen image lightbox modal on tap.
+  - Formatted date + time display (e.g., `07 Sep 2026 • 4:13 PM`).
+  - Removed duplicate bottom photo grid section.
+- Hid **Help & Support** Quick Action card in `app/home.tsx` (commented out in JSX).
+- Removed duplicate **Track Status** card from Quick Actions in `app/home.tsx`.
+- Removed duplicate **notification bell icon** from `Header.tsx` top area.
+- Commented out **Use Current Location** button in `app/complaint/location.tsx`.
+- Removed dummy **profile icon** from sub-page headers when `showBack` is true in `components/Header.tsx`.
+
+### Changed
+- Header welcome strip in `components/Header.tsx` now reads `profileName` from Zustand store (dynamic name from API), replacing the static `'Rahul Sharma'` placeholder.
+- `app/home.tsx` now loads saved profile photo from `AsyncStorage` on mount and saves API-returned profile image fields (`profileImage`, `photoUrl`, `avatarUrl`, `profilePhoto`) to the store.
+
+---
+
+## [04 Sep 2026]
+
+### Added
+- Integrated **photo and document upload API** in `app/complaint/attachments.tsx`:
+  - Photos upload to `POST /citizen/complaints/upload-photo` (multipart/form-data).
+  - Documents upload to `POST /citizen/complaints/upload-document` (multipart/form-data).
+  - Upload IDs returned by the API are stored in Zustand for submission.
+
+### Integrated (API)
+- **Auth**: OTP send (`POST /citizen/auth/send-otp`), OTP verify (`POST /citizen/auth/verify-otp`), Register (`POST /citizen/auth/register`), Logout (`POST /citizen/auth/logout`) — `app/login.tsx`, `app/register.tsx`.
+- **Profile**: Fetch (`GET /citizen/profile`), Update (`PUT /citizen/profile`) — `app/home.tsx`, `app/profile/edit.tsx`, `components/Profile.tsx`.
+- **Complaints**: My Complaints list (`POST /citizen/complaints/my-complaints`), Submit (`POST /citizen/complaints/submit`), Timeline (`GET /citizen/complaints/track/:id`) — `app/home.tsx`, `app/complaint/review.tsx`, `app/complaint/timeline/[id].tsx`.
+- **Categories**: Dynamic category list (`GET /category`) — `app/complaint/category.tsx`.
+- **Location**: Prabhag/Ward list (`GET /prabhag`) — `app/complaint/location.tsx`.
+- Created `services/api.ts`: Axios instance with `baseURL`, request interceptor to attach Bearer token from AsyncStorage, and token management helpers (`storeToken`, `getStoredToken`, `removeStoredToken`).
+
+---
+
+## [Earlier — Phase 1 & Phase 2 UI Build]
 
 ### Added
 - Integrated `@expo-google-fonts/inter` to load Inter fonts asynchronously with splash screen management in root layout.
 - Configured custom font family mappings in `tailwind.config.js` (`font-inter`, `font-inter-medium`, `font-inter-semibold`, `font-inter-bold`).
 - Integrated `react-native-heroicons` and `react-native-svg` for vectorized icons.
-- Created theme color tokens inside `global.css` and mapped them inside Tailwind (`--color-primary`, `--color-background`, `--color-text`, `--color-muted`, etc.).
+- Created theme color tokens inside `global.css` and mapped them inside Tailwind (`--color-primary`, `--color-background`, `--color-text`, `--color-muted`, etc.)
 - Configured `node-linker=hoisted` inside `.npmrc` to flatten node_modules and solve Metro bundler symlink errors on PNPM.
 - Added wildcard typescript declaration for `*.png` inside `app.d.ts` to allow static image imports.
 - Built responsive Mobile Login Screen (`login.tsx`) and set root path (`index.tsx`) to redirect to `/login`.
@@ -20,49 +78,58 @@ All notable changes to this project will be documented in this file.
 - Created reusable `Header` component.
 - Built `app/home.tsx` and configured Root Layout stack with OTP redirect.
 - Created `BottomNavigation` component with four tabs and active state highlights.
-- Built the Home screen dashboard: greeting section, Register Complaint card, Quick Actions 2x2 grid, and Recent Complaints list.
+- Built the Home screen dashboard: Register Complaint card, Quick Actions 2x2 grid, and Recent Complaints list.
 - Created polymorphic `Card` component supporting `complaint`, `quick`, and `recent` variants.
 - Added `getFormattedDate` utility for dynamic date display.
 - Built Register Complaint wizard Step 1 (`complaint/category.tsx`) — category selection with radio buttons and disabled Next guard.
-- Built Register Complaint wizard Step 2 (`complaint/details.tsx`) — Complaint Title, Description textarea, and Priority radio selection.
-- Built Register Complaint wizard Step 3 (`complaint/location.tsx`) — Address, Area, Ward dropdown, Pincode, and "Use Current Location" button.
+- Built Register Complaint wizard Step 2 (`complaint/details.tsx`) — Complaint Title and Description textarea.
+- Built Register Complaint wizard Step 3 (`complaint/location.tsx`) — Address, Area, Pincode.
 - Created reusable `Dropdown` component with inline popover list, selected state highlight, and check icon.
-
-- Built Register Complaint wizard Step 4 (`complaint/attachments.tsx`) with a dashed border upload button featuring an upload icon when empty, and previews + Add More once populated.
+- Built Register Complaint wizard Step 4 (`complaint/attachments.tsx`) with dashed border upload button and image/file previews.
 - Built Register Complaint wizard Step 5 (`complaint/review.tsx`) with Web-compatible Custom Modal confirmation.
-- Built Complaint Submitted Success screen (`complaint/success.tsx`) using dashed input box design.
+- Built Complaint Submitted Success screen (`complaint/success.tsx`).
 - Created `store/useComplaintStore.ts` using Zustand to manage global complaint state across the wizard.
-- Installed `expo-image-picker` dependency and created cross-platform `UploadModal` component supporting Take Photo (Camera) and Choose Gallery (Media Library) inputs across Web, Android, and iOS.
-- Installed `expo-document-picker` dependency and integrated file uploading capability on the attachments page.
-- Connected submitted complaints dynamically to the Home screen dashboard from the global Zustand store, updating it upon successful submission.
-- Integrated profile photo upload and preview inside the Profile screen (`components/Profile.tsx`) using the custom `UploadModal`.
-- Connected profile photo state to global Zustand store to maintain selections across screens and dynamically update the top Header avatar component.
-- Connected citizen phone number dynamically to the Profile screen (`components/Profile.tsx`), saving the value entered during OTP verification.
-- Created dynamic "Personal Details" card displaying Name, Phone, Email, Address, and Pincode on the Profile screen, featuring a Pencil Edit Icon to edit and update fields in the Zustand store.
-- Added custom premium icons (User, Phone, Envelope, Location markers) next to each detail row inside the Profile screen "Personal Details" card.
-- Updated `BottomNavigation` component to show solid-filled icons when a tab is active, and styled the active states with the primary brand color.
-- Added `--color-white` token to `global.css` and `Colors.ts`.
+- Installed `expo-image-picker` and created cross-platform `UploadModal` component.
+- Installed `expo-document-picker` and integrated file uploading capability.
+- Connected submitted complaints dynamically to the Home screen dashboard from Zustand store.
+- Integrated profile photo upload and preview inside Profile screen using `UploadModal`.
+- Connected profile photo state to global Zustand store to update across screens.
+- Connected citizen phone number dynamically to the Profile screen from login credentials.
+- Created dynamic "Personal Details" card on Profile screen with Name, Phone, Email, Address, Pincode and Pencil Edit Icon.
+- Added premium icons (User, Phone, Envelope, Location markers) inside Profile screen "Personal Details" card.
+- Updated `BottomNavigation` to show solid-filled icons when a tab is active.
+- Built error fallback screens: `no-internet.tsx`, `error.tsx`.
+- Built `pending-approval.tsx` screen shown after new citizen registration.
+- Created `register.tsx` new citizen registration form.
+- Created `AlertModal.tsx` — reusable cross-platform modal component for web-safe alerts.
+- Created `FormStepper.tsx` — step progress indicator for complaint wizard.
+- Created `Stepper.tsx` and `StepperTimeline.tsx` — horizontal and vertical stepper components.
+- Created `Notifications.tsx` — notifications tab content.
+- Created `Tabs.tsx` — reusable tab strip supporting customizable labels, active states, and counts.
+- Built `app/complaint/timeline/[id].tsx` — Complaint Status Timeline Tracker with API integration.
+- Built `app/profile/edit.tsx` — Edit Profile screen with API integration.
+- Built `app/updates/index.tsx` — City Updates list screen.
+- Built `app/updates/[id].tsx` — City Update detail with image carousel and fullscreen lightbox.
+- Built `app/help.tsx` — Help & Support screen (currently hidden).
 
 ### Changed
 - Refactored `Button`, `Input`, and `login` screen styles to use `font-inter-*` typography classes and design color tokens only.
-- Refactored `Header` to support app branding, a right-aligned user avatar, and a white three-line hamburger menu icon (`Bars3Icon`) for side navigation on main screens. Styled its background using the new `bg-header-bg` CSS variable theme token (`#1A3B5C`) with white text and back navigation arrow (`ArrowLeftIcon`). Configured its height to `h-36` (144px) to support a dynamic welcome greeting alongside a dark sub-banner ("User from: Office Management System") mimicking the mockup design structure on main screens.
-- Removed the static "Good Morning, Rahul Sharma" greeting block from the home screen body (`app/home.tsx`), since it is now natively integrated inside the header.
-- Mapped all custom icon colors inside Profile details and Home quick actions to the `icon-muted` CSS variable theme token (`#a5a4bf`) instead of using hardcoded color strings.
-- Removed Address, About App, and Change Password menu fields from Profile screen (`components/Profile.tsx`).
+- Refactored `Header` to support app branding with OMS logo, dynamic welcome text strip, and back navigation for sub-screens.
+- Removed the static "Good Morning, Rahul Sharma" greeting block from the home screen body.
+- Mapped all custom icon colors to `icon-muted` CSS variable theme token (`#a5a4bf`).
+- Removed Address, About App, and Change Password menu fields from Profile screen.
 - Updated `Input` to support `multiline` textareas with top-aligned text and minimum height.
-- Updated `Input` to wrap `TextInput` in `TouchableOpacity` with `ref` focus for reliable keyboard activation on physical Android devices.
-- Updated primary brand color in `global.css` (`--color-primary`) and `constants/Colors.ts` to the warm gold-yellow brand color (`#ffba01`), automatically updating all primary buttons, input focus states, headers, and active navigation states globally across all pages.
-- Mapped the CSS variable `--color-text` to the cleaner Tailwind class `text-dark` (and `colors.dark` in TypeScript) to avoid the redundant `text-text` class naming convention.
-- Changed "Welcome" and "Enter OTP" text headers on the Login screen to use `text-dark` (black) instead of the primary brand color.
-- Updated `Button` component to support an optional `leftIcon` prop, and allowed custom `rounded-` classes to override default rounded styles (e.g. `rounded-full` for Logout button on Profile).
-- Created a generic, reusable `Tabs` component (`components/Tabs.tsx`) supporting customizable label arrays, active selections, and counts, and integrated it into the My Complaints dashboard.
-- Updated My Complaints filter tabs (`All`, `Unsolved`, `In-Progress`, `Solved`) to use a rectangular `rounded-lg` layout with thin slate borders, solid primary background with black text when active, and added dynamic complaint item counts next to each tab label.
-- Updated Card component's "recent" variant to use a solid white background (`bg-white`) instead of `bg-background` to stand out cleanly from the screen.
-- Refactored Quick Actions cards container in `home.tsx` to use negative margins (`-mx-[1%]`) and `mx-[1%]` grid items, preventing flexbox wrapping and overlapping bugs on web/desktop viewports.
-- Updated `SafeAreaView` in `home.tsx` to include `edges={['top', 'bottom']}`, resolving Bottom Navigation overlap on Android.
+- Updated primary brand color (`--color-primary`) to warm gold-yellow (`#ffba01`) globally.
+- Mapped `--color-text` to `text-dark` / `colors.dark` to avoid the `text-text` redundancy.
+- Changed "Welcome" and "Enter OTP" text headers on Login screen to black.
+- Created generic reusable `Tabs` component and integrated it into My Complaints dashboard.
+- Updated My Complaints filter tabs to match mockup styling with dynamic counts.
+- Updated Card component "recent" variant to use solid white background.
+- Refactored Quick Actions cards container to prevent flexbox wrapping bugs on web.
+- Updated `SafeAreaView` in `home.tsx` with `edges={['top', 'bottom']}` to resolve Android bottom nav overlap.
 
 ### Fixed
-- OTP input boxes not responding to touch on physical Android in Expo Go — resolved by overlaying a full-width invisible `TextInput` over the digit boxes with `autoFocus`.
-- Description textarea not opening keyboard on mobile — resolved via `TouchableOpacity` wrapper and `ref.focus()` in `Input` component.
-- Bottom Navigation bar overlapping page content on Android — resolved by using `edges={['top', 'bottom']}` on `SafeAreaView`.
-- Fixed `Alert.alert` silently failing on Web by implementing a custom React Native `Modal` fallback inside `review.tsx`.
+- OTP input boxes not responding to touch on physical Android in Expo Go.
+- Description textarea not opening keyboard on mobile — resolved via `TouchableOpacity` wrapper and `ref.focus()`.
+- Bottom Navigation bar overlapping page content on Android.
+- `Alert.alert` silently failing on Web — implemented custom React Native `Modal` fallback inside `review.tsx`.

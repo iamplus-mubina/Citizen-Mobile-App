@@ -1,7 +1,11 @@
 # Progress Report
 
 ## Current Status
-**Project Phase**: Phase 2 - Complaint Registration Wizard (In Progress)
+**Project Phase**: Phase 3 — Backend API Integration  Completed | Phase 4 — UI Refinements & Form Simplification  Completed
+**Last Updated**: 08 Sep 2026
+
+
+---
 
 ## Completed Tasks
 
@@ -23,57 +27,94 @@
 - [x] Fixed mobile keyboard overlap via `KeyboardAvoidingView` (bypassed on web).
 - [x] Created onboarding Splash Screen with circular logo, paging dots, and touch swipe gesture transition.
 - [x] Fixed OTP input boxes not responding to touch on physical Android devices in Expo Go.
+- [x] Integrated OTP send API (`POST /citizen/auth/send-otp`).
+- [x] Integrated OTP verify API (`POST /citizen/auth/verify-otp`) — token saved to AsyncStorage on success.
+- [x] Built `register.tsx` — New Citizen Registration form.
+- [x] Integrated Register API (`POST /citizen/auth/register`).
+- [x] Built `pending-approval.tsx` — shown after successful new registration.
+- [x] Built `no-internet.tsx` and `error.tsx` — fallback error screens.
+- [x] Created `AlertModal.tsx` — cross-platform alert modal (web-safe `Alert.alert` replacement).
 
 ### Home Dashboard
-- [x] Created reusable `Header` component (app branding + user avatar).
+- [x] Created reusable `Header` component (OMS logo + dynamic welcome text from API profile name).
 - [x] Built `home.tsx` dashboard with router redirection upon OTP verification.
 - [x] Created `BottomNavigation` component with 4 tabs and active state highlights.
-- [x] Built Home Dashboard: Greeting, Register Complaint card, Quick Actions grid, Recent Complaints list.
+- [x] Built Home Dashboard: Register Complaint card, Quick Actions grid, Complaint position stats.
 - [x] Refactored home screen widgets into a single polymorphic `Card` component (`complaint`, `quick`, `recent` variants).
 - [x] Implemented `getFormattedDate` helper for dynamic date display.
 - [x] Fixed Bottom Navigation overlap on Android via `SafeAreaView` bottom edge.
+- [x] Integrated profile API (`GET /citizen/profile`) on home mount — fetches name and sets into Zustand store.
+- [x] Integrated My Complaints API (`POST /citizen/complaints/my-complaints`) on home mount — fetches latest 10 complaints.
+- [x] Profile photo stored to and loaded from `AsyncStorage` (`user_profile_photo` key) for persistence across app restarts.
+- [x] Removed duplicate Track Status card from Quick Actions.
+- [x] Hidden Help & Support card (commented out in JSX, not deleted — pending backend support).
 
 ### Complaint Registration Wizard
-- [x] Built Step 1 — Category Selection (`complaint/category.tsx`) with radio buttons and disabled Next guard.
-- [x] Built Step 2 — Complaint Details (`complaint/details.tsx`) with Title, Description textarea, and Priority selection.
-- [x] Built Step 3 — Location (`complaint/location.tsx`) with Address, Area, Ward dropdown, Pincode, and Current Location button.
-- [x] Built Step 4 — Attachments UI (`complaint/attachments.tsx`) with a dashed border upload button featuring an upload icon when empty, and previews + Add More once populated.
-- [x] Built Step 5 — Review and Submit Complaint UI (`complaint/review.tsx`).
+- [x] Built Step 1 — Category Selection (`complaint/category.tsx`) with dynamic categories from API (`GET /category`).
+- [x] Built Step 2 — Complaint Details (`complaint/details.tsx`) with Title and Description textarea.
+  - **Priority selection removed** (simplified by request).
+- [x] Built Step 3 — Location (`complaint/location.tsx`) with Address, Area, Pincode.
+  - **Ward dropdown removed** (simplified by request).
+  - **Use Current Location button hidden** (GPS integration pending).
+- [x] Built Step 4 — Attachments (`complaint/attachments.tsx`) with photo/document upload APIs.
+  - Photos: `POST /citizen/complaints/upload-photo` (multipart/form-data).
+  - Documents: `POST /citizen/complaints/upload-document` (multipart/form-data).
+- [x] Built Step 5 — Review and Submit (`complaint/review.tsx`) with complaint submission API (`POST /citizen/complaints/submit`).
 - [x] Built Complaint Submitted Successfully confirmation screen (`complaint/success.tsx`).
-- [x] Created reusable `Dropdown` component with inline popover and selected state.
-- [x] Created cross-platform `UploadModal` component using `expo-image-picker` to capture photos or pick gallery images across Web, Android, and iOS.
-- [x] Updated `Input` component to support `multiline` textarea mode.
-- [x] Updated `Input` component with `TouchableOpacity` focus fix for mobile keyboard activation.
-- [x] Updated `Button` component with optional `leftIcon` support.
-- [x] Configured Zustand store (`store/useComplaintStore.ts`) to manage wizard form state.
-- [x] Integrated cross-platform document uploading using `expo-document-picker` inside `attachments.tsx`.
-- [x] Connected submitted complaints dynamically to the Home screen dashboard list from the Zustand store.
-- [x] Removed Address, About App, Change Password, and Language menu fields from Profile screen.
-- [x] Integrated profile photo upload and edit triggers inside the Profile screen avatar using `UploadModal`.
-- [x] Persisted profile photo state inside global Zustand store to maintain state across unmounts and update top Header avatar.
-- [x] Connected citizen phone number dynamically to the Profile screen from the login credentials.
-- [x] Created dynamic "Personal Details" card displaying Name, Phone, Email, Address, and Pincode on the Profile screen, featuring a Pencil Edit Icon to edit and update fields in the Zustand store.
-- [x] Customized the Logout button with a pill-shaped rounded layout and mapped all primary buttons globally to the warm gold-yellow branding color (`#ffba01`).
-- [x] Enhanced the "Personal Details" card on the Profile screen with premium icons (User, Phone, Envelope, and Location markers) in a custom slate-gray/lavender theme color (`icon-muted` / `#a5a4bf`) for each field.
-- [x] Set the icon colors of the Home screen "Quick Actions" cards to the matching custom slate-gray/lavender theme color (`icon-muted` / `#a5a4bf`).
-- [x] Customized the `BottomNavigation` component to show active tab icons in a solid style filled with the primary brand color (`#ffba01`).
-- [x] Configured the "View Timeline" button inside the Complaint Details screen (`view/[id].tsx`) to use the primary gold-yellow button variant.
-- [x] Customized the `Header` component background to use the dark blue theme token (`header-bg` / `#1A3B5C`), expanded its height to `h-36` to match the tall mockup hero layout, and styled the header text and back navigation arrow (`ArrowLeftIcon`) to white.
-- [x] Changed the "Welcome" and "Enter OTP" text headers on the Login screen to be in black.
-- [x] Mapped the CSS variable `--color-text` to the cleaner Tailwind class `text-dark` and `colors.dark` key to avoid the duplicate `text-text` syntax.
-- [x] Replaced the body "Good Morning, Rahul Sharma" greeting with a clean, industry-standard header displaying user avatar and welcome text dynamically.
-- [x] Configured the My Complaints dashboard filter tabs (`All`, `Unsolved`, `In-Progress`, `Solved`) to match the mockup styling (rectangular rounded-lg layout with black borders, solid primary fill on active states, and dynamic counts of complaints in brackets).
-- [x] Extracted the tabs design into a generic, reusable `Tabs` component (`components/Tabs.tsx`) supporting customizable label arrays, active selections, and counts.
-- [x] Changed the background of complaints cards inside the My Complaints tab list (`variant="recent"`) to a solid white (`bg-white`) to stand out from the screen.
-- [x] Corrected the Quick Actions layout grid on Home screen by using proportional margin adjustments (`mx-[1%]` and `-mx-[1%]`), preventing browser flex wrap bugs/overlapping on web/desktop viewports.
-- [x] Added a white three-line hamburger menu icon (`Bars3Icon`) to the right of the header on main screens to trigger side navigation drawer interactions.
+- [x] Created reusable `Dropdown` component with inline popover and search.
+- [x] Created cross-platform `UploadModal` component using `expo-image-picker` (Camera + Gallery + Web).
+- [x] Integrated `expo-document-picker` for document upload.
+- [x] Configured Zustand store (`store/useComplaintStore.ts`) to manage wizard form state, profile, complaints.
+- [x] Connected submitted complaints dynamically to the Home screen dashboard from the Zustand store.
+
+### Complaint Tracking
+- [x] Built `app/complaint/timeline/[id].tsx` — Complaint Status Timeline Tracker.
+- [x] Integrated Timeline API (`GET /citizen/complaints/track/:id`).
+- [x] Created `StepperTimeline.tsx` and `Stepper.tsx` reusable timeline step components.
+
+### City Updates
+- [x] Built `app/updates/index.tsx` — City Updates list screen.
+- [x] Integrated City Updates List API (`GET /updates/citizen/list`) with multi-endpoint fallback strategy.
+- [x] Built `app/updates/[id].tsx` — City Update Detail screen.
+- [x] Integrated City Update Detail API (`GET /updates/:id`).
+- [x] Added paging image carousel with `1/N` counter badge and pagination dot indicator.
+- [x] Added fullscreen image lightbox modal (tap image to expand).
+- [x] Formatted date + time display (`DD MMM YYYY • HH:MM AM/PM`).
+- [x] Passed `imageUrl` via router params from list → detail to eliminate transition image flicker.
+
+### Profile
+- [x] Built `app/profile/edit.tsx` — Edit Profile screen.
+- [x] Integrated Edit Profile API (`PUT /citizen/profile`).
+- [x] Integrated profile photo upload/update inside Profile screen using `UploadModal`.
+- [x] Profile photo persisted to `AsyncStorage` on selection.
+- [x] Connected phone number from login credentials to Profile screen dynamically.
+- [x] Created "Personal Details" card with premium icons (User, Phone, Envelope, Location markers).
+
+### Header Improvements
+- [x] Sub-page headers (`showBack=true`) no longer show the OMS logo or profile icon — shows only back arrow + screen title.
+- [x] Welcome strip reads dynamic name from Zustand store (from API profile fetch).
+- [x] Removed duplicate notification bell icon from header.
+- [x] Removed `UserCircleIcon` from welcome strip for cleaner look.
+
+### API Service Layer
+- [x] Created `services/api.ts` — Axios instance with:
+  - `baseURL` from `EXPO_PUBLIC_API_URL` env variable, with hardcoded fallback URL.
+  - Request interceptor to automatically attach Bearer token from AsyncStorage (or `localStorage` on Web).
+  - Token helpers: `storeToken` → `setStoredToken`, `getStoredToken`, `removeStoredToken`.
+
+---
 
 ## In Progress
 
-## Next Steps
-- [ ] Complaint Details view and Status Tracking Timeline.
-- [ ] In-App Notifications History screen.
-- [ ] Citizen Profile view and Edit Profile screens.
-- [ ] Help & Support, No Internet, and Error fallback screens.
-- [ ] Backend API integration for OTP send/verify and Complaint submission.
-- [ ] Connect authentication state to Zustand store.
+- [ ] In-App Notifications History screen (API integration pending).
+
+---
+
+## Pending / Next Steps
+
+- [ ] Help & Support screen (backend support pending — currently hidden).
+- [ ] GPS / Use Current Location integration in complaint location step.
+- [ ] Push Notifications setup.
+- [ ] Profile photo upload API (if backend provides endpoint).
+- [ ] End-to-end testing on physical Android device.
+- [ ] Production build and APK generation.
