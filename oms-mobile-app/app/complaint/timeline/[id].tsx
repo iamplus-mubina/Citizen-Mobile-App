@@ -32,33 +32,27 @@ const getComplaintHistory = (status: string): StepperStep[] => {
   if (s.includes('resolved') || s.includes('complete') || s.includes('solved')) {
     return [
       { id: 'step-1', title: 'Submitted', status: 'completed', theme: 'primary' },
-      { id: 'step-2', title: 'Verified', status: 'completed', theme: 'primary' },
-      { id: 'step-3', title: 'Assigned', status: 'completed', theme: 'primary' },
-      { id: 'step-4', title: 'Work', status: 'completed', theme: 'primary' },
-      { id: 'step-5', title: 'Resolved', status: 'completed', theme: 'primary' },
-      { id: 'step-6', title: 'Complete', status: 'current', theme: 'primary' }
+      { id: 'step-2', title: 'Pending Approval', status: 'completed', theme: 'primary' },
+      { id: 'step-3', title: 'Verified', status: 'completed', theme: 'primary' },
+      { id: 'step-4', title: 'Resolve', status: 'current', theme: 'primary' },
     ];
   }
 
-  if (s.includes('progress') || s.includes('work')) {
+  if (s.includes('verified') || s.includes('progress') || s.includes('assigned') || s.includes('work')) {
     return [
       { id: 'step-1', title: 'Submitted', status: 'completed', theme: 'primary' },
-      { id: 'step-2', title: 'Verified', status: 'completed', theme: 'primary' },
-      { id: 'step-3', title: 'Assigned', status: 'completed', theme: 'primary' },
-      { id: 'step-4', title: 'Work', status: 'current', theme: 'primary' },
-      { id: 'step-5', title: 'Resolved', status: 'future' },
-      { id: 'step-6', title: 'Complete', status: 'future' }
+      { id: 'step-2', title: 'Pending Approval', status: 'completed', theme: 'primary' },
+      { id: 'step-3', title: 'Verified', status: 'current', theme: 'primary' },
+      { id: 'step-4', title: 'Resolve', status: 'future' },
     ];
   }
 
-  // Default / Pending
+
   return [
     { id: 'step-1', title: 'Submitted', status: 'completed', theme: 'primary' },
-    { id: 'step-2', title: 'Verified', status: 'completed', theme: 'primary' },
-    { id: 'step-3', title: 'Assigned', status: 'current', theme: 'primary' },
-    { id: 'step-4', title: 'Work', status: 'future' },
-    { id: 'step-5', title: 'Resolved', status: 'future' },
-    { id: 'step-6', title: 'Complete', status: 'future' }
+    { id: 'step-2', title: 'Pending Approval', status: 'current', theme: 'primary' },
+    { id: 'step-3', title: 'Verified', status: 'future' },
+    { id: 'step-4', title: 'Resolve', status: 'future' },
   ];
 };
 
@@ -67,11 +61,11 @@ export default function TimelineScreen() {
   const ticketId = (id as string) || 'REQ-1';
 
   const submittedComplaints = useComplaintStore(state => state.submittedComplaints);
-  
+
   const foundComplaint = submittedComplaints.find(
-    c => c.ticketId === ticketId || 
-         c.ticketId === `REQ-${ticketId}` || 
-         (ticketId.replace(/\D/g, '') !== '' && c.ticketId.replace(/\D/g, '') === ticketId.replace(/\D/g, ''))
+    c => c.ticketId === ticketId ||
+      c.ticketId === `REQ-${ticketId}` ||
+      (ticketId.replace(/\D/g, '') !== '' && c.ticketId.replace(/\D/g, '') === ticketId.replace(/\D/g, ''))
   );
 
   const initialComplaint = foundComplaint || {
