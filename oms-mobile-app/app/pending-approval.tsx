@@ -1,4 +1,5 @@
-import { View, Text, Platform, SafeAreaView } from 'react-native';
+import { View, Text, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Button } from '@/components/Button';
 import { CheckIcon } from 'react-native-heroicons/solid';
@@ -54,7 +55,7 @@ export default function PendingApprovalScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
       {renderContent()}
     </SafeAreaView>
   );
