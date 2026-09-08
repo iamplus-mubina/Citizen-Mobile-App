@@ -16,8 +16,9 @@ interface HeaderProps {
 
 export function Header({ className = '', avatarUrl, showBack, title, notificationCount, onNotificationPress }: HeaderProps) {
   const router = useRouter();
-  const { profileName } = useComplaintStore();
-  const displayName = profileName || 'Rahul Sharma';
+  const { profileName, profilePhoto } = useComplaintStore();
+  const displayName = profileName || 'Citizen User';
+  const displayAvatar = avatarUrl || profilePhoto;
 
   return (
     <View
@@ -55,10 +56,9 @@ export function Header({ className = '', avatarUrl, showBack, title, notificatio
             </View>
           </View>
 
-
           <View className="bg-black/20 border border-black/10 rounded-md px-3 py-2.5 flex-row items-center">
-            <UserCircleIcon size={18} color={colors.white} />
-            <Text className="text-xs font-inter-medium text-white/90 ml-2">Welcome, {displayName}</Text>
+            {/* <UserCircleIcon size={18} color={colors.white} /> */}
+            <Text className="text-xs font-inter-medium text-white/90">Welcome, {displayName}</Text>
           </View>
         </View>
       )}

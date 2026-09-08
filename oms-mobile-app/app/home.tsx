@@ -16,15 +16,27 @@ import { MyComplaints } from '@/components/MyComplaints';
 import { Notifications } from '@/components/Notifications';
 import { Profile } from '@/components/Profile';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useComplaintStore } from '@/store/useComplaintStore';
 import { api } from '@/services/api';
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const router = useRouter();
-  const { submittedComplaints, profilePhoto, setProfile, setComplaints } = useComplaintStore();
+  const { submittedComplaints, profilePhoto, setProfile, setProfilePhoto, setComplaints } = useComplaintStore();
 
   useEffect(() => {
+    const loadSavedPhoto = async () => {
+      try {
+        const savedPhoto = await AsyncStorage.getItem('user_profile_photo');
+        if (savedPhoto && !profilePhoto) {
+          setProfilePhoto(savedPhoto);
+        }
+      } catch (err) {
+        console.error('Failed to load saved profile photo:', err);
+      }
+    };
+
     const fetchProfile = async () => {
       try {
         const res = await api.get('/citizen/profile');
@@ -32,6 +44,11 @@ export default function HomeScreen() {
         if (data) {
           const fullName = [data.firstName, data.lastName].filter(Boolean).join(' ');
           setProfile(fullName, data.email || '', data.address || '', '');
+          const photo = data.profileImage || data.photoUrl || data.avatarUrl || data.profilePhoto;
+          if (photo) {
+            setProfilePhoto(photo);
+            AsyncStorage.setItem('user_profile_photo', photo).catch(() => {});
+          }
         }
       } catch (err) {
         console.error('Failed to fetch profile:', err);
@@ -56,6 +73,7 @@ export default function HomeScreen() {
       }
     };
 
+    loadSavedPhoto();
     fetchProfile();
     fetchComplaints();
   }, []);
@@ -98,12 +116,12 @@ export default function HomeScreen() {
                   badgeCount={3}
                   onPress={() => setActiveTab('notifications')}
                 />
-                <Card 
+                {/* <Card 
                   variant="quick"
                   title="Help & Support" 
                   Icon={QuestionMarkCircleIcon} 
                   onPress={() => router.push('/help' as any)}
-                />
+                /> */}
                 <Card 
                   variant="quick"
                   title="Updates" 

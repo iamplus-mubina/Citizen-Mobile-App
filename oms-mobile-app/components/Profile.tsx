@@ -126,7 +126,10 @@ export function Profile() {
       <UploadModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        onImagePicked={(uri) => setProfilePhoto(uri)}
+        onImagePicked={(uri) => {
+          setProfilePhoto(uri);
+          AsyncStorage.setItem('user_profile_photo', uri).catch((err) => console.error('Failed to save profile photo:', err));
+        }}
       />
 
 
