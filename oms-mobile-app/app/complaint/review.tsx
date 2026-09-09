@@ -131,13 +131,7 @@ export default function ReviewScreen() {
         <Header 
           showBack 
           title="Raise a complaint" 
-          onBack={() => {
-            if (router.canGoBack()) {
-              router.back();
-            } else {
-              router.replace('/complaint/attachments');
-            }
-          }}
+          onBack={() => router.replace('/home')}
         />
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>

@@ -54,13 +54,7 @@ export default function LocationScreen() {
         <Header 
           showBack 
           title="Raise a complaint" 
-          onBack={() => {
-            if (router.canGoBack()) {
-              router.back();
-            } else {
-              router.replace('/complaint/details');
-            }
-          }}
+          onBack={() => router.replace('/home')}
         />
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
@@ -97,14 +91,28 @@ export default function LocationScreen() {
               error={errors.pincode}
             />
 
-            <View className="mt-4 mb-8">
-              <Button
-                title="Next"
-                onPress={handleNext}
-              />
-            </View>
           </View>
         </ScrollView>
+
+        {/* Bottom action bar — Back + Next */}
+        <View className="px-6 py-4 border-t border-border bg-background flex-row gap-x-3">
+          <View className="flex-[0.8]">
+            <Button
+              title="Back"
+              variant="outline"
+              onPress={() => {
+                if (router.canGoBack()) {
+                  router.back();
+                } else {
+                  router.replace('/complaint/details');
+                }
+              }}
+            />
+          </View>
+          <View className="flex-[1.2]">
+            <Button title="Next" onPress={handleNext} />
+          </View>
+        </View>
 
       </View>
     </SafeAreaView>

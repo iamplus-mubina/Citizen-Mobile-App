@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Platform, ActivityIndicator, BackHandler } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Platform, ActivityIndicator, BackHandler, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Button } from '@/components/Button';
@@ -8,7 +8,7 @@ import { FormStepper } from '@/components/FormStepper';
 import { Dropdown } from '@/components/Dropdown';
 import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
-import { TagIcon } from 'react-native-heroicons/outline';
+import { TagIcon, MagnifyingGlassIcon, XMarkIcon } from 'react-native-heroicons/outline';
 import { citizenService } from '@/services/citizenService';
 import type { ComplainCategory, ComplainType } from '@/services/types';
 
@@ -19,6 +19,7 @@ export default function CategoryScreen() {
   const [categoriesList, setCategoriesList] = useState<ComplainCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const onBackPress = () => {
@@ -76,6 +77,14 @@ export default function CategoryScreen() {
   const canContinue = selectedCategory && selectedCategoryId && 
     (availableTypes.length === 0 || (selectedTypeId !== null));
 
+  // Filter categories by search query
+  const filteredCategories = searchQuery.trim()
+    ? categoriesList.filter((cat) =>
+        cat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (cat.prefix && cat.prefix.toLowerCase().includes(searchQuery.toLowerCase()))
+      )
+    : categoriesList;
+
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background h-screen overflow-hidden"
     : "flex-1 bg-background";
@@ -89,6 +98,27 @@ export default function CategoryScreen() {
           <View className="mb-4">
             <FormStepper currentStep={1} totalSteps={6} />
           </View>
+
+          {/* Search Bar */}
+          {!loading && !error && categoriesList.length > 0 && (
+            <View className="flex-row items-center bg-surface border border-border rounded-xl px-3 mb-4">
+              <MagnifyingGlassIcon size={18} color={colors.muted} />
+              <TextInput
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder="Search category..."
+                placeholderTextColor={colors.muted}
+                className="flex-1 py-3 px-2 text-sm font-inter text-dark"
+                returnKeyType="search"
+                autoCorrect={false}
+              />
+              {searchQuery.length > 0 && (
+                <TouchableOpacity onPress={() => setSearchQuery('')} activeOpacity={0.7}>
+                  <XMarkIcon size={18} color={colors.muted} />
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
 
           {loading ? (
             <View className="py-12 items-center justify-center">
@@ -106,43 +136,57 @@ export default function CategoryScreen() {
             </View>
           ) : (
             <>
-              <View className="mb-4 mt-4">
-                {categoriesList.map((category) => {
-                  const isSelected = selectedCategory === category.name;
-                  return (
-                    <TouchableOpacity
-                      key={category.id}
-                      activeOpacity={0.7}
-                      onPress={() => handleCategorySelect(category)}
-                      className={`flex-row items-center justify-between p-4 mb-4 rounded-lg border ${isSelected ? 'border-primary bg-primary/10' : 'border-border bg-surface'
+              {/* Category list — filtered by search */}
+              {filteredCategories.length === 0 ? (
+                <View className="py-10 items-center justify-center">
+                  <Text className="text-muted font-inter text-sm">
+                    No categories found for "{searchQuery}"
+                  </Text>
+                  <TouchableOpacity onPress={() => setSearchQuery('')} className="mt-2">
+                    <Text className="text-primary font-inter-semibold text-sm">Clear search</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <View className="mb-4 mt-4">
+                  {filteredCategories.map((category) => {
+                    const isSelected = selectedCategory === category.name;
+                    return (
+                      <TouchableOpacity
+                        key={category.id}
+                        activeOpacity={0.7}
+                        onPress={() => handleCategorySelect(category)}
+                        className={`flex-row items-center justify-between p-4 mb-4 rounded-lg border ${
+                          isSelected ? 'border-primary bg-primary/10' : 'border-border bg-surface'
                         }`}
-                    >
-                      <View className="flex-row items-center flex-1">
-                        <TagIcon size={24} color={colors.primary} />
-                        <View className="ml-4 flex-1">
-                          <Text className="text-base font-inter-semibold text-dark">
-                            {category.name}
-                          </Text>
-                          {category.prefix && (
-                            <Text className="text-xs font-inter text-muted mt-0.5">
-                              {category.prefix}
+                      >
+                        <View className="flex-row items-center flex-1">
+                          <TagIcon size={24} color={colors.primary} />
+                          <View className="ml-4 flex-1">
+                            <Text className="text-base font-inter-semibold text-dark">
+                              {category.name}
                             </Text>
+                            {category.prefix && (
+                              <Text className="text-xs font-inter text-muted mt-0.5">
+                                {category.prefix}
+                              </Text>
+                            )}
+                          </View>
+                        </View>
+
+                        <View
+                          className={`w-5 h-5 rounded-full border-2 items-center justify-center ml-4 ${
+                            isSelected ? 'border-primary' : 'border-muted'
+                          }`}
+                        >
+                          {isSelected && (
+                            <View className="w-2.5 h-2.5 rounded-full bg-primary" />
                           )}
                         </View>
-                      </View>
-
-                      <View
-                        className={`w-5 h-5 rounded-full border-2 items-center justify-center ml-4 
-                          ${isSelected ? 'border-primary' : 'border-muted'}`}
-                      >
-                        {isSelected && (
-                          <View className="w-2.5 h-2.5 rounded-full bg-primary" />
-                        )}
-                      </View>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              )}
 
               {/* Complaint Type sub-dropdown */}
               {selectedCategory && availableTypes.length > 0 && (
@@ -161,8 +205,18 @@ export default function CategoryScreen() {
               )}
             </>
           )}
+        </ScrollView>
 
-          <View className="mb-8">
+        {/* Bottom action bar — Back + Continue */}
+        <View className="px-6 py-4 border-t border-border bg-background flex-row gap-x-3">
+          <View className="flex-[0.8]">
+            <Button
+              title="Back"
+              variant="outline"
+              onPress={() => router.replace('/home')}
+            />
+          </View>
+          <View className="flex-[1.2]">
             <Button
               title="Continue"
               onPress={() => {
@@ -177,10 +231,9 @@ export default function CategoryScreen() {
                 }
               }}
               disabled={!canContinue}
-              className={!canContinue ? 'opacity-50' : ''}
             />
           </View>
-        </ScrollView>
+        </View>
       </View>
     </SafeAreaView>
   );

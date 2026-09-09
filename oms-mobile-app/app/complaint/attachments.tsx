@@ -102,13 +102,7 @@ export default function AttachmentsScreen() {
         <Header 
           showBack 
           title="Raise a complaint" 
-          onBack={() => {
-            if (router.canGoBack()) {
-              router.back();
-            } else {
-              router.replace('/complaint/location');
-            }
-          }}
+          onBack={() => router.replace('/home')}
         />
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
@@ -194,8 +188,27 @@ export default function AttachmentsScreen() {
             </Text>
           </View>
           <View className="mb-8 mt-4">
+          </View>
+        </ScrollView>
+
+        {/* Bottom action bar — Back + Next */}
+        <View className="px-6 py-4 border-t border-border bg-background flex-row gap-x-3">
+          <View className="flex-[0.8]">
             <Button
-              title={isUploading ? "Uploading..." : "Next"}
+              title="Back"
+              variant="outline"
+              onPress={() => {
+                if (router.canGoBack()) {
+                  router.back();
+                } else {
+                  router.replace('/complaint/location');
+                }
+              }}
+            />
+          </View>
+          <View className="flex-[1.2]">
+            <Button
+              title={isUploading ? 'Uploading...' : 'Next'}
               disabled={isUploading}
               onPress={() => {
                 setComplaintForm({
@@ -208,7 +221,7 @@ export default function AttachmentsScreen() {
               }}
             />
           </View>
-        </ScrollView>
+        </View>
 
         <UploadModal
           visible={modalVisible}

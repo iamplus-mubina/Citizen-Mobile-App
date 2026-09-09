@@ -60,7 +60,7 @@ export function Dropdown({
   };
 
   return (
-    <View className={`w-full mb-4 z-50 ${className}`}>
+    <View className={`w-full mb-4 ${className}`}>
       {label && (
         <Text className="text-dark font-inter-semibold mb-2">
           {label}
@@ -95,10 +95,11 @@ export function Dropdown({
         <Text className="text-error text-sm font-inter mt-1">{error}</Text>
       )}
 
-      {/* Dropdown Panel */}
+      {/* Dropdown Panel — renders in normal flow, no overlap */}
       {isOpen && (
         <View 
-          className="absolute top-[80px] left-0 right-0 bg-surface border border-border rounded-md z-50 overflow-hidden"
+          className="w-full bg-surface border border-border rounded-md mt-1 overflow-hidden"
+          style={{ elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4 }}
         >
           <View className="px-3 py-2 border-b border-border">
             <View className="flex-row items-center bg-background rounded-md px-3 py-2">
