@@ -1,34 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { View, Text, ScrollView, TouchableOpacity, Image, Switch, Modal, TouchableWithoutFeedback } from 'react-native';
-import { UserIcon, CameraIcon, PencilIcon, PhoneIcon, EnvelopeIcon, MapPinIcon, MapIcon, ArrowRightStartOnRectangleIcon, GlobeAltIcon, BellIcon, IdentificationIcon, AcademicCapIcon, BriefcaseIcon, CakeIcon, TagIcon } from 'react-native-heroicons/outline';
+import { View, Text, ScrollView, TouchableOpacity, Image, Switch, Modal, TouchableWithoutFeedback, RefreshControl } from 'react-native';
+import { 
+  UserIcon, 
+  CameraIcon, 
+  PencilIcon, 
+  PhoneIcon, 
+  EnvelopeIcon, 
+  MapPinIcon, 
+  MapIcon, 
+  ArrowRightStartOnRectangleIcon, 
+  GlobeAltIcon, 
+  BellIcon, 
+  IdentificationIcon, 
+  AcademicCapIcon, 
+  BriefcaseIcon, 
+  CakeIcon, 
+  TagIcon,
+  BuildingOfficeIcon,
+  DocumentTextIcon
+} from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { UploadModal } from '@/components/UploadModal';
 import { useComplaintStore } from '@/store/useComplaintStore';
-import { api, removeStoredToken } from '@/services/api';
+import { citizenService } from '@/services/citizenService';
+import { removeStoredToken } from '@/services/api';
 
 export function Profile() {
   const router = useRouter();
+  const store = useComplaintStore();
   const { 
     profilePhoto, setProfilePhoto, phoneNumber, profileName, profileEmail, profileAddress, profilePincode,
-    dob, age, education, occupation, aadharCard, panCard, voterId, rationCard,
-    caste, subCaste, voterAccountNumber, voterPartNumber, voterSectionNumber, voterSlnNumber, ourVoter
-  } = useComplaintStore();
+    alternatePhone, phone3, phone4, city, cityType,
+    dob, age, gender, bloodGroup, education, occupation,
+    aadharCard, panCard, voterId, drivingLicence, rationCard,
+    districtName, assemblyName, gaonName, ganName, gatName, prabhagName, prabhagAreaName,
+    religionName, castName, subCastName, caste, subCaste,
+    isVoter, acNumber, voterAccountNumber, voterPartNumber, voterSectionNumber, voterSlnNumber, boothNumber, boothName, ourVoter, note,
+    setProfileFromApi
+  } = store;
+
   const [modalVisible, setModalVisible] = useState(false);
   const [notifEnabled, setNotifEnabled] = useState(true);
   const [langModalVisible, setLangModalVisible] = useState(false);
   const [selectedLang, setSelectedLang] = useState('English');
+  const [refreshing, setRefreshing] = useState(false);
 
   const LANGUAGES = ['English', 'हिंदी', 'मराठी'];
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      const data = await citizenService.getProfile();
+      if (data) {
+        setProfileFromApi(data);
+      }
+    } catch (err) {
+      console.warn('Failed to refresh profile:', err);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [setProfileFromApi]);
+
+  React.useEffect(() => {
+    onRefresh();
+  }, [onRefresh]);
+
   const handleLogout = async () => {
     try {
-      await api.post('/citizen/auth/logout', {});
+      await citizenService.logout();
     } catch (error) {
-      console.error('Logout API error:', error);
+      console.error('Logout error:', error);
     } finally {
-      // Always clear token and redirect, even if API fails
       await removeStoredToken();
       router.replace('/login');
     }
@@ -36,9 +80,16 @@ export function Profile() {
 
   return (
     <View className="flex-1 w-full bg-background pt-6 px-5">
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
 
-        <View className="items-center mb-8">
+        {/* Profile Avatar & Title */}
+        <View className="items-center mb-6">
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => setModalVisible(true)}
@@ -55,16 +106,14 @@ export function Profile() {
               <CameraIcon size={16} color={colors.dark} />
             </View>
           </TouchableOpacity>
-          <Text className="text-xl font-inter-bold text-dark mb-1">{profileName}</Text>
-          <Text className="text-sm font-inter text-muted">{phoneNumber}</Text>
+          <Text className="text-xl font-inter-bold text-dark mb-1">{profileName || 'Citizen'}</Text>
+          <Text className="text-sm font-inter text-muted">{phoneNumber || '-'}</Text>
         </View>
 
-
-        <View
-          className="bg-surface border border-border rounded-xl mb-4"
-        >
+        {/* 1. Contact & Address */}
+        <View className="bg-surface border border-border rounded-xl mb-4">
           <View className="flex-row justify-between items-center px-4 pt-4 pb-3 border-b border-border">
-            <Text className="text-sm font-inter-bold text-dark">Contact and address</Text>
+            <Text className="text-sm font-inter-bold text-dark">Contact and Address</Text>
             <TouchableOpacity
               onPress={() => router.push('/profile/edit')}
               activeOpacity={0.7}
@@ -74,46 +123,86 @@ export function Profile() {
             </TouchableOpacity>
           </View>
 
+          <DetailRow icon={PhoneIcon} label="Primary Phone" value={phoneNumber} />
+          {alternatePhone ? <DetailRow icon={PhoneIcon} label="Alternate Phone" value={alternatePhone} /> : null}
+          {phone3 ? <DetailRow icon={PhoneIcon} label="Phone 3" value={phone3} /> : null}
+          {phone4 ? <DetailRow icon={PhoneIcon} label="Phone 4" value={phone4} /> : null}
           <DetailRow icon={EnvelopeIcon} label="Email" value={profileEmail} />
           <DetailRow icon={MapPinIcon} label="Address" value={profileAddress} />
-          <DetailRow icon={MapIcon} label="Ward / Pincode" value={profilePincode} isLast />
+          <DetailRow icon={BuildingOfficeIcon} label="City / Area Type" value={[city, cityType].filter(Boolean).join(' · ')} />
+          <DetailRow icon={MapIcon} label="Pincode" value={profilePincode} isLast />
         </View>
 
-        <View
-          className="bg-surface border border-border rounded-xl mb-4"
-        >
-          <View className="flex-row justify-between items-center px-4 pt-4 pb-3 border-b border-border">
-            <Text className="text-sm font-inter-bold text-dark">Identity & Personal Details</Text>
+        {/* 2. Personal Details */}
+        <View className="bg-surface border border-border rounded-xl mb-4">
+          <View className="px-4 pt-4 pb-3 border-b border-border">
+            <Text className="text-sm font-inter-bold text-dark">Personal Details</Text>
           </View>
 
-          <DetailRow icon={CakeIcon} label="Date of Birth / Age" value={dob || age ? `${dob || '-'} / ${age ? age + ' yrs' : '-'}` : ''} />
+          <DetailRow icon={CakeIcon} label="Date of Birth / Age" value={dob || age ? `${dob || '-'} / ${age ? `${age} yrs` : '-'}` : ''} />
+          <DetailRow icon={UserIcon} label="Gender" value={gender} />
+          <DetailRow icon={TagIcon} label="Blood Group" value={bloodGroup} />
           <DetailRow icon={AcademicCapIcon} label="Education" value={education} />
-          <DetailRow icon={BriefcaseIcon} label="Occupation" value={occupation} />
+          <DetailRow icon={BriefcaseIcon} label="Occupation" value={occupation} isLast />
+        </View>
+
+        {/* 3. Identity Documents */}
+        <View className="bg-surface border border-border rounded-xl mb-4">
+          <View className="px-4 pt-4 pb-3 border-b border-border">
+            <Text className="text-sm font-inter-bold text-dark">Identity Documents</Text>
+          </View>
+
           <DetailRow icon={IdentificationIcon} label="Aadhar Card" value={aadharCard} />
           <DetailRow icon={IdentificationIcon} label="PAN Card" value={panCard} />
-          <DetailRow icon={TagIcon} label="Caste / Sub-caste" value={caste || subCaste ? `${caste || '-'} / ${subCaste || '-'}` : ''} />
+          <DetailRow icon={IdentificationIcon} label="Voter ID" value={voterId} />
+          <DetailRow icon={IdentificationIcon} label="Driving Licence" value={drivingLicence} />
           <DetailRow icon={IdentificationIcon} label="Ration Card" value={rationCard} isLast />
         </View>
 
-        <View
-          className="bg-surface border border-border rounded-xl mb-4"
-        >
-          <View className="flex-row justify-between items-center px-4 pt-4 pb-3 border-b border-border">
+        {/* 4. Location & Administration */}
+        <View className="bg-surface border border-border rounded-xl mb-4">
+          <View className="px-4 pt-4 pb-3 border-b border-border">
+            <Text className="text-sm font-inter-bold text-dark">Location Details</Text>
+          </View>
+
+          <DetailRow icon={MapPinIcon} label="District" value={districtName} />
+          <DetailRow icon={MapPinIcon} label="Assembly" value={assemblyName} />
+          <DetailRow icon={MapPinIcon} label="Gaon / Village" value={gaonName} />
+          <DetailRow icon={MapPinIcon} label="Gan (Panchayat Samiti)" value={ganName} />
+          <DetailRow icon={MapPinIcon} label="Gat (Zilla Parishad)" value={gatName} />
+          <DetailRow icon={MapPinIcon} label="Prabhag / Ward" value={prabhagName} />
+          <DetailRow icon={MapPinIcon} label="Prabhag Area" value={prabhagAreaName} isLast />
+        </View>
+
+        {/* 5. Caste & Religion */}
+        <View className="bg-surface border border-border rounded-xl mb-4">
+          <View className="px-4 pt-4 pb-3 border-b border-border">
+            <Text className="text-sm font-inter-bold text-dark">Caste & Religion</Text>
+          </View>
+
+          <DetailRow icon={TagIcon} label="Religion" value={religionName} />
+          <DetailRow icon={TagIcon} label="Caste" value={castName || caste} />
+          <DetailRow icon={TagIcon} label="Sub-Caste" value={subCastName || subCaste} isLast />
+        </View>
+
+        {/* 6. Voter Information */}
+        <View className="bg-surface border border-border rounded-xl mb-4">
+          <View className="px-4 pt-4 pb-3 border-b border-border">
             <Text className="text-sm font-inter-bold text-dark">Voter Information</Text>
           </View>
 
-          <DetailRow icon={IdentificationIcon} label="Voter ID" value={voterId} />
-          <DetailRow icon={UserIcon} label="Our Voter" value={ourVoter ? 'Yes' : 'No'} />
-          <DetailRow icon={TagIcon} label="Account / Part No." value={voterAccountNumber || voterPartNumber ? `${voterAccountNumber || '-'} / ${voterPartNumber || '-'}` : ''} />
-          <DetailRow icon={TagIcon} label="Section / SLN No." value={voterSectionNumber || voterSlnNumber ? `${voterSectionNumber || '-'} / ${voterSlnNumber || '-'}` : ''} isLast />
+          <DetailRow icon={IdentificationIcon} label="Voter Status" value={isVoter !== undefined ? (isVoter ? 'Registered Voter' : 'Not Registered') : (ourVoter ? 'Our Voter' : '')} />
+          <DetailRow icon={TagIcon} label="AC Number" value={acNumber || voterAccountNumber} />
+          <DetailRow icon={TagIcon} label="Part Number" value={voterPartNumber} />
+          <DetailRow icon={TagIcon} label="Section Number" value={voterSectionNumber} />
+          {voterSlnNumber ? <DetailRow icon={TagIcon} label="SLN Number" value={voterSlnNumber} /> : null}
+          <DetailRow icon={BuildingOfficeIcon} label="Booth" value={[boothNumber, boothName].filter(Boolean).join(' - ')} />
+          {note ? <DetailRow icon={DocumentTextIcon} label="Note" value={note} isLast /> : null}
         </View>
 
-
-        <View
-          className="bg-surface border border-border rounded-xl mb-8"
-        >
+        {/* Preferences */}
+        <View className="bg-surface border border-border rounded-xl mb-6">
           <Text className="text-sm font-inter-bold text-dark px-4 pt-4 pb-3 border-b border-border">Preferences</Text>
-
 
           <TouchableOpacity activeOpacity={0.7} onPress={() => setLangModalVisible(true)} className="flex-row items-center px-4 py-3 border-b border-border">
             <View className="w-10 h-10 rounded-full bg-primary-light items-center justify-center mr-4">
@@ -125,7 +214,6 @@ export function Profile() {
             </View>
             <Text className="text-xs font-inter text-muted mr-1">›</Text>
           </TouchableOpacity>
-
 
           <View className="flex-row items-center px-4 py-3">
             <View className="w-10 h-10 rounded-full bg-primary-light items-center justify-center mr-4">
@@ -144,11 +232,11 @@ export function Profile() {
           </View>
         </View>
 
-
+        {/* Logout */}
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={handleLogout}
-          className="flex-row items-center justify-center border border-primary rounded-xl py-4 mb-8 bg-surface"
+          className="flex-row items-center justify-center border border-primary rounded-xl py-4 mb-4 bg-surface"
         >
           <ArrowRightStartOnRectangleIcon size={20} color={colors.primary} />
           <Text className="text-base font-inter-bold text-primary ml-2">Log out</Text>
@@ -165,7 +253,6 @@ export function Profile() {
         }}
       />
 
-
       <Modal
         visible={langModalVisible}
         transparent
@@ -177,11 +264,8 @@ export function Profile() {
           <View className="flex-1 bg-black/60 justify-end items-center">
             <TouchableWithoutFeedback>
               <View className="bg-surface w-full max-w-md rounded-t-2xl pt-4 pb-10 border-t border-border">
-
                 <View className="w-10 h-1 rounded-full bg-border self-center mb-5" />
-
                 <Text className="text-base font-inter-bold text-dark px-6 mb-4">Choose language</Text>
-
                 {LANGUAGES.map((lang) => (
                   <TouchableOpacity
                     key={lang}
@@ -189,14 +273,12 @@ export function Profile() {
                     onPress={() => { setSelectedLang(lang); setLangModalVisible(false); }}
                     className="flex-row items-center px-6 py-4"
                   >
-                    <View className={`w-5 h-5 rounded-full border-2 items-center justify-center mr-4 ${selectedLang === lang ? 'border-primary' : 'border-border'
-                      }`}>
+                    <View className={`w-5 h-5 rounded-full border-2 items-center justify-center mr-4 ${selectedLang === lang ? 'border-primary' : 'border-border'}`}>
                       {selectedLang === lang && (
                         <View className="w-2.5 h-2.5 rounded-full bg-primary" />
                       )}
                     </View>
-                    <Text className={`text-base font-inter-medium ${selectedLang === lang ? 'text-primary' : 'text-dark'
-                      }`}>{lang}</Text>
+                    <Text className={`text-base font-inter-medium ${selectedLang === lang ? 'text-primary' : 'text-dark'}`}>{lang}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -216,7 +298,7 @@ function DetailRow({
 }: {
   icon: React.ComponentType<any>;
   label: string;
-  value: string;
+  value?: string | null;
   isLast?: boolean
 }) {
   return (
@@ -226,7 +308,7 @@ function DetailRow({
       </View>
       <View className="flex-1">
         <Text className="text-xs font-inter-semibold text-muted mb-0.5">{label}</Text>
-        <Text className="text-sm font-inter-medium text-dark">{value || '-'}</Text>
+        <Text className="text-sm font-inter-medium text-dark">{value ? String(value) : '-'}</Text>
       </View>
     </View>
   );

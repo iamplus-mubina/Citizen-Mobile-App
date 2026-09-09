@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Platform, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Button } from '@/components/Button';
@@ -9,16 +9,26 @@ import { Input } from '@/components/Input';
 import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
 
-const PRIORITIES = ['Low', 'Medium', 'High'];
-
 export default function DetailsScreen() {
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [priority, setPriority] = useState('Medium');
-  const setDetails = useComplaintStore((s) => s.setDetails);
+  const setComplaintForm = useComplaintStore((s) => s.setComplaintForm);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const onBackPress = () => {
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace('/complaint/category');
+      }
+      return true;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [router]);
 
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background"
@@ -39,14 +49,24 @@ export default function DetailsScreen() {
       return;
     }
 
-    setDetails(title, description, priority);
+    setComplaintForm({ description });
     router.push('/complaint/location');
   };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className={containerClass}>
-        <Header showBack title="Raise a complaint" />
+        <Header 
+          showBack 
+          title="Raise a complaint" 
+          onBack={() => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/complaint/category');
+            }
+          }}
+        />
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
           

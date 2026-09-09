@@ -1,4 +1,5 @@
-import { View, Text, ScrollView, TouchableOpacity, Platform, Linking } from 'react-native';
+import { useEffect } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Platform, Linking, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { Header } from '@/components/Header';
@@ -59,6 +60,25 @@ const menuItems = [
 ];
 
 export default function HelpSupportScreen() {
+  const router = useRouter();
+
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/home');
+    }
+  };
+
+  useEffect(() => {
+    const onBackPress = () => {
+      handleBack();
+      return true;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [router]);
+
   const containerClass = Platform.OS === 'web'
     ? 'flex-1 w-full max-w-md mx-auto bg-background'
     : 'flex-1 bg-background';
@@ -67,7 +87,7 @@ export default function HelpSupportScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
       <Stack.Screen options={{ headerShown: false }} />
       <View className={containerClass}>
-        <Header showBack title="Help & Support" />
+        <Header showBack title="Help & Support" onBack={handleBack} />
 
         <ScrollView className="flex-1 px-5 pt-6" showsVerticalScrollIndicator={false}>
           <View className="mb-8">

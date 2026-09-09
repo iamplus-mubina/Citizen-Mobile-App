@@ -1,6 +1,7 @@
-import { View, Text, Platform, ScrollView } from 'react-native';
+import { useEffect } from 'react';
+import { View, Text, Platform, ScrollView, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { CheckIcon } from 'react-native-heroicons/solid';
 import { Button } from '@/components/Button';
 import { Header } from '@/components/Header';
@@ -9,12 +10,26 @@ import { useComplaintStore } from '@/store/useComplaintStore';
 
 export default function SuccessScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const submittedComplaints = useComplaintStore(state => state.submittedComplaints);
 
+  useEffect(() => {
+    const onBackPress = () => {
+      router.replace('/home');
+      return true;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [router]);
 
-  const latestComplaint = submittedComplaints.length > 0 ? submittedComplaints[0] : {
-    ticketId: 'CMP-1025',
-    date: '13 May 2024'
+  const reqId = params?.requestId ? String(params.requestId) : '';
+  const matched = reqId
+    ? submittedComplaints.find((c) => String(c.requestId) === reqId || String(c.id) === reqId)
+    : null;
+
+  const latestComplaint = matched || (submittedComplaints.length > 0 ? submittedComplaints[0] : null) || {
+    ticketId: reqId ? `REQ-${reqId}` : 'REQ-New',
+    date: new Date().toLocaleDateString('en-IN'),
   };
 
   const containerClass = Platform.OS === 'web'
@@ -57,7 +72,7 @@ export default function SuccessScreen() {
           <Button
             title="Track complaint"
             variant="primary"
-            onPress={() => router.push(`/complaint/timeline/${latestComplaint.ticketId}`)}
+            onPress={() => router.replace(`/complaint/timeline/${latestComplaint.ticketId}`)}
             className="w-full"
           />
           <View className="mt-3">

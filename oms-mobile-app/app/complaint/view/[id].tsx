@@ -1,4 +1,5 @@
-import { View, Text, ScrollView, Platform } from 'react-native';
+import { useEffect } from 'react';
+import { View, Text, ScrollView, Platform, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Header } from '@/components/Header';
@@ -22,6 +23,23 @@ export default function ComplaintDetailsViewScreen() {
   const router = useRouter();
   const complaint = getComplaintDetails(id);
 
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace({ pathname: '/home', params: { tab: 'complaints' } });
+    }
+  };
+
+  useEffect(() => {
+    const onBackPress = () => {
+      handleBack();
+      return true;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [router]);
+
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background"
     : "flex-1 bg-background";
@@ -30,7 +48,7 @@ export default function ComplaintDetailsViewScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
       <Stack.Screen options={{ headerShown: false }} />
       <View className={containerClass}>
-        <Header showBack />
+        <Header showBack onBack={handleBack} />
 
         <View className="px-6 pb-6 pt-2">
           <Text className="text-lg font-inter-bold text-dark">Complaint Details</Text>

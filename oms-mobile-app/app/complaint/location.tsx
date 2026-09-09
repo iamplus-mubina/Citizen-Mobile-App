@@ -1,53 +1,33 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Platform } from 'react-native';
+import { View, Text, ScrollView, Platform, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Button } from '@/components/Button';
 import { Header } from '@/components/Header';
 import { FormStepper } from '@/components/FormStepper';
 import { Input } from '@/components/Input';
-import { Dropdown } from '@/components/Dropdown';
-import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
-import { api } from '@/services/api';
-
-const FALLBACK_WARDS = ['Ward A', 'Ward B', 'Ward C', 'Ward D', 'Ward E'];
 
 export default function LocationScreen() {
   const router = useRouter();
   const [address, setAddress] = useState('');
-  const [ward, setWard] = useState('');
   const [pincode, setPincode] = useState('');
-  const [wardOptions, setWardOptions] = useState<string[]>(FALLBACK_WARDS);
-  const setLocation = useComplaintStore((s) => s.setLocation);
+  const setComplaintForm = useComplaintStore((s) => s.setComplaintForm);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const fetchLocationData = async () => {
-      try {
-        const [deptRes, assemblyRes, gaonRes, ganRes, gatRes, prabhagRes, prabhagAreaRes, districtRes] = await Promise.allSettled([
-          api.get('/department'),
-          api.get('/assembly'),
-          api.get('/gaon'),
-          api.get('/ganNo'),
-          api.get('/gatNo'),
-          api.get('/prabhag'),
-          api.get('/prabhagArea'),
-          api.get('/district'),
-        ]);
-
-        if (prabhagRes.status === 'fulfilled' && Array.isArray(prabhagRes.value.data) && prabhagRes.value.data.length > 0) {
-          const prabhagList = prabhagRes.value.data.map((p: any) => p.name || `Prabhag ${p.id}`);
-          setWardOptions(prabhagList);
-          console.log('Prabhag/Ward options dynamically loaded:', prabhagList.length);
-        }
-      } catch (error) {
-        console.error('Error fetching location data:', error);
+    const onBackPress = () => {
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace('/complaint/details');
       }
+      return true;
     };
-    fetchLocationData();
-  }, []);
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [router]);
 
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background"
@@ -57,21 +37,31 @@ export default function LocationScreen() {
     const newErrors: Record<string, string> = {};
 
     if (!address.trim()) newErrors.address = 'Address is required';
-    if (pincode.length !== 6) newErrors.pincode = 'Pincode must be 6 digits';
+    if (pincode && pincode.length !== 6) newErrors.pincode = 'Pincode must be 6 digits';
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    setLocation(address, '', ward, pincode);
+    setComplaintForm({ address, pincode });
     router.push('/complaint/attachments');
   };
 
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className={containerClass}>
-        <Header showBack title="Raise a complaint" />
+        <Header 
+          showBack 
+          title="Raise a complaint" 
+          onBack={() => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/complaint/details');
+            }
+          }}
+        />
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
 
@@ -80,7 +70,6 @@ export default function LocationScreen() {
             <FormStepper currentStep={3} totalSteps={5} />
             <Text className="text-base font-inter-semibold text-dark mt-6 mb-2">Pinpoint the issue location</Text>
           </View>
-
 
           <View className="mb-8">
             <Input
@@ -94,28 +83,20 @@ export default function LocationScreen() {
               error={errors.address}
             />
 
-
             <Input
-              label="Pincode *"
+              label="Pincode (Optional)"
               placeholder="Enter pincode"
               value={pincode}
               onChangeText={(text) => {
                 const cleanText = text.replace(/[^0-9]/g, '');
                 setPincode(cleanText);
-                if (cleanText.length === 6) setErrors(prev => ({ ...prev, pincode: '' }));
+                if (cleanText.length === 6 || cleanText.length === 0) setErrors(prev => ({ ...prev, pincode: '' }));
               }}
               keyboardType="numeric"
               maxLength={6}
               error={errors.pincode}
             />
 
-            {/* <Button
-              title="Use Current Location"
-              variant="outline"
-              leftIcon={<MapPinIcon size={20} color={colors.primary} />}
-              onPress={() => console.log('Fetch location...')}
-              className="mt-2"
-            /> */}
             <View className="mt-4 mb-8">
               <Button
                 title="Next"

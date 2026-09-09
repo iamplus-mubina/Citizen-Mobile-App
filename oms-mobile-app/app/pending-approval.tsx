@@ -1,4 +1,5 @@
-import { View, Text, Platform } from 'react-native';
+import { useEffect } from 'react';
+import { View, Text, Platform, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Button } from '@/components/Button';
@@ -7,6 +8,15 @@ import { colors } from '@/constants/Colors';
 
 export default function PendingApprovalScreen() {
   const router = useRouter();
+
+  useEffect(() => {
+    const onBackPress = () => {
+      router.replace('/login');
+      return true;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [router]);
 
   const renderContent = () => (
     <View className="flex-1 px-6 w-full max-w-md mx-auto pt-16 pb-10 justify-between">
@@ -40,7 +50,7 @@ export default function PendingApprovalScreen() {
         <Button 
           title="Close" 
           variant="secondary" 
-          onPress={() => router.push('/login')} 
+          onPress={() => router.replace('/login')} 
         />
       </View>
     </View>

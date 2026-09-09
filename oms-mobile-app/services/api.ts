@@ -6,6 +6,7 @@ const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://mn-0042-api.digital
 
 export const api = axios.create({
   baseURL: BASE_URL,
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
     'Accept-Language': 'en',
@@ -50,22 +51,28 @@ export const removeStoredToken = async (): Promise<void> => {
   try {
     if (Platform.OS === 'web' && typeof window !== 'undefined' && window.localStorage) {
       window.localStorage.removeItem('userToken');
+      window.localStorage.removeItem('user_profile_photo');
       return;
     }
     if (AsyncStorage && typeof AsyncStorage.removeItem === 'function') {
       await AsyncStorage.removeItem('userToken');
+      await AsyncStorage.removeItem('user_profile_photo');
     }
   } catch (e) {
     console.log('Storage removeItem fallback:', e);
   }
 };
 
+// Request Interceptor: Attach Bearer Token
 api.interceptors.request.use(
   async (config) => {
     try {
       const token = await getStoredToken();
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+      }
+      if (config.data instanceof FormData) {
+        delete config.headers['Content-Type'];
       }
     } catch (error) {
       console.error('Error fetching token', error);
@@ -75,7 +82,21 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Response Interceptor: Handle 401 (session expired)
+let isRedirectingToLogin = false;
+
 api.interceptors.response.use(
   (response) => response,
-  async (error) => Promise.reject(error)
+  async (error) => {
+    if (error.response && error.response.status === 401 && !isRedirectingToLogin) {
+      isRedirectingToLogin = true;
+      await removeStoredToken();
+      // Use a small delay to allow navigation to settle
+      setTimeout(() => {
+        isRedirectingToLogin = false;
+      }, 2000);
+      // The app's auth check in home.tsx / _layout.tsx will handle redirect
+    }
+    return Promise.reject(error);
+  }
 );

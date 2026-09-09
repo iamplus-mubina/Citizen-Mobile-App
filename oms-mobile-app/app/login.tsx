@@ -10,7 +10,8 @@ import {
   Keyboard,
   TouchableOpacity,
   TextInput,
-  Image
+  Image,
+  BackHandler
 } from 'react-native';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
@@ -19,12 +20,15 @@ import { PhoneIcon, ArrowLeftIcon } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 import omsLogo from '../assets/images/oms_logo.png';
 import { useComplaintStore } from '@/store/useComplaintStore';
+import { useSystemConfigStore } from '@/store/useSystemConfigStore';
 import { api, setStoredToken } from '@/services/api';
 import { AlertModal } from '@/components/AlertModal';
 
 export default function LoginScreen() {
   const router = useRouter();
   const { setPhoneNumber } = useComplaintStore();
+  const { config, fetchSystemConfig, getBrandingPhotoUrl } = useSystemConfigStore();
+  const [logoError, setLogoError] = useState(false);
   const [step, setStep] = useState<'splash' | 'mobile' | 'otp'>('splash');
   const [mobile, setMobile] = useState('');
   const [otp, setOtp] = useState('');
@@ -38,6 +42,10 @@ export default function LoginScreen() {
   const touchStartX = useRef(0);
 
   useEffect(() => {
+    fetchSystemConfig();
+  }, []);
+
+  useEffect(() => {
     if (step !== 'otp' || timeLeft <= 0) return;
 
     const timer = setInterval(() => {
@@ -46,6 +54,23 @@ export default function LoginScreen() {
 
     return () => clearInterval(timer);
   }, [step, timeLeft]);
+
+  useEffect(() => {
+    const onBackPress = () => {
+      if (step === 'otp') {
+        handleBackToMobile();
+        return true;
+      }
+      if (step === 'mobile') {
+        setStep('splash');
+        return true;
+      }
+      return false;
+    };
+
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [step]);
 
   const handleMobileChange = (text: string) => {
     const numericText = text.replace(/[^0-9]/g, '');
@@ -72,14 +97,13 @@ export default function LoginScreen() {
         }, 100);
       } catch (err: any) {
         console.error('Request OTP Error:', err);
-        const errorMessage = err.response?.data?.message || 'Failed to send OTP. Please try again.';
+        const rawMessage = err.response?.data?.message;
+        const errorMessage = Array.isArray(rawMessage)
+          ? rawMessage.join(', ')
+          : (rawMessage || 'Failed to send OTP. Please try again.');
         
-        if (errorMessage.includes('Account not found') || errorMessage.includes('onboarding')) {
-          router.push('/pending-approval');
-        } else {
-          setAlertConfig({ title: 'Error', message: errorMessage, type: 'error' });
-          setAlertVisible(true);
-        }
+        setAlertConfig({ title: 'Notice', message: errorMessage, type: 'error' });
+        setAlertVisible(true);
       }
     }
   };
@@ -102,7 +126,10 @@ export default function LoginScreen() {
         router.replace('/home');
       } catch (err: any) {
         console.error('Verify OTP Error:', err);
-        const errorMessage = err.response?.data?.message || 'Invalid OTP. Please try again.';
+        const rawMessage = err.response?.data?.message;
+        const errorMessage = Array.isArray(rawMessage)
+          ? rawMessage.join(', ')
+          : (rawMessage || 'Invalid OTP. Please try again.');
         setAlertConfig({ title: 'Verification Failed', message: errorMessage, type: 'error' });
         setAlertVisible(true);
       }
@@ -122,7 +149,10 @@ export default function LoginScreen() {
         console.log('OTP Resent to:', mobile);
       } catch (err: any) {
         console.error('Resend OTP Error:', err);
-        const errorMessage = err.response?.data?.message || 'Failed to resend OTP.';
+        const rawMessage = err.response?.data?.message;
+        const errorMessage = Array.isArray(rawMessage)
+          ? rawMessage.join(', ')
+          : (rawMessage || 'Failed to resend OTP.');
         setAlertConfig({ title: 'Error', message: errorMessage, type: 'error' });
         setAlertVisible(true);
       }
@@ -167,6 +197,10 @@ export default function LoginScreen() {
       ? "flex-1 px-6 w-full max-w-md mx-auto"
       : "flex-1 px-6";
 
+    const photoUrl = getBrandingPhotoUrl('L');
+    const brandingTitle = config?.BRANDING_TITLE || 'Office Management';
+    const brandingSubTitle = config?.BRANDING_SUB_TITLE || 'Citizen App';
+
     if (step === 'splash') {
       return (
         <View
@@ -176,13 +210,21 @@ export default function LoginScreen() {
         >
           <View className="items-center px-6">
             <Image
-              source={omsLogo}
-              style={{ width: 160, height: 160, marginBottom: 32 }}
+              source={photoUrl && !logoError ? { uri: photoUrl } : omsLogo}
+              style={{ width: 160, height: 160, marginBottom: 28 }}
               resizeMode="contain"
+              onError={() => setLogoError(true)}
             />
-            <Text className="text-3xl font-inter-bold text-dark mb-10 text-center leading-10">
-              {"Office Management\nCitizen App"}
+            <Text className="text-3xl font-inter-bold text-dark mb-2 text-center leading-10">
+              {brandingTitle}
             </Text>
+            {brandingSubTitle ? (
+              <Text className="text-lg font-inter text-muted mb-8 text-center">
+                {brandingSubTitle}
+              </Text>
+            ) : (
+              <View className="mb-8" />
+            )}
 
             <View className="flex-row gap-x-2 mt-4">
               <View className="w-2.5 h-2.5 rounded-full bg-primary" />
@@ -201,7 +243,7 @@ export default function LoginScreen() {
     return (
       <View className={mainClass}>
         <View className="h-14 justify-center">
-          {step === 'otp' && (
+          {step === 'otp' ? (
             <TouchableOpacity
               onPress={handleBackToMobile}
               className="self-start p-2 -ml-2 rounded-full"
@@ -209,22 +251,31 @@ export default function LoginScreen() {
             >
               <ArrowLeftIcon size={24} color={colors.dark} />
             </TouchableOpacity>
-          )}
+          ) : step === 'mobile' ? (
+            <TouchableOpacity
+              onPress={() => setStep('splash')}
+              className="self-start p-2 -ml-2 rounded-full"
+              activeOpacity={0.7}
+            >
+              <ArrowLeftIcon size={24} color={colors.dark} />
+            </TouchableOpacity>
+          ) : null}
         </View>
 
         <View className="flex-1 justify-center pb-14">
           <View className="mb-10 items-center">
             <Image
-              source={omsLogo}
-              style={{ width: 150, height: 150, marginBottom: 24 }}
+              source={photoUrl && !logoError ? { uri: photoUrl } : omsLogo}
+              style={{ width: 140, height: 140, marginBottom: 20 }}
               resizeMode="contain"
+              onError={() => setLogoError(true)}
             />
             <Text className="text-3xl font-inter-bold text-dark mb-2 text-center">
-              {step === 'mobile' ? 'Welcome' : 'Enter OTP'}
+              {step === 'mobile' ? (config?.BRANDING_TITLE || 'Welcome') : 'Enter OTP'}
             </Text>
             <Text className="text-muted text-lg font-inter text-center">
               {step === 'mobile'
-                ? 'Please enter your mobile number.'
+                ? (config?.BRANDING_SUB_TITLE ? `${config.BRANDING_SUB_TITLE} - Please enter your mobile number.` : 'Please enter your mobile number.')
                 : `We have sent a 6-digit code to ${mobile}`
               }
             </Text>

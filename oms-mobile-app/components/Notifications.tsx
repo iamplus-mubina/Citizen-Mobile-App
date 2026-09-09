@@ -21,13 +21,21 @@ export function Notifications() {
 
   const notificationsList: NotificationItem[] = useMemo(() => {
     if (submittedComplaints.length === 0) return [];
-    return submittedComplaints.map((c: SubmittedComplaint, index: number) => ({
-      id: `notif-${c.ticketId}`,
-      title: `Complaint Status: ${c.status}`,
-      message: `Your complaint ${c.ticketId} (${c.title}) status is currently ${c.status}.`,
-      time: `${c.date} • Submitted`,
-      read: index > 0,
-    }));
+    return submittedComplaints.map((c: SubmittedComplaint, index: number) => {
+      const displayStatus = c.requestStatus === 'REJECTED' 
+        ? 'Rejected' 
+        : c.requestStatus === 'PENDING' 
+          ? 'Pending Approval' 
+          : c.liveStatus || 'In Progress';
+      const complaintTitle = c.type || c.category || 'Complaint';
+      return {
+        id: `notif-${c.ticketId || c.id}`,
+        title: `Complaint Status: ${displayStatus}`,
+        message: `Your complaint ${c.ticketId} (${complaintTitle}) status is currently ${displayStatus}.`,
+        time: `${c.date || 'Recently'} • Updated`,
+        read: index > 0,
+      };
+    });
   }, [submittedComplaints]);
 
   const counts = useMemo(() => ({

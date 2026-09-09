@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Platform, Image, TouchableOpacity, Modal, Dimensions } from 'react-native';
+import { View, Text, ScrollView, Platform, Image, TouchableOpacity, Modal, Dimensions, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Header } from '@/components/Header';
 import { PlayIcon, MegaphoneIcon, XMarkIcon } from 'react-native-heroicons/solid';
 import { colors } from '@/constants/Colors';
@@ -29,7 +29,25 @@ const formatDateString = (dateStr?: string) => {
 };
 
 export default function UpdateDetailScreen() {
+  const router = useRouter();
   const params = useLocalSearchParams<{ id?: string; title?: string; summary?: string; date?: string; category?: string; imageUrl?: string }>();
+
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace({ pathname: '/home', params: { tab: 'updates' } });
+    }
+  };
+
+  useEffect(() => {
+    const onBackPress = () => {
+      handleBack();
+      return true;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [router]);
   const [detail, setDetail] = useState<{
     title: string;
     date: string;
@@ -117,7 +135,7 @@ export default function UpdateDetailScreen() {
       <Stack.Screen options={{ headerShown: false }} />
       <View className={containerClass}>
 
-        <Header showBack title="City Updates" />
+        <Header showBack title="City Updates" onBack={handleBack} />
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
 

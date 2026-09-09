@@ -9,6 +9,7 @@ import {
   Inter_600SemiBold, 
   Inter_700Bold 
 } from '@expo-google-fonts/inter';
+import { useSystemConfigStore } from '@/store/useSystemConfigStore';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -19,6 +20,10 @@ export default function RootLayout() {
     Inter_600SemiBold,
     Inter_700Bold,
   });
+
+  useEffect(() => {
+    useSystemConfigStore.getState().fetchSystemConfig();
+  }, []);
 
   useEffect(() => {
     if (fontsLoaded || error) {

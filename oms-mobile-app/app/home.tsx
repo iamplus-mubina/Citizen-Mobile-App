@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { View, Text, Platform, ScrollView, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { View, Text, Platform, ScrollView, TouchableOpacity, RefreshControl, BackHandler, ToastAndroid } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/Header';
 import { BottomNavigation, TabType } from '@/components/BottomNavigation';
@@ -8,22 +8,94 @@ import { Card } from '@/components/Card';
 import { 
   ClipboardDocumentListIcon,
   BellIcon,
-  QuestionMarkCircleIcon,
   MegaphoneIcon,
   UserIcon
 } from 'react-native-heroicons/outline';
 import { MyComplaints } from '@/components/MyComplaints';
 import { Notifications } from '@/components/Notifications';
+import { Updates } from '@/components/Updates';
 import { Profile } from '@/components/Profile';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useComplaintStore } from '@/store/useComplaintStore';
-import { api } from '@/services/api';
+import { citizenService } from '@/services/citizenService';
 
 export default function HomeScreen() {
-  const [activeTab, setActiveTab] = useState<TabType>('home');
   const router = useRouter();
-  const { submittedComplaints, profilePhoto, setProfile, setProfilePhoto, setComplaints } = useComplaintStore();
+  const params = useLocalSearchParams<{ tab?: string }>();
+  const [activeTab, setActiveTab] = useState<TabType>('home');
+  const [refreshing, setRefreshing] = useState(false);
+  const lastBackPress = useRef(0);
+
+  useEffect(() => {
+    if (params?.tab && ['home', 'complaints', 'updates', 'profile', 'notifications'].includes(params.tab)) {
+      setActiveTab(params.tab as TabType);
+    }
+  }, [params?.tab]);
+
+  useEffect(() => {
+    const onBackPress = () => {
+      if (activeTab !== 'home') {
+        setActiveTab('home');
+        return true;
+      }
+      const now = Date.now();
+      if (now - lastBackPress.current < 2000) {
+        BackHandler.exitApp();
+        return true;
+      }
+      lastBackPress.current = now;
+      if (Platform.OS === 'android') {
+        ToastAndroid.show('Press back again to exit', ToastAndroid.SHORT);
+      }
+      return true;
+    };
+
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [activeTab]);
+  const { 
+    submittedComplaints, 
+    totalComplaintsCount,
+    profilePhoto, 
+    setProfilePhoto, 
+    setProfileFromApi, 
+    setComplaints 
+  } = useComplaintStore();
+
+  const loadData = useCallback(async () => {
+    try {
+      // 1. Fetch Profile
+      try {
+        const profileRes = await citizenService.getProfile();
+        if (profileRes) {
+          setProfileFromApi(profileRes);
+          const photo = profileRes.ProfileImage || (profileRes as any).profileImage;
+          if (photo) {
+            setProfilePhoto(photo);
+            AsyncStorage.setItem('user_profile_photo', photo).catch(() => {});
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to load profile in home:', err);
+      }
+
+      // 2. Fetch Complaints
+      try {
+        const complaintsRes = await citizenService.getMyComplaints({
+          page: { number: 0, size: 20 },
+          status: ''
+        });
+        const list = complaintsRes.data || [];
+        const total = complaintsRes.total ?? list.length;
+        setComplaints(list, total);
+      } catch (err) {
+        console.warn('Failed to load complaints in home:', err);
+      }
+    } finally {
+      setRefreshing(false);
+    }
+  }, [setProfileFromApi, setProfilePhoto, setComplaints]);
 
   useEffect(() => {
     const loadSavedPhoto = async () => {
@@ -37,55 +109,27 @@ export default function HomeScreen() {
       }
     };
 
-    const fetchProfile = async () => {
-      try {
-        const res = await api.get('/citizen/profile');
-        const data = res.data;
-        if (data) {
-          const fullName = [data.firstName, data.lastName].filter(Boolean).join(' ');
-          setProfile({
-            profileName: fullName,
-            profileEmail: data.email || '',
-            profileAddress: data.address || '',
-            profilePincode: ''
-          });
-          const photo = data.profileImage || data.photoUrl || data.avatarUrl || data.profilePhoto;
-          if (photo) {
-            setProfilePhoto(photo);
-            AsyncStorage.setItem('user_profile_photo', photo).catch(() => {});
-          }
-        }
-      } catch (err) {
-        console.error('Failed to fetch profile:', err);
-      }
-    };
-
-    const fetchComplaints = async () => {
-      try {
-        const res = await api.post('/citizen/complaints/my-complaints', {
-          page: { number: 0, size: 10 },
-          status: ''
-        });
-        // Response is [[...complaints], totalCount]
-        const data = res.data;
-        const complaintsList = Array.isArray(data) ? (Array.isArray(data[0]) ? data[0] : data) : [];
-        if (setComplaints) {
-          setComplaints(complaintsList);
-        }
-        console.log('My complaints fetched:', complaintsList.length);
-      } catch (err) {
-        console.error('Failed to fetch complaints:', err);
-      }
-    };
-
     loadSavedPhoto();
-    fetchProfile();
-    fetchComplaints();
-  }, []);
+    loadData();
+  }, [loadData]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    loadData();
+  }, [loadData]);
 
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background justify-between h-screen overflow-hidden"
     : "flex-1 bg-background justify-between";
+
+  // Dynamic counts derived from actual dual-status data
+  const totalCount = totalComplaintsCount || submittedComplaints.length;
+  const pendingCount = submittedComplaints.filter(c => c.requestStatus === 'PENDING').length;
+  const inProgressCount = submittedComplaints.filter(c => (c.liveStatus || '').toUpperCase().includes('PROGRESS')).length;
+  const solvedCount = submittedComplaints.filter(c => {
+    const live = (c.liveStatus || '').toUpperCase();
+    return (live.includes('SOLVED') && !live.includes('UNSOLVED')) || live.includes('RESOLVED') || live.includes('COMPLETE');
+  }).length;
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -95,12 +139,15 @@ export default function HomeScreen() {
             className="flex-1 px-5 pt-6" 
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 40 }}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
           >
 
             <Card 
               variant="complaint"
               title="Raise a complaint"
-              description="Report a civic issue in six clear steps. You can add location and evidence."
+              description="Report a civic issue in simple steps with photos and location details."
               onPress={() => router.push('/complaint/category')}
             />
 
@@ -118,21 +165,13 @@ export default function HomeScreen() {
                   variant="quick"
                   title="Notifications" 
                   Icon={BellIcon} 
-                  badgeCount={3}
                   onPress={() => setActiveTab('notifications')}
                 />
-                {/* <Card 
-                  variant="quick"
-                  title="Help & Support" 
-                  Icon={QuestionMarkCircleIcon} 
-                  onPress={() => router.push('/help' as any)}
-                /> */}
                 <Card 
                   variant="quick"
                   title="Updates" 
                   Icon={MegaphoneIcon} 
-                  badgeCount={2}
-                  onPress={() => router.push('/updates' as any)}
+                  onPress={() => setActiveTab('updates')}
                 />
                 <Card 
                   variant="quick"
@@ -147,33 +186,22 @@ export default function HomeScreen() {
               <Text className="text-lg font-inter-bold text-dark mb-4">Your complaint position</Text>
               
               <View className="flex-row justify-between mx-[-4px]">
-                {(() => {
-                  const totalCount = submittedComplaints.length;
-                  const openCount = submittedComplaints.filter(c => c.status.toLowerCase().includes('pending')).length;
-                  const inProgressCount = submittedComplaints.filter(c => c.status.toLowerCase().includes('progress') || c.status.toLowerCase().includes('assign')).length;
-                  const resolvedCount = submittedComplaints.filter(c => c.status.toLowerCase().includes('resolv') || c.status.toLowerCase().includes('complet')).length;
-
-                  return (
-                    <>
-                      <View className="flex-1 bg-surface border border-border rounded-xl p-2 mx-1">
-                        <Text className="text-xl font-inter-bold text-dark mb-2">{totalCount}</Text>
-                        <Text className="text-[10px] font-inter text-dark" numberOfLines={1} adjustsFontSizeToFit>Total</Text>
-                      </View>
-                      <View className="flex-1 bg-surface border border-border rounded-xl p-2 mx-1">
-                        <Text className="text-xl font-inter-bold text-dark mb-2">{openCount}</Text>
-                        <Text className="text-[10px] font-inter text-dark" numberOfLines={1} adjustsFontSizeToFit>Open</Text>
-                      </View>
-                      <View className="flex-1 bg-surface border border-border rounded-xl p-2 mx-1">
-                        <Text className="text-xl font-inter-bold text-dark mb-2">{inProgressCount}</Text>
-                        <Text className="text-[10px] font-inter text-dark" numberOfLines={1} adjustsFontSizeToFit>In progress</Text>
-                      </View>
-                      <View className="flex-1 bg-surface border border-border rounded-xl p-2 mx-1">
-                        <Text className="text-xl font-inter-bold text-dark mb-2">{resolvedCount}</Text>
-                        <Text className="text-[10px] font-inter text-dark" numberOfLines={1} adjustsFontSizeToFit>Resolved</Text>
-                      </View>
-                    </>
-                  );
-                })()}
+                <View className="flex-1 bg-surface border border-border rounded-xl p-2 mx-1">
+                  <Text className="text-xl font-inter-bold text-dark mb-2">{totalCount}</Text>
+                  <Text className="text-[10px] font-inter text-dark" numberOfLines={1} adjustsFontSizeToFit>Total</Text>
+                </View>
+                <View className="flex-1 bg-surface border border-border rounded-xl p-2 mx-1">
+                  <Text className="text-xl font-inter-bold text-amber-600 mb-2">{pendingCount}</Text>
+                  <Text className="text-[10px] font-inter text-dark" numberOfLines={1} adjustsFontSizeToFit>Pending</Text>
+                </View>
+                <View className="flex-1 bg-surface border border-border rounded-xl p-2 mx-1">
+                  <Text className="text-xl font-inter-bold text-blue-600 mb-2">{inProgressCount}</Text>
+                  <Text className="text-[10px] font-inter text-dark" numberOfLines={1} adjustsFontSizeToFit>In progress</Text>
+                </View>
+                <View className="flex-1 bg-surface border border-border rounded-xl p-2 mx-1">
+                  <Text className="text-xl font-inter-bold text-emerald-600 mb-2">{solvedCount}</Text>
+                  <Text className="text-[10px] font-inter text-dark" numberOfLines={1} adjustsFontSizeToFit>Solved</Text>
+                </View>
               </View>
             </View>
 
@@ -185,25 +213,37 @@ export default function HomeScreen() {
                 </TouchableOpacity>
               </View>
 
-              {submittedComplaints.map((item) => (
-                <View key={item.ticketId} className="mb-3">
-                  <Card 
-                    variant="recent"
-                    ticketId={item.ticketId}
-                    title={item.title}
-                    description={item.category ? `${item.category} · ${item.ward || 'Ward 1'}` : undefined}
-                    date={item.date}
-                    status={item.status}
-                    onPress={() => router.push(`/complaint/timeline/${item.ticketId}`)}
-                  />
+              {submittedComplaints.length > 0 ? (
+                submittedComplaints.slice(0, 5).map((item) => (
+                  <View key={item.ticketId || item.id} className="mb-3">
+                    <Card 
+                      variant="recent"
+                      ticketId={item.ticketId}
+                      title={item.type || item.category || 'Complaint'}
+                      description={item.description || (item.category ? `${item.category}` : undefined)}
+                      date={item.date}
+                      requestStatus={item.requestStatus}
+                      liveStatus={item.liveStatus}
+                      rejectionReason={item.rejectionReason}
+                      onPress={() => router.push(`/complaint/timeline/${item.ticketId}`)}
+                    />
+                  </View>
+                ))
+              ) : (
+                <View className="bg-surface border border-border rounded-xl p-6 items-center">
+                  <Text className="text-base font-inter-semibold text-dark mb-1">No complaints yet</Text>
+                  <Text className="text-xs font-inter text-muted text-center">
+                    Tap "Raise a complaint" above to report a civic issue in your area.
+                  </Text>
                 </View>
-              ))}
+              )}
             </View>
           </ScrollView>
         );
       case 'complaints':
         return <MyComplaints />;
       case 'updates':
+        return <Updates />;
       case 'notifications':
         return <Notifications />;
       case 'profile':
@@ -224,13 +264,8 @@ export default function HomeScreen() {
         <BottomNavigation 
           activeTab={activeTab} 
           onTabPress={(tab) => {
-            if (tab === 'updates') {
-              router.push('/updates' as any);
-            } else {
-              setActiveTab(tab);
-            }
+            setActiveTab(tab);
           }} 
-          updatesBadgeCount={2}
         />
       </View>
     </SafeAreaView>

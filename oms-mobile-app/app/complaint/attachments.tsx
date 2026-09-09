@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image, Platform, Alert } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Image, Platform, Alert, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { ChevronLeftIcon, PhotoIcon, DocumentIcon, XMarkIcon, ArrowUpTrayIcon } from 'react-native-heroicons/outline';
@@ -10,14 +10,28 @@ import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
 import { UploadModal } from '@/components/UploadModal';
 import * as DocumentPicker from 'expo-document-picker';
-import { api } from '@/services/api';
+import { citizenService } from '@/services/citizenService';
 
 export default function AttachmentsScreen() {
   const router = useRouter();
-  const [photos, setPhotos] = useState<string[]>([]);
-  const [documents, setDocuments] = useState<{ name: string }[]>([]);
+  const [photos, setPhotos] = useState<{ uri: string; serverPath?: string }[]>([]);
+  const [documents, setDocuments] = useState<{ name: string; serverPath?: string }[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const setAttachments = useComplaintStore((s) => s.setAttachments);
+  const setComplaintForm = useComplaintStore((s) => s.setComplaintForm);
+
+  useEffect(() => {
+    const onBackPress = () => {
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.replace('/complaint/location');
+      }
+      return true;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [router]);
 
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background"
@@ -28,20 +42,21 @@ export default function AttachmentsScreen() {
   };
 
   const handleImagePicked = async (uri: string) => {
-    setPhotos((prev) => [...prev, uri]);
+    setIsUploading(true);
     try {
-      const formData = new FormData();
-      const filename = uri.split('/').pop() || 'photo.jpg';
+      const filename = uri.split('/').pop() || `photo_${Date.now()}.jpg`;
       const match = /\.(\w+)$/.exec(filename);
       const type = match ? `image/${match[1]}` : 'image/jpeg';
-      formData.append('file', { uri, name: filename, type } as any);
 
-      await api.post('/file-uploader/upload2?entityName=citizen-complaints', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      console.log('Photo uploaded via /file-uploader/upload2');
+      const res = await citizenService.uploadFile(uri, filename, type);
+      const serverPath = res?.path || res?.data?.path || '';
+      setPhotos((prev) => [...prev, { uri, serverPath }]);
+      console.log('Photo uploaded successfully:', serverPath);
     } catch (err) {
-      console.log('Photo upload handler:', err);
+      console.log('Photo upload handler error:', err);
+      setPhotos((prev) => [...prev, { uri }]);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -54,22 +69,17 @@ export default function AttachmentsScreen() {
 
       if (!result.canceled && result.assets?.[0]) {
         const file = result.assets[0];
-        setDocuments((prev) => [...prev, { name: file.name }]);
-
+        setIsUploading(true);
         try {
-          const formData = new FormData();
-          formData.append('file', {
-            uri: file.uri,
-            name: file.name,
-            type: file.mimeType || 'application/pdf',
-          } as any);
-
-          await api.post('/file-uploader/upload2?entityName=citizen-complaints', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-          });
-          console.log('Document uploaded via /file-uploader/upload2');
+          const res = await citizenService.uploadFile(file.uri, file.name, file.mimeType || 'application/pdf');
+          const serverPath = res?.path || res?.data?.path || '';
+          setDocuments((prev) => [...prev, { name: file.name, serverPath }]);
+          console.log('Document uploaded successfully:', serverPath);
         } catch (err) {
-          console.log('Document upload handler:', err);
+          console.log('Document upload handler error:', err);
+          setDocuments((prev) => [...prev, { name: file.name }]);
+        } finally {
+          setIsUploading(false);
         }
       }
     } catch (e) {
@@ -89,7 +99,17 @@ export default function AttachmentsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
       <View className={containerClass}>
-        <Header showBack title="Raise a complaint" />
+        <Header 
+          showBack 
+          title="Raise a complaint" 
+          onBack={() => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/complaint/location');
+            }
+          }}
+        />
 
         <ScrollView className="flex-1 px-6 pt-2" showsVerticalScrollIndicator={false}>
           <View className="mb-4">
@@ -116,9 +136,9 @@ export default function AttachmentsScreen() {
             ) : (
               <>
                 <View className="flex-row flex-wrap gap-3 mb-4">
-                  {photos.map((uri, index) => (
+                  {photos.map((item, index) => (
                     <View key={index} className="w-24 h-24 rounded-md overflow-hidden border border-border relative">
-                      <Image source={{ uri }} className="w-full h-full" resizeMode="cover" />
+                      <Image source={{ uri: item.uri }} className="w-full h-full" resizeMode="cover" />
                       <TouchableOpacity
                         onPress={() => handleRemovePhoto(index)}
                         className="absolute top-1 right-1 bg-black/50 rounded-full p-0.5"
@@ -175,9 +195,15 @@ export default function AttachmentsScreen() {
           </View>
           <View className="mb-8 mt-4">
             <Button
-              title="Next"
+              title={isUploading ? "Uploading..." : "Next"}
+              disabled={isUploading}
               onPress={() => {
-                setAttachments(photos.length, documents.length);
+                setComplaintForm({
+                  photoCount: photos.length,
+                  documentCount: documents.length,
+                  uploadedPhotoUrls: photos.map((p) => p.serverPath || p.uri).filter(Boolean),
+                  uploadedDocumentUrls: documents.map((d) => d.serverPath || d.name).filter(Boolean),
+                });
                 router.push('/complaint/review');
               }}
             />

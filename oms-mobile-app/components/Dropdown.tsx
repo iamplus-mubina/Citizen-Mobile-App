@@ -1,17 +1,31 @@
 import { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, TextInput, ActivityIndicator } from 'react-native';
 import { ChevronDownIcon, ChevronUpIcon, CheckIcon, MagnifyingGlassIcon } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
+
+type OptionItem = string | { id: number; name: string; [key: string]: any };
 
 interface DropdownProps {
   label?: string;
   value: string;
-  options: string[];
+  options: OptionItem[];
   placeholder?: string;
-  onSelect: (value: string) => void;
+  onSelect: (value: string, id?: number) => void;
   error?: string;
   className?: string;
+  disabled?: boolean;
+  loading?: boolean;
 }
+
+const getOptionLabel = (item: OptionItem): string => {
+  if (typeof item === 'string') return item;
+  return item.name || String(item.id);
+};
+
+const getOptionId = (item: OptionItem): number | undefined => {
+  if (typeof item === 'string') return undefined;
+  return item.id;
+};
 
 export function Dropdown({ 
   label, 
@@ -20,22 +34,25 @@ export function Dropdown({
   placeholder = 'Select option', 
   onSelect, 
   error, 
-  className = '' 
+  className = '',
+  disabled = false,
+  loading = false,
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredOptions = options.filter((item) =>
-    item.toLowerCase().includes(searchQuery.toLowerCase())
+    getOptionLabel(item).toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSelect = (item: string) => {
-    onSelect(item);
+  const handleSelect = (item: OptionItem) => {
+    onSelect(getOptionLabel(item), getOptionId(item));
     setIsOpen(false);
     setSearchQuery('');
   };
 
   const handleToggle = () => {
+    if (disabled || loading) return;
     setIsOpen((prev) => {
       if (prev) setSearchQuery('');
       return !prev;
@@ -53,16 +70,24 @@ export function Dropdown({
       <TouchableOpacity 
         activeOpacity={0.7}
         onPress={handleToggle}
+        disabled={disabled || loading}
         className={`flex-row items-center justify-between w-full bg-surface border ${
           error ? 'border-error' : (isOpen ? 'border-primary' : 'border-border')
-        } rounded-md px-4 py-3`}
+        } rounded-md px-4 py-3 ${disabled ? 'opacity-50' : ''}`}
       >
-        <Text className={`text-base font-inter ${value ? 'text-dark' : 'text-muted'}`}>
-          {value || placeholder}
-        </Text>
+        {loading ? (
+          <View className="flex-row items-center">
+            <ActivityIndicator size="small" color={colors.primary} />
+            <Text className="text-muted text-base font-inter ml-2">Loading...</Text>
+          </View>
+        ) : (
+          <Text className={`text-base font-inter ${value ? 'text-dark' : 'text-muted'}`}>
+            {value || placeholder}
+          </Text>
+        )}
         {isOpen
           ? <ChevronUpIcon size={20} color={colors.primary} />
-          : <ChevronDownIcon size={20} color={colors.dark} />
+          : <ChevronDownIcon size={20} color={disabled ? colors.muted : colors.dark} />
         }
       </TouchableOpacity>
 
@@ -96,11 +121,12 @@ export function Dropdown({
             className="max-h-[200px]"
           >
             {filteredOptions.length > 0 ? (
-              filteredOptions.map((item) => {
-                const isSelected = item === value;
+              filteredOptions.map((item, index) => {
+                const itemLabel = getOptionLabel(item);
+                const isSelected = itemLabel === value;
                 return (
                   <TouchableOpacity
-                    key={item}
+                    key={`${getOptionId(item) ?? itemLabel}-${index}`}
                     activeOpacity={0.7}
                     className={`flex-row items-center justify-between px-4 py-3 ${
                       isSelected ? 'bg-primary/10' : ''
@@ -108,7 +134,7 @@ export function Dropdown({
                     onPress={() => handleSelect(item)}
                   >
                     <Text className={`text-base font-inter ${isSelected ? 'text-primary font-inter-semibold' : 'text-dark'}`}>
-                      {item}
+                      {itemLabel}
                     </Text>
                     {isSelected && <CheckIcon size={18} color={colors.primary} />}
                   </TouchableOpacity>

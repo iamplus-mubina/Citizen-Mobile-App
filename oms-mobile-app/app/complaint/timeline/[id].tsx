@@ -1,66 +1,145 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, Platform, Text } from 'react-native';
+import { View, ScrollView, Platform, Text, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLocalSearchParams, Stack } from 'expo-router';
+import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { Header } from '@/components/Header';
 import { Stepper, StepperStep } from '@/components/Stepper';
-import { MapPinIcon, BuildingOfficeIcon, IdentificationIcon, CheckIcon } from 'react-native-heroicons/outline';
+import { MapPinIcon, BuildingOfficeIcon, IdentificationIcon, CheckIcon, XMarkIcon } from 'react-native-heroicons/outline';
 import { useComplaintStore } from '@/store/useComplaintStore';
 import { colors } from '@/constants/Colors';
-import { api } from '@/services/api';
+import { citizenService } from '@/services/citizenService';
 
-const getStatusStyles = (status: string) => {
-  const s = status.toLowerCase();
-  if (s.includes('pending')) {
-    return { bg: 'bg-amber-100', border: 'border-amber-200', text: 'text-amber-700' };
-  }
-  if (s.includes('progress') || s.includes('assigned')) {
-    return { bg: 'bg-blue-100', border: 'border-blue-200', text: 'text-blue-700' };
-  }
-  if (s.includes('resolved') || s.includes('completed') || s.includes('solved')) {
-    return { bg: 'bg-emerald-100', border: 'border-emerald-200', text: 'text-emerald-700' };
-  }
-  if (s.includes('reject') || s.includes('closed') || s.includes('fail')) {
-    return { bg: 'bg-red-100', border: 'border-red-200', text: 'text-red-700' };
-  }
-  return { bg: 'bg-gray-100', border: 'border-gray-200', text: 'text-gray-700' };
+// Strict helper checks to prevent 'UNSOLVED' from matching 'SOLVED'
+const isSolvedStatus = (status?: string) => {
+  const s = (status || '').toUpperCase().trim();
+  return (s.includes('SOLVED') && !s.includes('UNSOLVED')) || s.includes('RESOLVED') || s.includes('COMPLETE');
 };
 
-const getComplaintHistory = (status: string): StepperStep[] => {
-  const s = status.toLowerCase();
+const isInProgressStatus = (status?: string) => {
+  const s = (status || '').toUpperCase().trim();
+  return s.includes('PROGRESS') || s.includes('ASSIGN') || s.includes('WORKING');
+};
 
-  if (s.includes('resolved') || s.includes('complete') || s.includes('solved')) {
+const isUnsolvedStatus = (status?: string) => {
+  const s = (status || '').toUpperCase().trim();
+  return s.includes('UNSOLVED') || s === 'PENDING APPROVAL';
+};
+
+const getRequestStatusStyles = (status?: string) => {
+  const s = (status || '').toUpperCase();
+  if (s === 'APPROVED') {
+    return { bg: 'bg-emerald-50', border: 'border-emerald-300', text: 'text-emerald-700', label: 'Req: Approved' };
+  }
+  if (s === 'REJECTED') {
+    return { bg: 'bg-rose-50', border: 'border-rose-300', text: 'text-rose-700', label: 'Req: Rejected' };
+  }
+  return { bg: 'bg-amber-50', border: 'border-amber-300', text: 'text-amber-700', label: 'Req: Pending Approval' };
+};
+
+const getLiveStatusStyles = (status?: string) => {
+  const s = (status || '').toUpperCase().replace(/[-_ ]/g, '');
+  if (s.includes('UNSOLVED')) {
+    return { bg: 'bg-blue-100', border: 'border-blue-200', text: 'text-blue-700', label: 'Unsolved' };
+  }
+  if (isInProgressStatus(s)) {
+    return { bg: 'bg-cyan-100', border: 'border-cyan-200', text: 'text-cyan-700', label: 'In Progress' };
+  }
+  if (isSolvedStatus(s)) {
+    return { bg: 'bg-emerald-100', border: 'border-emerald-200', text: 'text-emerald-700', label: 'Solved' };
+  }
+  if (s.includes('HOLD')) {
+    return { bg: 'bg-amber-100', border: 'border-amber-200', text: 'text-amber-800', label: 'On Hold' };
+  }
+  if (s.includes('REJECT')) {
+    return { bg: 'bg-rose-100', border: 'border-rose-200', text: 'text-rose-700', label: 'Rejected' };
+  }
+  return { bg: 'bg-amber-100', border: 'border-amber-200', text: 'text-amber-700', label: 'Pending Approval' };
+};
+
+const getComplaintHistory = (reqStatus?: string, liveStatus?: string): StepperStep[] => {
+  const req = (reqStatus || '').toUpperCase().trim();
+  const live = (liveStatus || '').toUpperCase().trim();
+
+  // 1. Rejected by Super Admin
+  if (req === 'REJECTED' || live.includes('REJECT')) {
     return [
       { id: 'step-1', title: 'Submitted', status: 'completed', theme: 'primary' },
-      { id: 'step-2', title: 'Pending Approval', status: 'completed', theme: 'primary' },
-      { id: 'step-3', title: 'Verified', status: 'completed', theme: 'primary' },
-      { id: 'step-4', title: 'Resolve', status: 'current', theme: 'primary' },
+      { id: 'step-2', title: 'Super Admin Rejected', status: 'completed', theme: 'primary' },
     ];
   }
 
-  if (s.includes('verified') || s.includes('progress') || s.includes('assigned') || s.includes('work')) {
+  // 2. Pending Super Admin Approval
+  if (req === 'PENDING') {
     return [
       { id: 'step-1', title: 'Submitted', status: 'completed', theme: 'primary' },
-      { id: 'step-2', title: 'Pending Approval', status: 'completed', theme: 'primary' },
-      { id: 'step-3', title: 'Verified', status: 'current', theme: 'primary' },
-      { id: 'step-4', title: 'Resolve', status: 'future' },
+      { id: 'step-2', title: 'Pending Admin Approval', status: 'current', theme: 'primary' },
+      { id: 'step-3', title: 'In Progress', status: 'future' },
+      { id: 'step-4', title: 'Resolved', status: 'future' },
     ];
   }
 
+  // 3. Approved by Super Admin:
+  // 3a. Truly Solved
+  if (isSolvedStatus(live)) {
+    return [
+      { id: 'step-1', title: 'Submitted', status: 'completed', theme: 'primary' },
+      { id: 'step-2', title: 'Admin Approved', status: 'completed', theme: 'primary' },
+      { id: 'step-3', title: 'In Progress', status: 'completed', theme: 'primary' },
+      { id: 'step-4', title: 'Resolved', status: 'completed', theme: 'primary' },
+    ];
+  }
 
+  // 3b. Work In Progress / Worker Assigned
+  if (isInProgressStatus(live)) {
+    return [
+      { id: 'step-1', title: 'Submitted', status: 'completed', theme: 'primary' },
+      { id: 'step-2', title: 'Admin Approved', status: 'completed', theme: 'primary' },
+      { id: 'step-3', title: 'In Progress', status: 'current', theme: 'primary' },
+      { id: 'step-4', title: 'Resolved', status: 'future' },
+    ];
+  }
+
+  // 3c. On Hold
+  if (live.includes('HOLD')) {
+    return [
+      { id: 'step-1', title: 'Submitted', status: 'completed', theme: 'primary' },
+      { id: 'step-2', title: 'Admin Approved', status: 'completed', theme: 'primary' },
+      { id: 'step-3', title: 'On Hold', status: 'current', theme: 'primary' },
+      { id: 'step-4', title: 'Resolved', status: 'future' },
+    ];
+  }
+
+  // 3d. Approved & Unsolved (Awaiting field team assignment)
   return [
     { id: 'step-1', title: 'Submitted', status: 'completed', theme: 'primary' },
-    { id: 'step-2', title: 'Pending Approval', status: 'current', theme: 'primary' },
-    { id: 'step-3', title: 'Verified', status: 'future' },
-    { id: 'step-4', title: 'Resolve', status: 'future' },
+    { id: 'step-2', title: 'Admin Approved', status: 'completed', theme: 'primary' },
+    { id: 'step-3', title: 'In Progress', status: 'future' },
+    { id: 'step-4', title: 'Resolved', status: 'future' },
   ];
 };
 
-export default function TimelineScreen() {
+export default function ComplaintTimelineScreen() {
+  const router = useRouter();
   const { id } = useLocalSearchParams();
-  const ticketId = (id as string) || 'REQ-1';
+  const ticketId = Array.isArray(id) ? id[0] : (id || 'REQ-1');
+  const submittedComplaints = useComplaintStore((state) => state.submittedComplaints);
 
-  const submittedComplaints = useComplaintStore(state => state.submittedComplaints);
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace({ pathname: '/home', params: { tab: 'complaints' } });
+    }
+  };
+
+  useEffect(() => {
+    const onBackPress = () => {
+      handleBack();
+      return true;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [router]);
 
   const foundComplaint = submittedComplaints.find(
     c => c.ticketId === ticketId ||
@@ -72,47 +151,82 @@ export default function TimelineScreen() {
     ticketId: ticketId.startsWith('REQ-') || ticketId.startsWith('CMP-') ? ticketId : `REQ-${ticketId}`,
     title: 'Complaint Details',
     category: 'General',
-    date: '3 Sep 2026',
-    status: 'Pending Approval',
-    area: '',
-    ward: '',
-    description: 'Complaint description...'
+    type: 'Complaint',
+    date: 'Recently',
+    requestStatus: 'PENDING' as const,
+    liveStatus: 'PENDING APPROVAL',
+    rejectionReason: null,
+    address: '',
+    description: 'Complaint description...',
+    comments: [],
+    karyaKarta: null,
   };
 
   const [complaint, setComplaint] = useState<any>(initialComplaint);
 
   useEffect(() => {
-    // If complaint is already in store or is a local CMP- ID, use store data and bypass backend call
-    if (foundComplaint || ticketId.startsWith('CMP-')) {
-      if (foundComplaint) setComplaint(foundComplaint);
-      return;
-    }
+    let isMounted = true;
 
-    const numericId = parseInt(ticketId.replace(/\D/g, ''), 10);
-    if (!isNaN(numericId) && numericId > 0) {
-      const fetchDetails = async () => {
+    const loadComplaint = async () => {
+      let current = foundComplaint;
+
+      // If not present in store (e.g. direct link or refresh), load from my-complaints
+      if (!current) {
         try {
-          const res = await api.get(`/complainbox/mobile/${numericId}`);
-          if (res.data) {
-            setComplaint((prev: any) => ({
-              ...prev,
-              title: res.data.description?.substring(0, 50) || prev.title,
-              description: res.data.description || prev.description,
-              status: res.data.status || prev.status,
-              category: res.data.category?.name || prev.category,
-            }));
-          }
-        } catch (err) {
-          console.log('Background fetch for complaint details (optional endpoint):', err);
+          const res = await citizenService.getMyComplaints(0, 50, '');
+          const list = Array.isArray(res) ? (Array.isArray(res[0]) ? res[0] : res) : (res?.data || []);
+          current = list.find(
+            (c: any) =>
+              String(c.tokenNumber) === String(ticketId) ||
+              String(c.id) === String(ticketId) ||
+              String(c.requestId) === String(ticketId) ||
+              String(c.complainId) === String(ticketId)
+          );
+        } catch (e) {
+          console.log('Error locating complaint from list:', e);
         }
-      };
-      fetchDetails();
-    }
+      }
+
+      if (!isMounted) return;
+
+      if (current) {
+        setComplaint((prev: any) => ({ ...prev, ...current }));
+
+        // ONLY fetch ComplainBox live details if request is APPROVED and has a valid live complainId
+        if (current.requestStatus === 'APPROVED' && current.complainId) {
+          try {
+            const data = await citizenService.getComplaintDetails(current.complainId);
+            if (data && isMounted) {
+              setComplaint((prev: any) => ({
+                ...prev,
+                title: data.type?.name || data.category?.name || prev.title,
+                description: data.description || prev.description,
+                category: data.category?.name || prev.category,
+                type: data.type?.name || prev.type,
+                liveStatus: data.status || prev.liveStatus,
+                address: data.address?.line1 || (typeof data.address === 'string' ? data.address : prev.address),
+                karyaKarta: data.karyaKarta || prev.karyaKarta,
+                comments: Array.isArray(data.comments) ? data.comments : prev.comments || [],
+              }));
+            }
+          } catch (err) {
+            console.log('Background fetch for live complaint details:', err);
+          }
+        }
+      }
+    };
+
+    loadComplaint();
+
+    return () => {
+      isMounted = false;
+    };
   }, [ticketId, foundComplaint]);
 
-  const historySteps = getComplaintHistory(complaint.status);
-  const statusStyle = getStatusStyles(complaint.status);
-  const isAssigned = !complaint.status.toLowerCase().includes('pending');
+  const reqStyle = getRequestStatusStyles(complaint.requestStatus);
+  const liveStyle = getLiveStatusStyles(complaint.liveStatus);
+  const historySteps = getComplaintHistory(complaint.requestStatus, complaint.liveStatus);
+  const isApproved = complaint.requestStatus === 'APPROVED';
 
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background"
@@ -123,108 +237,188 @@ export default function TimelineScreen() {
       <Stack.Screen options={{ headerShown: false }} />
       <View className={containerClass}>
 
-        <Header showBack />
+        <Header showBack onBack={handleBack} />
 
         <View className="px-6 pb-4 pt-2 border-b border-border mb-4">
-          <Text className="text-2xl font-inter-bold text-dark mb-6">Complaint details</Text>
+          <Text className="text-2xl font-inter-bold text-dark mb-4">Complaint details</Text>
 
           <View className="flex-row justify-between items-center mb-3">
             <Text className="text-sm font-inter-bold text-header-bg">{complaint.ticketId}</Text>
-            <View className={`px-3 py-1.5 rounded-md border ${statusStyle.bg} ${statusStyle.border}`}>
-              <Text className={`text-[11px] font-inter-semibold capitalize ${statusStyle.text}`}>{complaint.status}</Text>
+            <View className="flex-row items-center gap-1.5 flex-wrap justify-end">
+              <View className={`px-2.5 py-1 rounded-md border ${reqStyle.bg} ${reqStyle.border}`}>
+                <Text className={`text-[10px] font-inter-bold ${reqStyle.text}`}>{reqStyle.label}</Text>
+              </View>
+              <View className={`px-2.5 py-1 rounded-md border ${liveStyle.bg} ${liveStyle.border}`}>
+                <Text className={`text-[10px] font-inter-bold ${liveStyle.text}`}>{liveStyle.label}</Text>
+              </View>
             </View>
           </View>
 
-          <Text className="text-xl font-inter-bold text-dark mb-1">{complaint.title}</Text>
-          <Text className="text-xs font-inter text-muted">{complaint.category} • Submitted {complaint.date.split(',')[0]}</Text>
+          <Text className="text-xl font-inter-bold text-dark mb-1">{complaint.type || complaint.category || complaint.title}</Text>
+          <Text className="text-xs font-inter text-muted">
+            {complaint.category ? `${complaint.category} • ` : ''}Submitted {complaint.date ? complaint.date.split(',')[0] : 'Recently'}
+          </Text>
+
+          {complaint.rejectionReason && (
+            <View className="mt-3 bg-rose-50 border border-rose-200 rounded-lg p-3">
+              <Text className="text-xs font-inter-bold text-rose-800 mb-0.5">Admin Rejection Reason:</Text>
+              <Text className="text-xs font-inter text-rose-700">{complaint.rejectionReason}</Text>
+            </View>
+          )}
         </View>
 
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
 
-
           <View className="bg-surface border border-border rounded-xl p-5 mb-4">
-            <Text className="text-base font-inter-bold text-dark mb-4">Current position</Text>
+            <Text className="text-base font-inter-bold text-dark mb-4">Complaint Progress</Text>
             <Stepper steps={historySteps} />
           </View>
 
-
           <View className="bg-surface border border-border rounded-xl p-5 mb-4">
-            <Text className="text-base font-inter-bold text-dark mb-3">Complaint</Text>
+            <Text className="text-base font-inter-bold text-dark mb-3">Complaint Information</Text>
             <Text className="text-sm font-inter text-dark mb-4 border-b border-border pb-4">{complaint.description}</Text>
 
-            <View className="flex-row mb-4">
-              <MapPinIcon size={20} color={colors.primary} className="mt-0.5" />
-              <View className="flex-1 ml-3">
-                <Text className="text-xs font-inter text-muted mb-1">Location</Text>
-                <Text className="text-sm font-inter-medium text-dark">{complaint.title}</Text>
-                <Text className="text-sm font-inter text-dark">{complaint.area} • {complaint.ward}</Text>
+            {complaint.address ? (
+              <View className="flex-row mb-4">
+                <MapPinIcon size={20} color={colors.primary} className="mt-0.5" />
+                <View className="flex-1 ml-3">
+                  <Text className="text-xs font-inter text-muted mb-1">Location</Text>
+                  <Text className="text-sm font-inter-medium text-dark">{complaint.address}</Text>
+                </View>
               </View>
-            </View>
+            ) : null}
 
             <View className="flex-row mb-4">
               <BuildingOfficeIcon size={20} color={colors.primary} />
               <View className="flex-1 ml-3">
-                <Text className="text-xs font-inter text-muted mb-1">Department</Text>
-                <Text className="text-sm font-inter-medium text-dark">{isAssigned ? `${complaint.category} Dept.` : 'Not assigned yet'}</Text>
+                <Text className="text-xs font-inter text-muted mb-1">Category & Department</Text>
+                <Text className="text-sm font-inter-medium text-dark">
+                  {complaint.category || 'General'} {complaint.type ? `(${complaint.type})` : ''}
+                </Text>
+              </View>
+            </View>
+
+            <View className="flex-row mb-4">
+              <IdentificationIcon size={20} color={colors.primary} />
+              <View className="flex-1 ml-3">
+                <Text className="text-xs font-inter text-muted mb-1">Super Admin Approval</Text>
+                <Text className="text-sm font-inter-medium text-dark">
+                  {complaint.requestStatus === 'REJECTED'
+                    ? 'Request Rejected'
+                    : isApproved 
+                      ? 'Approved by Super Admin' 
+                      : 'Awaiting Super Admin Approval'}
+                </Text>
               </View>
             </View>
 
             <View className="flex-row">
               <IdentificationIcon size={20} color={colors.primary} />
               <View className="flex-1 ml-3">
-                <Text className="text-xs font-inter text-muted mb-1">Responsible role</Text>
-                <Text className="text-sm font-inter-medium text-dark">{isAssigned ? 'Field Worker' : 'Not assigned yet'}</Text>
+                <Text className="text-xs font-inter text-muted mb-1">Field Assignment</Text>
+                <Text className="text-sm font-inter-medium text-dark">
+                  {complaint.karyaKarta 
+                    ? `Assigned to ${complaint.karyaKarta.fullName || complaint.karyaKarta.name || complaint.karyaKarta.firstName || 'Field Worker'}`
+                    : isApproved
+                      ? 'Awaiting Field Worker Assignment'
+                      : 'Pending Approval'}
+                </Text>
               </View>
             </View>
           </View>
 
-
           <View className="bg-surface border border-border rounded-xl p-5 mb-8">
-            <Text className="text-base font-inter-bold text-dark mb-4">Timeline</Text>
+            <Text className="text-base font-inter-bold text-dark mb-4">Activity Timeline</Text>
 
             <View>
               {(() => {
-                const s = complaint.status.toLowerCase();
-                const events = [];
+                const req = (complaint.requestStatus || '').toUpperCase().trim();
+                const live = (complaint.liveStatus || '').toUpperCase().trim();
+                const events: { id: string; date: string; role: string; text: string; isReject?: boolean }[] = [];
 
-                if (s.includes('resolved') || s.includes('complete') || s.includes('solved')) {
+                // 1. Only if truly Solved / Resolved
+                if (isSolvedStatus(live)) {
                   events.push({
-                    id: 3,
-                    date: 'Updated recently',
+                    id: 'ev-resolved',
+                    date: complaint.updatedDate || 'Recently',
                     role: 'Field Worker',
-                    text: 'Issue has been resolved and verified.'
+                    text: 'Civic issue has been resolved and closed.'
                   });
                 }
 
-                if (s.includes('progress') || s.includes('work') || s.includes('resolved') || s.includes('complete') || s.includes('solved')) {
+                // 2. Only if In Progress or truly Solved
+                if (isInProgressStatus(live)) {
                   events.push({
-                    id: 2,
-                    date: 'Updated recently',
-                    role: 'Operations Admin',
-                    text: 'Complaint moved to In progress.'
+                    id: 'ev-inprogress',
+                    date: complaint.updatedDate || 'Recently',
+                    role: 'Operations',
+                    text: 'Field team assigned and work is in progress.'
                   });
                 }
 
+                // 3. If On Hold
+                if (live.includes('HOLD')) {
+                  events.push({
+                    id: 'ev-hold',
+                    date: complaint.updatedDate || 'Recently',
+                    role: 'Operations',
+                    text: 'Complaint resolution is temporarily on hold.'
+                  });
+                }
+
+                // Real comments from backend if available
+                if (Array.isArray(complaint.comments) && complaint.comments.length > 0) {
+                  complaint.comments.forEach((c: any) => {
+                    events.push({
+                      id: `comment-${c.id}`,
+                      date: c.createdDate ? new Date(c.createdDate).toLocaleDateString('en-IN') : 'Recently',
+                      role: c.createdBy ? `${c.createdBy.firstName || ''} ${c.createdBy.lastName || ''}`.trim() || 'Staff' : 'Official',
+                      text: c.comment,
+                    });
+                  });
+                }
+
+                // 4. Super Admin Approval or Rejection
+                if (req === 'APPROVED') {
+                  events.push({
+                    id: 'ev-approved',
+                    date: complaint.updatedDate || complaint.date || 'Recently',
+                    role: 'Super Admin',
+                    text: 'Complaint request approved and scheduled for resolution.'
+                  });
+                } else if (req === 'REJECTED') {
+                  events.push({
+                    id: 'ev-rejected',
+                    date: complaint.updatedDate || complaint.date || 'Recently',
+                    role: 'Super Admin',
+                    text: `Complaint request rejected.${complaint.rejectionReason ? ` Reason: ${complaint.rejectionReason}` : ''}`,
+                    isReject: true
+                  });
+                }
+
+                // 5. Initial Submission
                 events.push({
-                  id: 1,
-                  date: complaint.date,
+                  id: 'ev-submitted',
+                  date: complaint.date || 'Recently',
                   role: 'Citizen',
-                  text: 'Complaint submitted and waiting for verification.'
+                  text: 'Complaint submitted via Citizen App.'
                 });
 
                 return events.map((event, index, arr) => (
                   <View key={event.id} className="flex-row mb-3 relative">
-                    {/* Left Column: Icon and Line */}
                     <View className="mr-3 w-6 items-center relative z-10">
                       <View className="w-6 h-6 rounded-full bg-primary items-center justify-center z-20">
-                        <CheckIcon size={14} color="white" strokeWidth={3} />
+                        {event.isReject ? (
+                          <XMarkIcon size={14} color="white" strokeWidth={3} />
+                        ) : (
+                          <CheckIcon size={14} color="white" strokeWidth={3} />
+                        )}
                       </View>
 
                       {index !== arr.length - 1 && (
                         <View className="absolute top-6 -bottom-3 w-[2px] bg-primary z-10 left-[11px]" />
                       )}
                     </View>
-
 
                     <View className="flex-1 border border-border rounded-lg p-3 bg-background">
                       <View className="flex-row justify-between items-center mb-2">
