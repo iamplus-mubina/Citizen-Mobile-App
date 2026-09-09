@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, Platform, ScrollView, TouchableOpacity, RefreshControl, BackHandler, ToastAndroid } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Header } from '@/components/Header';
 import { BottomNavigation, TabType } from '@/components/BottomNavigation';
 import { Card } from '@/components/Card';
@@ -21,6 +21,7 @@ import { useComplaintStore } from '@/store/useComplaintStore';
 import { citizenService } from '@/services/citizenService';
 
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const params = useLocalSearchParams<{ tab?: string }>();
   const [activeTab, setActiveTab] = useState<TabType>('home');
@@ -110,8 +111,13 @@ export default function HomeScreen() {
     };
 
     loadSavedPhoto();
-    loadData();
-  }, [loadData]);
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [loadData])
+  );
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -252,7 +258,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
+    <View className="flex-1 bg-background" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
       <View className={containerClass}>
         <View className="flex-1">
           <Header
@@ -268,6 +274,6 @@ export default function HomeScreen() {
           }} 
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
