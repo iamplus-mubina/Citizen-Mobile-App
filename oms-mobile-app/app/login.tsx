@@ -21,8 +21,10 @@ import { colors } from '@/constants/Colors';
 import omsLogo from '../assets/images/oms_logo.png';
 import { useComplaintStore } from '@/store/useComplaintStore';
 import { useSystemConfigStore } from '@/store/useSystemConfigStore';
-import { api, setStoredToken } from '@/services/api';
+import { api, setStoredToken, getStoredToken, removeStoredToken } from '@/services/api';
+import { citizenService } from '@/services/citizenService';
 import { AlertModal } from '@/components/AlertModal';
+import { getCleanImageUrl } from '@/utils/image';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -30,6 +32,13 @@ export default function LoginScreen() {
   const { config, fetchSystemConfig, getBrandingPhotoUrl } = useSystemConfigStore();
   const [logoError, setLogoError] = useState(false);
   const [step, setStep] = useState<'splash' | 'mobile' | 'otp'>('splash');
+
+  const photoUrl = getBrandingPhotoUrl('L');
+  const cleanPhotoUrl = getCleanImageUrl(photoUrl);
+
+  useEffect(() => {
+    setLogoError(false);
+  }, [cleanPhotoUrl]);
   const [mobile, setMobile] = useState('');
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
@@ -43,6 +52,29 @@ export default function LoginScreen() {
 
   useEffect(() => {
     fetchSystemConfig();
+
+    let isMounted = true;
+    const checkActiveSession = async () => {
+      try {
+        const token = await getStoredToken();
+        if (token) {
+          const profile = await citizenService.getProfile();
+          if (profile && isMounted) {
+            useComplaintStore.getState().setProfileFromApi(profile);
+            router.replace('/home');
+          }
+        }
+      } catch (err: any) {
+        if (err?.response?.status === 401) {
+          await removeStoredToken();
+        }
+      }
+    };
+    checkActiveSession();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -96,8 +128,14 @@ export default function LoginScreen() {
           otpRef.current?.focus();
         }, 100);
       } catch (err: any) {
-        console.error('Request OTP Error:', err);
-        const rawMessage = err.response?.data?.message;
+        console.log('Request OTP Error:', err?.response?.data || err?.message);
+        const data = err.response?.data;
+        if (data?.isPendingApproval || data?.status === 'PENDING_APPROVAL') {
+          router.push('/pending-approval');
+          return;
+        }
+
+        const rawMessage = data?.message;
         const errorMessage = Array.isArray(rawMessage)
           ? rawMessage.join(', ')
           : (rawMessage || 'Failed to send OTP. Please try again.');
@@ -125,7 +163,7 @@ export default function LoginScreen() {
         console.log('Login successful with mobile:', mobile);
         router.replace('/home');
       } catch (err: any) {
-        console.error('Verify OTP Error:', err);
+        console.log('Verify OTP Error:', err?.response?.data || err?.message);
         const rawMessage = err.response?.data?.message;
         const errorMessage = Array.isArray(rawMessage)
           ? rawMessage.join(', ')
@@ -148,7 +186,7 @@ export default function LoginScreen() {
         }, 100);
         console.log('OTP Resent to:', mobile);
       } catch (err: any) {
-        console.error('Resend OTP Error:', err);
+        console.log('Resend OTP Error:', err?.response?.data || err?.message);
         const rawMessage = err.response?.data?.message;
         const errorMessage = Array.isArray(rawMessage)
           ? rawMessage.join(', ')
@@ -198,6 +236,7 @@ export default function LoginScreen() {
       : "flex-1 px-6";
 
     const photoUrl = getBrandingPhotoUrl('L');
+    const cleanPhotoUrl = getCleanImageUrl(photoUrl);
     const brandingTitle = config?.BRANDING_TITLE || 'Office Management';
     const brandingSubTitle = config?.BRANDING_SUB_TITLE || 'Citizen App';
 
@@ -210,7 +249,8 @@ export default function LoginScreen() {
         >
           <View className="items-center px-6">
             <Image
-              source={photoUrl && !logoError ? { uri: photoUrl } : omsLogo}
+              key={cleanPhotoUrl || 'default'}
+              source={cleanPhotoUrl && !logoError ? { uri: cleanPhotoUrl } : omsLogo}
               style={{ width: 160, height: 160, marginBottom: 28 }}
               resizeMode="contain"
               onError={() => setLogoError(true)}
@@ -265,7 +305,7 @@ export default function LoginScreen() {
         <View className="flex-1 justify-center pb-14">
           <View className="mb-10 items-center">
             <Image
-              source={photoUrl && !logoError ? { uri: photoUrl } : omsLogo}
+              source={getCleanImageUrl(photoUrl) && !logoError ? { uri: getCleanImageUrl(photoUrl)! } : omsLogo}
               style={{ width: 140, height: 140, marginBottom: 20 }}
               resizeMode="contain"
               onError={() => setLogoError(true)}

@@ -1,6 +1,9 @@
 import { create } from 'zustand';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { citizenService, getFileViewUrl } from '@/services/citizenService';
 import type { SystemConfig } from '@/services/types';
+
+const SYSTEM_CONFIG_CACHE_KEY = '@oms_system_config_cache';
 
 interface SystemConfigState {
   config: SystemConfig | null;
@@ -24,15 +27,42 @@ export const useSystemConfigStore = create<SystemConfigState>((set, get) => ({
   error: null,
 
   fetchSystemConfig: async (force = false) => {
+    // 1. If not yet in memory, try reading from AsyncStorage first for immediate display
+    if (!get().config) {
+      try {
+        const cached = await AsyncStorage.getItem(SYSTEM_CONFIG_CACHE_KEY);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && typeof parsed === 'object') {
+            set({ config: parsed });
+          }
+        }
+      } catch (e) {
+        // ignore cache read error
+      }
+    }
+
     const current = get().config;
     if (current && !force) {
+      // In background, refresh cache to ensure config is up-to-date
+      citizenService.getSystemConfig().then((data) => {
+        if (data) {
+          set({ config: data });
+          AsyncStorage.setItem(SYSTEM_CONFIG_CACHE_KEY, JSON.stringify(data)).catch(() => {});
+        }
+      }).catch(() => {});
       return current;
     }
 
     set({ isLoading: true, error: null });
     try {
       const data = await citizenService.getSystemConfig();
-      set({ config: data, isLoading: false, error: null });
+      if (data) {
+        set({ config: data, isLoading: false, error: null });
+        AsyncStorage.setItem(SYSTEM_CONFIG_CACHE_KEY, JSON.stringify(data)).catch(() => {});
+      } else {
+        set({ isLoading: false });
+      }
       return data;
     } catch (err: any) {
       console.log('Error fetching system config:', err?.message || err);
@@ -41,7 +71,10 @@ export const useSystemConfigStore = create<SystemConfigState>((set, get) => ({
     }
   },
 
-  setConfig: (config: SystemConfig) => set({ config }),
+  setConfig: (config: SystemConfig) => {
+    set({ config });
+    AsyncStorage.setItem(SYSTEM_CONFIG_CACHE_KEY, JSON.stringify(config)).catch(() => {});
+  },
 
   getBrandingTitle: () => {
     const { config } = get();
@@ -70,3 +103,17 @@ export const useSystemConfigStore = create<SystemConfigState>((set, get) => ({
     return getFileViewUrl(photoPath);
   },
 }));
+
+// Eagerly restore cached config from AsyncStorage on app boot
+AsyncStorage.getItem(SYSTEM_CONFIG_CACHE_KEY)
+  .then((cached) => {
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (parsed && typeof parsed === 'object' && !useSystemConfigStore.getState().config) {
+          useSystemConfigStore.setState({ config: parsed });
+        }
+      } catch (e) {}
+    }
+  })
+  .catch(() => {});

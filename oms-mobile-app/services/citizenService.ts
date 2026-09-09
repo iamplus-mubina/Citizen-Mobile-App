@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
-import { api } from './api';
+import * as FileSystem from 'expo-file-system/legacy';
+import { api, getStoredToken, BASE_URL } from './api';
 import type {
   CitizenOnboardingPayload,
   AuthLoginResponse,
@@ -16,12 +17,18 @@ export const getFileViewUrl = (path?: string | null): string | null => {
   if (!path || typeof path !== 'string' || !path.trim()) return null;
   const trimmed = path.trim();
   if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
-  const baseUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080';
-  return `${baseUrl}/file-uploader/downloadS3?path=${encodeURIComponent(trimmed)}`;
+  const baseUrl = api.defaults.baseURL || BASE_URL;
+  const endpoint = trimmed.startsWith('citizen-complaints/') ? 'file2' : 'downloadS3';
+  return `${baseUrl}/file-uploader/${endpoint}?path=${encodeURIComponent(trimmed)}`;
 };
 
 export const citizenService = {
   // ─── Auth & Onboarding ───
+  requestOnboardOtp: async (phone: string) => {
+    const res = await api.post('/citizen/onboard/request-otp', { phone });
+    return res.data;
+  },
+
   onboard: async (payload: CitizenOnboardingPayload) => {
     const res = await api.post('/citizen/onboard', payload);
     return res.data;
@@ -49,7 +56,30 @@ export const citizenService = {
   },
 
   updateProfile: async (payload: UpdateProfilePayload) => {
-    const res = await api.put('/citizen/profile', payload);
+    const data: any = { ...payload };
+    if (data.ProfileImage) {
+      if (typeof data.ProfileImage === 'string') {
+        const trimmed = data.ProfileImage.trim();
+        if (!trimmed.startsWith('[')) {
+          let obj: any = null;
+          try {
+            if (trimmed.startsWith('{')) obj = JSON.parse(trimmed);
+          } catch {}
+          data.ProfileImage = JSON.stringify([
+            {
+              access_url: obj?.access_url || obj?.url || trimmed,
+              originalName: obj?.originalName || trimmed.split('/').pop() || 'profile.jpg',
+              date: new Date().toISOString(),
+            },
+          ]);
+        }
+      } else if (Array.isArray(data.ProfileImage)) {
+        data.ProfileImage = JSON.stringify(data.ProfileImage);
+      } else if (typeof data.ProfileImage === 'object') {
+        data.ProfileImage = JSON.stringify([data.ProfileImage]);
+      }
+    }
+    const res = await api.put('/citizen/profile', data);
     return res.data;
   },
 
@@ -162,12 +192,21 @@ export const citizenService = {
   },
 
   // ─── File Upload ───
-  uploadFile: async (fileUri: string, fileName: string, fileType: string) => {
-    const formData = new FormData();
-    const filename = fileName || `file_${Date.now()}.jpg`;
-    const type = fileType || 'image/jpeg';
+  uploadFile: async (fileUri: string, fileName?: string, fileType?: string) => {
+    let filename = fileName || `file_${Date.now()}.jpg`;
+    if (!filename.includes('.')) {
+      filename = `${filename}.jpg`;
+    }
+    const type = fileType || (filename.endsWith('.png') ? 'image/png' : 'image/jpeg');
+
+    const token = await getStoredToken();
+    const baseUrl = api.defaults.baseURL || BASE_URL;
+    const uploadUrl = `${baseUrl}/file-uploader/upload2?entityName=citizen-complaints`;
+
+    console.log('[uploadFile] Starting upload to:', uploadUrl, 'fileUri:', fileUri, 'name:', filename, 'type:', type);
 
     if (Platform.OS === 'web') {
+      const formData = new FormData();
       try {
         const response = await fetch(fileUri);
         const blob = await response.blob();
@@ -175,22 +214,41 @@ export const citizenService = {
       } catch {
         formData.append('filename', { uri: fileUri, name: filename, type } as any);
       }
-    } else {
-      formData.append('filename', {
-        uri: Platform.OS === 'android' ? fileUri : fileUri.replace('file://', ''),
-        name: filename,
-        type: type,
-      } as any);
+      const response = await fetch(uploadUrl, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: formData,
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Upload failed with status ${response.status}: ${errorText}`);
+      }
+      return await response.json();
     }
 
-    const res = await api.post(
-      '/file-uploader/upload2?entityName=citizen-complaints',
-      formData,
-      {
-        transformRequest: (data) => data,
-      }
-    );
-    return res.data;
+    // Native Android / iOS using native OkHttp via Expo FileSystem (avoids React Native fetch/XHR Scoped Storage issues)
+    const result = await FileSystem.uploadAsync(uploadUrl, fileUri, {
+      httpMethod: 'POST',
+      uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+      fieldName: 'filename',
+      mimeType: type,
+      headers: {
+        Accept: 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+
+    console.log('[uploadFile] Result status:', result.status, 'body:', result.body);
+
+    if (result.status < 200 || result.status >= 300) {
+      throw new Error(`Upload failed with status ${result.status}: ${result.body}`);
+    }
+
+    const data = JSON.parse(result.body);
+    return data;
   },
 
   // ─── Updates ───

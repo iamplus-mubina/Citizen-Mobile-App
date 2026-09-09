@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://mn-0042-api.digitaloms.in';
+export const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://mn-0042-api.digitaloms.in';
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -72,7 +72,12 @@ api.interceptors.request.use(
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
-      if (config.data instanceof FormData) {
+      const isFormData =
+        config.data &&
+        (typeof (config.data as any).append === 'function' ||
+          (typeof FormData !== 'undefined' && config.data instanceof FormData) ||
+          (config.data as any)._parts);
+      if (isFormData) {
         delete config.headers['Content-Type'];
       }
     } catch (error) {

@@ -96,6 +96,7 @@ export interface CitizenOnboardingPayload {
   dob?: string;
   address?: string;
   profileImage?: string;
+  otpCode?: string;
 }
 
 // ─── Profile Update ───

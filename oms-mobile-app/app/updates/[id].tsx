@@ -6,6 +6,7 @@ import { Header } from '@/components/Header';
 import { PlayIcon, MegaphoneIcon, XMarkIcon } from 'react-native-heroicons/solid';
 import { colors } from '@/constants/Colors';
 import { api } from '@/services/api';
+import { getCleanImageUrl } from '@/utils/image';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -127,9 +128,11 @@ export default function UpdateDetailScreen() {
     ? "flex-1 w-full max-w-md mx-auto bg-background"
     : "flex-1 bg-background";
 
-  const bannerImages = (detail.images && detail.images.length > 0)
+  const bannerImages = ((detail.images && detail.images.length > 0)
     ? detail.images
-    : (detail.imageUrl ? [detail.imageUrl] : []);
+    : (detail.imageUrl ? [detail.imageUrl] : []))
+    .map((img) => getCleanImageUrl(img))
+    .filter((img): img is string => typeof img === 'string' && img.length > 0);
 
   return (
     <View className="flex-1 bg-background" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
@@ -262,13 +265,13 @@ export default function UpdateDetailScreen() {
               <XMarkIcon size={28} color="#FFFFFF" />
             </TouchableOpacity>
 
-            {selectedImage && (
+            {getCleanImageUrl(selectedImage) ? (
               <Image
-                source={{ uri: selectedImage }}
-                className="w-full h-4/5"
+                source={{ uri: getCleanImageUrl(selectedImage)! }}
+                className="w-full h-full"
                 resizeMode="contain"
               />
-            )}
+            ) : null}
           </View>
         </Modal>
 

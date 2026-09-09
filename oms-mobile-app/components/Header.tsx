@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
 import { useSystemConfigStore } from '@/store/useSystemConfigStore';
+import { getCleanImageUrl } from '@/utils/image';
 
 interface HeaderProps {
   className?: string;
@@ -35,6 +36,11 @@ export function Header({ className = '', avatarUrl, showBack, title, notificatio
   const brandingTopBar = config?.BRANDING_TOPBAR_TITLE || config?.BRANDING_TITLE || 'Office Management System';
   const brandingSub = config?.BRANDING_SUB_TITLE || 'OMS Citizen';
   const photoUrl = getBrandingPhotoUrl('L');
+  const cleanPhotoUrl = getCleanImageUrl(photoUrl);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [cleanPhotoUrl]);
 
   const handleBack = () => {
     if (onBack) {
@@ -72,7 +78,8 @@ export function Header({ className = '', avatarUrl, showBack, title, notificatio
             <View className="flex-row items-center flex-1">
               <View className="w-12 h-12 bg-white rounded-full items-center justify-center mr-3 border-2 border-white/10 overflow-hidden">
                 <Image
-                  source={photoUrl && !imgError ? { uri: Array.isArray(photoUrl) ? photoUrl[0] : photoUrl } : DEFAULT_LOGO}
+                  key={cleanPhotoUrl || 'default'}
+                  source={cleanPhotoUrl && !imgError ? { uri: cleanPhotoUrl } : DEFAULT_LOGO}
                   style={{ width: '100%', height: '100%' }}
                   resizeMode="cover"
                   onError={() => setImgError(true)}

@@ -16,9 +16,7 @@ import {
   AcademicCapIcon, 
   BriefcaseIcon, 
   CakeIcon, 
-  TagIcon,
-  BuildingOfficeIcon,
-  DocumentTextIcon
+  TagIcon
 } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
@@ -26,18 +24,17 @@ import { UploadModal } from '@/components/UploadModal';
 import { useComplaintStore } from '@/store/useComplaintStore';
 import { citizenService } from '@/services/citizenService';
 import { removeStoredToken } from '@/services/api';
+import { getCleanImageUrl } from '@/utils/image';
 
 export function Profile() {
   const router = useRouter();
   const store = useComplaintStore();
   const { 
     profilePhoto, setProfilePhoto, phoneNumber, profileName, profileEmail, profileAddress, profilePincode,
-    alternatePhone, phone3, phone4, city, cityType,
+    alternatePhone,
     dob, age, gender, bloodGroup, education, occupation,
     aadharCard, panCard, voterId, drivingLicence, rationCard,
-    districtName, assemblyName, gaonName, ganName, gatName, prabhagName, prabhagAreaName,
     religionName, castName, subCastName, caste, subCaste,
-    isVoter, acNumber, voterAccountNumber, voterPartNumber, voterSectionNumber, voterSlnNumber, boothNumber, boothName, ourVoter, note,
     setProfileFromApi
   } = store;
 
@@ -46,11 +43,21 @@ export function Profile() {
   const [langModalVisible, setLangModalVisible] = useState(false);
   const [selectedLang, setSelectedLang] = useState('English');
   const [refreshing, setRefreshing] = useState(false);
+  const [imgError, setImgError] = useState(false);
+
+  const cleanProfileUri = getCleanImageUrl(profilePhoto);
+
+  React.useEffect(() => {
+    setImgError(false);
+  }, [cleanProfileUri]);
+
+  const avatarUri = !imgError ? cleanProfileUri : null;
 
   const LANGUAGES = ['English', 'हिंदी', 'मराठी'];
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
+    setImgError(false);
     try {
       const data = await citizenService.getProfile();
       if (data) {
@@ -96,8 +103,14 @@ export function Profile() {
             className="relative mb-4"
           >
             <View className="w-24 h-24 rounded-full bg-primary-light items-center justify-center overflow-hidden border-2 border-primary/20">
-              {profilePhoto ? (
-                <Image source={{ uri: profilePhoto }} className="w-full h-full" resizeMode="cover" />
+              {avatarUri ? (
+                <Image 
+                  key={avatarUri}
+                  source={{ uri: avatarUri }} 
+                  className="w-full h-full" 
+                  resizeMode="cover" 
+                  onError={() => setImgError(true)}
+                />
               ) : (
                 <UserIcon size={40} color={colors.primary} />
               )}
@@ -123,13 +136,10 @@ export function Profile() {
             </TouchableOpacity>
           </View>
 
-          <DetailRow icon={PhoneIcon} label="Primary Phone" value={phoneNumber} />
+          <DetailRow icon={PhoneIcon} label="Registered Mobile Number" value={phoneNumber} />
           {alternatePhone ? <DetailRow icon={PhoneIcon} label="Alternate Phone" value={alternatePhone} /> : null}
-          {phone3 ? <DetailRow icon={PhoneIcon} label="Phone 3" value={phone3} /> : null}
-          {phone4 ? <DetailRow icon={PhoneIcon} label="Phone 4" value={phone4} /> : null}
           <DetailRow icon={EnvelopeIcon} label="Email" value={profileEmail} />
           <DetailRow icon={MapPinIcon} label="Address" value={profileAddress} />
-          <DetailRow icon={BuildingOfficeIcon} label="City / Area Type" value={[city, cityType].filter(Boolean).join(' · ')} />
           <DetailRow icon={MapIcon} label="Pincode" value={profilePincode} isLast />
         </View>
 
@@ -159,22 +169,7 @@ export function Profile() {
           <DetailRow icon={IdentificationIcon} label="Ration Card" value={rationCard} isLast />
         </View>
 
-        {/* 4. Location & Administration */}
-        <View className="bg-surface border border-border rounded-xl mb-4">
-          <View className="px-4 pt-4 pb-3 border-b border-border">
-            <Text className="text-sm font-inter-bold text-dark">Location Details</Text>
-          </View>
-
-          <DetailRow icon={MapPinIcon} label="District" value={districtName} />
-          <DetailRow icon={MapPinIcon} label="Assembly" value={assemblyName} />
-          <DetailRow icon={MapPinIcon} label="Gaon / Village" value={gaonName} />
-          <DetailRow icon={MapPinIcon} label="Gan (Panchayat Samiti)" value={ganName} />
-          <DetailRow icon={MapPinIcon} label="Gat (Zilla Parishad)" value={gatName} />
-          <DetailRow icon={MapPinIcon} label="Prabhag / Ward" value={prabhagName} />
-          <DetailRow icon={MapPinIcon} label="Prabhag Area" value={prabhagAreaName} isLast />
-        </View>
-
-        {/* 5. Caste & Religion */}
+        {/* 4. Caste & Religion */}
         <View className="bg-surface border border-border rounded-xl mb-4">
           <View className="px-4 pt-4 pb-3 border-b border-border">
             <Text className="text-sm font-inter-bold text-dark">Caste & Religion</Text>
@@ -183,21 +178,6 @@ export function Profile() {
           <DetailRow icon={TagIcon} label="Religion" value={religionName} />
           <DetailRow icon={TagIcon} label="Caste" value={castName || caste} />
           <DetailRow icon={TagIcon} label="Sub-Caste" value={subCastName || subCaste} isLast />
-        </View>
-
-        {/* 6. Voter Information */}
-        <View className="bg-surface border border-border rounded-xl mb-4">
-          <View className="px-4 pt-4 pb-3 border-b border-border">
-            <Text className="text-sm font-inter-bold text-dark">Voter Information</Text>
-          </View>
-
-          <DetailRow icon={IdentificationIcon} label="Voter Status" value={isVoter !== undefined ? (isVoter ? 'Registered Voter' : 'Not Registered') : (ourVoter ? 'Our Voter' : '')} />
-          <DetailRow icon={TagIcon} label="AC Number" value={acNumber || voterAccountNumber} />
-          <DetailRow icon={TagIcon} label="Part Number" value={voterPartNumber} />
-          <DetailRow icon={TagIcon} label="Section Number" value={voterSectionNumber} />
-          {voterSlnNumber ? <DetailRow icon={TagIcon} label="SLN Number" value={voterSlnNumber} /> : null}
-          <DetailRow icon={BuildingOfficeIcon} label="Booth" value={[boothNumber, boothName].filter(Boolean).join(' - ')} />
-          {note ? <DetailRow icon={DocumentTextIcon} label="Note" value={note} isLast /> : null}
         </View>
 
         {/* Preferences */}
@@ -249,11 +229,13 @@ export function Profile() {
         onClose={() => setModalVisible(false)}
         onImagePicked={async (uri) => {
           // Optimistic UI update
+          setImgError(false);
           setProfilePhoto(uri);
           setModalVisible(false);
           
           try {
-            const filename = uri.split('/').pop() || `profile_${Date.now()}.jpg`;
+            const rawFilename = uri.split('/').pop() || `profile_${Date.now()}.jpg`;
+            const filename = rawFilename.includes('.') ? rawFilename : `${rawFilename}.jpg`;
             const match = /\.(\w+)$/.exec(filename);
             const type = match ? `image/${match[1]}` : 'image/jpeg';
             
@@ -267,14 +249,17 @@ export function Profile() {
               AsyncStorage.setItem('user_profile_photo', serverPath).catch(() => {});
               
               // 3. Re-fetch to sync store perfectly
-              const freshProfile = await citizenService.getProfile();
-              if (freshProfile) {
-                setProfileFromApi(freshProfile);
+              try {
+                const freshProfile = await citizenService.getProfile();
+                if (freshProfile) {
+                  setProfileFromApi(freshProfile);
+                }
+              } catch (refreshErr) {
+                console.warn('Profile photo updated, background sync warning:', refreshErr);
               }
             }
           } catch (err) {
             console.error('Failed to upload profile photo:', err);
-            // Revert on error if necessary, but leaving optimistic update is okay for UX
           }
         }}
       />

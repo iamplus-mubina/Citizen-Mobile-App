@@ -19,6 +19,7 @@ import { Profile } from '@/components/Profile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useComplaintStore } from '@/store/useComplaintStore';
 import { citizenService } from '@/services/citizenService';
+import { getCleanImageUrl } from '@/utils/image';
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
@@ -71,10 +72,13 @@ export default function HomeScreen() {
         const profileRes = await citizenService.getProfile();
         if (profileRes) {
           setProfileFromApi(profileRes);
-          const photo = profileRes.ProfileImage || (profileRes as any).profileImage;
+          const photo = getCleanImageUrl(profileRes.ProfileImage || (profileRes as any).profileImage);
           if (photo) {
             setProfilePhoto(photo);
             AsyncStorage.setItem('user_profile_photo', photo).catch(() => {});
+          } else {
+            setProfilePhoto(null);
+            AsyncStorage.removeItem('user_profile_photo').catch(() => {});
           }
         }
       } catch (err) {
@@ -102,8 +106,9 @@ export default function HomeScreen() {
     const loadSavedPhoto = async () => {
       try {
         const savedPhoto = await AsyncStorage.getItem('user_profile_photo');
-        if (savedPhoto && !profilePhoto) {
-          setProfilePhoto(savedPhoto);
+        const cleanPhoto = getCleanImageUrl(savedPhoto);
+        if (cleanPhoto && !profilePhoto) {
+          setProfilePhoto(cleanPhoto);
         }
       } catch (err) {
         console.error('Failed to load saved profile photo:', err);

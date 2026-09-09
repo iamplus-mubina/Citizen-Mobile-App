@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { getCleanImageUrl } from '@/utils/image';
 
 // ─── Complaint Item (from API) ───
 export interface SubmittedComplaint {
@@ -221,7 +222,7 @@ export const useComplaintStore = create<ComplaintFormState>((set) => ({
     totalComplaintsCount: total ?? complaints.length,
   }),
 
-  setProfilePhoto: (profilePhoto) => set({ profilePhoto }),
+  setProfilePhoto: (profilePhoto) => set({ profilePhoto: getCleanImageUrl(profilePhoto) }),
 
   setPhoneNumber: (phoneNumber) => set({ phoneNumber }),
 
@@ -287,7 +288,7 @@ export const useComplaintStore = create<ComplaintFormState>((set) => ({
       religionId: data.religion?.id || null,
       religionName: data.religion?.name || '',
       // Profile image
-      profilePhoto: data.ProfileImage || data.profileImage || state.profilePhoto,
+      profilePhoto: getCleanImageUrl(data.ProfileImage ?? data.profileImage) ?? state.profilePhoto,
     };
   }),
 

@@ -90,13 +90,27 @@ export default function RegisterScreen() {
     }
 
     setErrors({});
-    // Switch to OTP step instead of calling API immediately
-    setStep('otp');
-    setOtp('');
-    setTimeLeft(45);
-    setTimeout(() => {
-      otpRef.current?.focus();
-    }, 100);
+    setIsSubmitting(true);
+
+    try {
+      await citizenService.requestOnboardOtp(mobile);
+      setStep('otp');
+      setOtp('');
+      setTimeLeft(45);
+      setTimeout(() => {
+        otpRef.current?.focus();
+      }, 100);
+    } catch (error: any) {
+      console.log('Request Onboard OTP Error:', error?.response?.data || error?.message);
+      const rawMsg = error.response?.data?.message;
+      const errorMessage = Array.isArray(rawMsg)
+        ? rawMsg.join(', ')
+        : (rawMsg || 'Failed to send OTP. Please try again.');
+      setAlertConfig({ title: 'Notice', message: errorMessage, type: 'error' });
+      setAlertVisible(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleVerifyOtp = async () => {
@@ -110,13 +124,14 @@ export default function RegisterScreen() {
 
     try {
       const payload = {
-        firstName,
-        middleName,
-        lastName,
-        phone: mobile,
-        email,
+        firstName: firstName.trim(),
+        middleName: middleName.trim() || undefined,
+        lastName: lastName.trim(),
+        phone: mobile.trim(),
+        email: email.trim() ? email.trim() : undefined,
         gender,
-        address,
+        address: address.trim(),
+        otpCode: otp,
       };
       
       await citizenService.onboard(payload);
@@ -128,8 +143,11 @@ export default function RegisterScreen() {
       });
       setAlertVisible(true);
     } catch (error: any) {
-      console.error('API Error:', error);
-      const errorMessage = error.response?.data?.message || 'Failed to register. Please try again.';
+      console.log('API Error:', error?.response?.data || error?.message);
+      const rawMsg = error.response?.data?.message;
+      const errorMessage = Array.isArray(rawMsg)
+        ? rawMsg.join(', ')
+        : (rawMsg || 'Failed to register. Please try again.');
       setAlertConfig({ title: 'Registration Failed', message: errorMessage, type: 'error' });
       setAlertVisible(true);
     } finally {
@@ -137,13 +155,24 @@ export default function RegisterScreen() {
     }
   };
 
-  const handleResendOtp = () => {
+  const handleResendOtp = async () => {
     if (timeLeft === 0) {
       setOtp('');
-      setTimeLeft(45);
-      setTimeout(() => {
-        otpRef.current?.focus();
-      }, 100);
+      try {
+        await citizenService.requestOnboardOtp(mobile);
+        setTimeLeft(45);
+        setTimeout(() => {
+          otpRef.current?.focus();
+        }, 100);
+      } catch (error: any) {
+        console.log('Resend OTP Error:', error?.response?.data || error?.message);
+        const rawMsg = error.response?.data?.message;
+        const errorMessage = Array.isArray(rawMsg)
+          ? rawMsg.join(', ')
+          : (rawMsg || 'Failed to resend OTP.');
+        setAlertConfig({ title: 'Notice', message: errorMessage, type: 'error' });
+        setAlertVisible(true);
+      }
     }
   };
 
@@ -153,8 +182,12 @@ export default function RegisterScreen() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const containerClass = Platform.OS === 'web'
+    ? "flex-1 px-6 w-full max-w-md mx-auto"
+    : "flex-1 px-5 w-full";
+
   const renderContent = () => (
-    <View className="flex-1 px-6 w-full max-w-md mx-auto">
+    <View className={containerClass}>
       <View className="h-14 justify-center">
         <TouchableOpacity
           onPress={() => {
@@ -173,69 +206,64 @@ export default function RegisterScreen() {
         </TouchableOpacity>
       </View>
 
-      <View className="flex-1 mt-4">
+      <View className="flex-1 mt-2">
         {step === 'details' && (
-          <View className="mb-8">
+          <View className="mb-6">
             <Text className="text-3xl font-inter-bold text-dark mb-2">
               Create Your Account
             </Text>
-            <Text className="text-muted text-lg font-inter">
+            <Text className="text-muted text-base font-inter">
               Please fill the details to register
             </Text>
           </View>
         )}
 
         {step === 'otp' && (
-          <View className="mb-10 items-center">
+          <View className="mb-8 items-center">
             <Image
               source={omsLogo}
-              style={{ width: 140, height: 140, marginBottom: 20 }}
+              style={{ width: 130, height: 130, marginBottom: 16 }}
               resizeMode="contain"
             />
-            <Text className="text-3xl font-inter-bold text-dark mb-2 text-center">
+            <Text className="text-2xl font-inter-bold text-dark mb-2 text-center">
               Enter OTP
             </Text>
-            <Text className="text-muted text-lg font-inter text-center">
+            <Text className="text-muted text-base font-inter text-center">
               We have sent a 6-digit code to {mobile}
             </Text>
           </View>
         )}
 
         {step === 'details' ? (
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
-          <View className="flex-row gap-x-3">
-            <View className="flex-1">
-              <Input
-                label="First Name *"
-                placeholder="First name"
-                value={firstName}
-                onChangeText={(text) => {
-                  setFirstName(text);
-                  if (text.trim()) setErrors(prev => ({ ...prev, firstName: '' }));
-                }}
-                error={errors.firstName}
-              />
-            </View>
-            <View className="flex-1">
-              <Input
-                label="Last Name *"
-                placeholder="Last name"
-                value={lastName}
-                onChangeText={(text) => {
-                  setLastName(text);
-                  if (text.trim()) setErrors(prev => ({ ...prev, lastName: '' }));
-                }}
-                error={errors.lastName}
-              />
-            </View>
-          </View>
+          <ScrollView className="flex-1 w-full" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 60 }}>
+            <Input
+              label="First Name *"
+              placeholder="First name"
+              value={firstName}
+              onChangeText={(text) => {
+                setFirstName(text);
+                if (text.trim()) setErrors(prev => ({ ...prev, firstName: '' }));
+              }}
+              error={errors.firstName}
+            />
 
-          <Input
-            label="Middle Name (Optional)"
-            placeholder="Middle name"
-            value={middleName}
-            onChangeText={setMiddleName}
-          />
+            <Input
+              label="Middle Name (Optional)"
+              placeholder="Middle name"
+              value={middleName}
+              onChangeText={setMiddleName}
+            />
+
+            <Input
+              label="Last Name *"
+              placeholder="Last name"
+              value={lastName}
+              onChangeText={(text) => {
+                setLastName(text);
+                if (text.trim()) setErrors(prev => ({ ...prev, lastName: '' }));
+              }}
+              error={errors.lastName}
+            />
 
           <Dropdown
             label="Gender *"
@@ -284,7 +312,7 @@ export default function RegisterScreen() {
           />
 
           <View className="mt-8">
-            <Button title="Next" onPress={handleSubmit} />
+            <Button title={isSubmitting ? "Sending OTP..." : "Next"} onPress={handleSubmit} disabled={isSubmitting} />
           </View>
         </ScrollView>
         ) : (

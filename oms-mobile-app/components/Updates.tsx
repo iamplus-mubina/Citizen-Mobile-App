@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { MegaphoneIcon } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 import { api, getStoredToken } from '@/services/api';
+import { getCleanImageUrl } from '@/utils/image';
 
 const formatDateString = (dateStr?: string) => {
   if (!dateStr) return 'Recently';
@@ -158,9 +159,9 @@ export function Updates() {
               } as any)}
               className="bg-surface border border-border rounded-lg p-4 mb-4 flex-row items-start"
             >
-              {update.imageUrl ? (
+              {getCleanImageUrl(update.imageUrl) ? (
                 <Image
-                  source={{ uri: update.imageUrl }}
+                  source={{ uri: getCleanImageUrl(update.imageUrl)! }}
                   className="w-16 h-16 rounded-lg mr-4"
                   resizeMode="cover"
                 />

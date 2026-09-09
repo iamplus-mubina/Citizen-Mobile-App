@@ -47,9 +47,8 @@ export default function EditProfileScreen() {
   const [pincode, setPincode] = useState(store.profilePincode || '');
   const [city, setCity] = useState(store.city || '');
   const [cityType, setCityType] = useState(store.cityType || '');
+  const [registeredPhone, setRegisteredPhone] = useState(store.phoneNumber || '');
   const [alternatePhone, setAlternatePhone] = useState(store.alternatePhone || '');
-  const [phone3, setPhone3] = useState(store.phone3 || '');
-  const [phone4, setPhone4] = useState(store.phone4 || '');
 
   // Personal Details
   const [gender, setGender] = useState(store.gender || '');
@@ -172,9 +171,8 @@ export default function EditProfileScreen() {
             if (fresh.pincode) setPincode(fresh.pincode);
             if (fresh.city) setCity(fresh.city);
             if (fresh.cityType) setCityType(fresh.cityType);
+            if (fresh.phone) setRegisteredPhone(fresh.phone);
             if (fresh.alternatePhone) setAlternatePhone(fresh.alternatePhone);
-            if (fresh.phone3) setPhone3(fresh.phone3);
-            if (fresh.phone4) setPhone4(fresh.phone4);
             if (fresh.gender) setGender(fresh.gender);
             if (fresh.dob) setDob(fresh.dob);
             if (fresh.age) setAge(String(fresh.age));
@@ -244,8 +242,6 @@ export default function EditProfileScreen() {
         city: city.trim() || undefined,
         cityType: cityType || undefined,
         alternatePhone: alternatePhone.trim() || undefined,
-        phone3: phone3.trim() || undefined,
-        phone4: phone4.trim() || undefined,
         gender: gender || undefined,
         dob: dob.trim() || undefined,
         age: age.trim() || undefined,
@@ -298,8 +294,6 @@ export default function EditProfileScreen() {
           city,
           cityType,
           alternatePhone,
-          phone3,
-          phone4,
           gender,
           dob,
           age,
@@ -408,18 +402,21 @@ export default function EditProfileScreen() {
               </View>
 
               <View className="mb-4">
+                <View className="flex-row items-center justify-between mb-2">
+                  <Text className="text-sm font-inter-semibold text-dark">Registered Mobile Number</Text>
+                  <View className="bg-gray-200/80 px-2 py-0.5 rounded">
+                    <Text className="text-[10px] font-inter-medium text-muted">Fixed / Non-editable</Text>
+                  </View>
+                </View>
+                <Input 
+                  value={registeredPhone ? (registeredPhone.startsWith('+91') ? registeredPhone : `+91 ${registeredPhone}`) : '-'} 
+                  editable={false} 
+                />
+              </View>
+
+              <View className="mb-4">
                 <Text className="text-sm font-inter-semibold text-dark mb-2">Alternate Phone</Text>
                 <Input placeholder="Enter alternate mobile number" value={alternatePhone} onChangeText={setAlternatePhone} keyboardType="phone-pad" maxLength={10} />
-              </View>
-
-              <View className="mb-4">
-                <Text className="text-sm font-inter-semibold text-dark mb-2">Phone 3</Text>
-                <Input placeholder="Enter additional phone" value={phone3} onChangeText={setPhone3} keyboardType="phone-pad" maxLength={10} />
-              </View>
-
-              <View className="mb-4">
-                <Text className="text-sm font-inter-semibold text-dark mb-2">Phone 4</Text>
-                <Input placeholder="Enter additional phone" value={phone4} onChangeText={setPhone4} keyboardType="phone-pad" maxLength={10} />
               </View>
 
               {/* 2. Address & City */}
@@ -428,19 +425,6 @@ export default function EditProfileScreen() {
                 <Text className="text-sm font-inter-semibold text-dark mb-2">Address</Text>
                 <Input placeholder="Enter detailed address" value={address} onChangeText={setAddress} multiline numberOfLines={2} />
               </View>
-
-              <View className="mb-4">
-                <Text className="text-sm font-inter-semibold text-dark mb-2">City / Village</Text>
-                <Input placeholder="Enter city or village name" value={city} onChangeText={setCity} />
-              </View>
-
-              <Dropdown
-                label="City / Area Type"
-                value={cityType}
-                options={CITY_TYPE_OPTIONS}
-                placeholder="Select city type"
-                onSelect={(val) => setCityType(val)}
-              />
 
               <View className="mb-4">
                 <Text className="text-sm font-inter-semibold text-dark mb-2">Pincode</Text>
@@ -525,93 +509,7 @@ export default function EditProfileScreen() {
                 onSelect={(val) => setRationCard(val)}
               />
 
-              {/* 5. Location & Administrative Details (Dynamic) */}
-              {renderSectionHeader('Location & Administrative (Dynamic)')}
-              <Dropdown
-                label="District (जिल्हा)"
-                value={districtName}
-                options={districts}
-                placeholder="Select District"
-                loading={loadingMaster && districts.length === 0}
-                onSelect={(name, id) => {
-                  setDistrictName(name);
-                  setDistrictId(id ?? null);
-                }}
-              />
-
-              <Dropdown
-                label="Assembly / Vidhansabha (विधानसभा)"
-                value={assemblyName}
-                options={assemblies}
-                placeholder="Select Assembly"
-                loading={loadingMaster && assemblies.length === 0}
-                onSelect={(name, id) => {
-                  setAssemblyName(name);
-                  setAssemblyId(id ?? null);
-                }}
-              />
-
-              <Dropdown
-                label="Gaon / Village (गाव)"
-                value={gaonName}
-                options={gaons}
-                placeholder="Select Gaon"
-                loading={loadingMaster && gaons.length === 0}
-                onSelect={(name, id) => {
-                  setGaonName(name);
-                  setGaonId(id ?? null);
-                }}
-              />
-
-              <Dropdown
-                label="Gan / Panchayat Samiti (गण)"
-                value={ganName}
-                options={gans}
-                placeholder="Select Gan"
-                loading={loadingMaster && gans.length === 0}
-                onSelect={(name, id) => {
-                  setGanName(name);
-                  setGanId(id ?? null);
-                }}
-              />
-
-              <Dropdown
-                label="Gat / Zilla Parishad (गट)"
-                value={gatName}
-                options={gats}
-                placeholder="Select Gat"
-                loading={loadingMaster && gats.length === 0}
-                onSelect={(name, id) => {
-                  setGatName(name);
-                  setGatId(id ?? null);
-                }}
-              />
-
-              <Dropdown
-                label="Prabhag / Ward (प्रभाग)"
-                value={prabhagName}
-                options={prabhags}
-                placeholder="Select Prabhag"
-                loading={loadingMaster && prabhags.length === 0}
-                onSelect={(name, id) => {
-                  setPrabhagName(name);
-                  setPrabhagId(id ?? null);
-                }}
-              />
-
-              <Dropdown
-                label="Prabhag Area (प्रभाग परिसर)"
-                value={prabhagAreaName}
-                options={prabhagAreas}
-                placeholder="Select Prabhag Area"
-                loading={loadingMaster && prabhagAreas.length === 0}
-                onSelect={(name, id) => {
-                  setPrabhagAreaName(name);
-                  setPrabhagAreaId(id ?? null);
-                }}
-              />
-
-              {/* 6. Caste & Religion (Dynamic) */}
+              {/* 5. Caste & Religion (Dynamic) */}
               {renderSectionHeader('Caste & Religion (Dynamic)')}
               <Dropdown
                 label="Religion (धर्म)"
@@ -649,55 +547,6 @@ export default function EditProfileScreen() {
                 }}
               />
 
-              {/* 7. Voter Details */}
-              {renderSectionHeader('Voter Information')}
-              <View className="mb-4 flex-row items-center justify-between p-3 bg-surface border border-border rounded-xl">
-                <View className="flex-1 mr-4">
-                  <Text className="text-sm font-inter-semibold text-dark">Is Registered Voter</Text>
-                  <Text className="text-xs font-inter text-muted">Toggle if citizen is registered in electoral roll</Text>
-                </View>
-                <Switch 
-                  value={isVoter} 
-                  onValueChange={setIsVoter} 
-                  trackColor={{ false: colors.border, true: colors.primary }} 
-                  thumbColor={colors.white} 
-                />
-              </View>
-
-              <View className="mb-4">
-                <Text className="text-sm font-inter-semibold text-dark mb-2">AC Number</Text>
-                <Input placeholder="Enter AC Number" value={acNumber} onChangeText={setAcNumber} />
-              </View>
-
-              <View className="mb-4">
-                <Text className="text-sm font-inter-semibold text-dark mb-2">Part Number</Text>
-                <Input placeholder="Enter Part Number" value={voterPartNumber} onChangeText={setVoterPartNumber} />
-              </View>
-
-              <View className="mb-4">
-                <Text className="text-sm font-inter-semibold text-dark mb-2">Section Number</Text>
-                <Input placeholder="Enter Section Number" value={voterSectionNumber} onChangeText={setVoterSectionNumber} />
-              </View>
-
-              <View className="mb-4">
-                <Text className="text-sm font-inter-semibold text-dark mb-2">SLN Number In Part</Text>
-                <Input placeholder="Enter SLN Number" value={voterSlnNumber} onChangeText={setVoterSlnNumber} />
-              </View>
-
-              <View className="mb-4">
-                <Text className="text-sm font-inter-semibold text-dark mb-2">Booth Number</Text>
-                <Input placeholder="Enter Booth Number" value={boothNumber} onChangeText={setBoothNumber} />
-              </View>
-
-              <View className="mb-4">
-                <Text className="text-sm font-inter-semibold text-dark mb-2">Booth Name</Text>
-                <Input placeholder="Enter Booth Name" value={boothName} onChangeText={setBoothName} />
-              </View>
-
-              <View className="mb-4">
-                <Text className="text-sm font-inter-semibold text-dark mb-2">Note</Text>
-                <Input placeholder="Additional notes..." value={note} onChangeText={setNote} multiline numberOfLines={3} />
-              </View>
 
             </View>
           </ScrollView>
