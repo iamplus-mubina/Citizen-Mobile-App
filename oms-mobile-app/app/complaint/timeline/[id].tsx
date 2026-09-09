@@ -120,12 +120,14 @@ const getComplaintHistory = (reqStatus?: string, liveStatus?: string): StepperSt
 
 export default function ComplaintTimelineScreen() {
   const router = useRouter();
-  const { id } = useLocalSearchParams();
+  const { id, fromSuccess } = useLocalSearchParams();
   const ticketId = Array.isArray(id) ? id[0] : (id || 'REQ-1');
   const submittedComplaints = useComplaintStore((state) => state.submittedComplaints);
 
   const handleBack = () => {
-    if (router.canGoBack()) {
+    if (fromSuccess === 'true') {
+      router.replace({ pathname: '/home', params: { tab: 'complaints' } });
+    } else if (router.canGoBack()) {
       router.back();
     } else {
       router.replace({ pathname: '/home', params: { tab: 'complaints' } });

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Platform, KeyboardAvoidingView, Alert, Switch, ActivityIndicator, BackHandler } from 'react-native';
+import { View, Text, ScrollView, Platform, KeyboardAvoidingView, Alert, Switch, ActivityIndicator, BackHandler, ToastAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { Header } from '@/components/Header';
@@ -343,9 +343,10 @@ export default function EditProfileScreen() {
         });
       }
 
-      Alert.alert('Success', 'Profile updated successfully!', [
-        { text: 'OK', onPress: () => router.back() }
-      ]);
+      if (Platform.OS === 'android') {
+        ToastAndroid.show('Profile updated successfully!', ToastAndroid.SHORT);
+      }
+      router.back();
     } catch (err: any) {
       console.error('Failed to update profile:', err);
       Alert.alert('Error', err.response?.data?.message || 'Failed to update profile. Please try again.');

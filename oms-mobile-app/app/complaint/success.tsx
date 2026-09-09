@@ -72,7 +72,10 @@ export default function SuccessScreen() {
           <Button
             title="Track complaint"
             variant="primary"
-            onPress={() => router.replace(`/complaint/timeline/${latestComplaint.ticketId}`)}
+            onPress={() => router.replace({ 
+              pathname: '/complaint/timeline/[id]', 
+              params: { id: latestComplaint.ticketId, fromSuccess: 'true' } 
+            })}
             className="w-full"
           />
           <View className="mt-3">

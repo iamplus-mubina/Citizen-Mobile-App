@@ -247,9 +247,35 @@ export function Profile() {
       <UploadModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        onImagePicked={(uri) => {
+        onImagePicked={async (uri) => {
+          // Optimistic UI update
           setProfilePhoto(uri);
-          AsyncStorage.setItem('user_profile_photo', uri).catch((err) => console.error('Failed to save profile photo:', err));
+          setModalVisible(false);
+          
+          try {
+            const filename = uri.split('/').pop() || `profile_${Date.now()}.jpg`;
+            const match = /\.(\w+)$/.exec(filename);
+            const type = match ? `image/${match[1]}` : 'image/jpeg';
+            
+            // 1. Upload to server
+            const res = await citizenService.uploadFile(uri, filename, type);
+            const serverPath = res?.path || res?.data?.path || '';
+            
+            if (serverPath) {
+              // 2. Update citizen profile with new image path
+              await citizenService.updateProfile({ ProfileImage: serverPath });
+              AsyncStorage.setItem('user_profile_photo', serverPath).catch(() => {});
+              
+              // 3. Re-fetch to sync store perfectly
+              const freshProfile = await citizenService.getProfile();
+              if (freshProfile) {
+                setProfileFromApi(freshProfile);
+              }
+            }
+          } catch (err) {
+            console.error('Failed to upload profile photo:', err);
+            // Revert on error if necessary, but leaving optimistic update is okay for UX
+          }
         }}
       />
 
