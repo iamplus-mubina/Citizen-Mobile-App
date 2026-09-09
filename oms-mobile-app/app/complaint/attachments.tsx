@@ -74,7 +74,12 @@ export default function AttachmentsScreen() {
   const handleChooseFile = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: '*/*',
+        type: [
+          'application/pdf', 
+          'image/*', 
+          'application/msword', 
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ],
         copyToCacheDirectory: true,
       });
 
@@ -176,7 +181,8 @@ export default function AttachmentsScreen() {
           </View>
 
           <View className="mb-8">
-            <Text className="text-dark font-inter-semibold mb-2">Upload Documents (Optional)</Text>
+            <Text className="text-dark font-inter-semibold">Upload Documents (Optional)</Text>
+            <Text className="text-xs text-muted font-inter mb-3">Supported formats: PDF, JPEG, PNG, DOC, DOCX</Text>
 
             {documents.length > 0 && (
               <View className="mb-4 space-y-3">

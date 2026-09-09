@@ -245,9 +245,6 @@ export default function ComplaintTimelineScreen() {
           <View className="flex-row justify-between items-center mb-3">
             <Text className="text-sm font-inter-bold text-header-bg">{complaint.ticketId}</Text>
             <View className="flex-row items-center gap-1.5 flex-wrap justify-end">
-              <View className={`px-2.5 py-1 rounded-md border ${reqStyle.bg} ${reqStyle.border}`}>
-                <Text className={`text-[10px] font-inter-bold ${reqStyle.text}`}>{reqStyle.label}</Text>
-              </View>
               <View className={`px-2.5 py-1 rounded-md border ${liveStyle.bg} ${liveStyle.border}`}>
                 <Text className={`text-[10px] font-inter-bold ${liveStyle.text}`}>{liveStyle.label}</Text>
               </View>

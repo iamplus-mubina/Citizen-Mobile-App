@@ -703,10 +703,10 @@ export default function EditProfileScreen() {
 
           {/* Action Buttons */}
           <View className="px-6 py-4 bg-background border-t border-border flex-row gap-x-3">
-            <View className="flex-1">
+            <View style={{ flex: 0.8 }}>
               <Button title="Cancel" onPress={() => router.back()} variant="secondary" disabled={saving} />
             </View>
-            <View className="flex-1">
+            <View style={{ flex: 1.2 }}>
               <Button 
                 title={saving ? "Saving..." : "Update Profile"} 
                 onPress={handleSave} 

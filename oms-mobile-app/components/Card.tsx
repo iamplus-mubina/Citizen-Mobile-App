@@ -125,11 +125,6 @@ export function Card({
         <View className="flex-row justify-between items-center mb-2">
           <Text className="text-sm font-inter-bold text-header-bg">{ticketId}</Text>
           <View className="flex-row items-center gap-1.5 flex-wrap justify-end">
-            {reqStyle && (
-              <View className={`px-2 py-0.5 rounded border ${reqStyle.bg} ${reqStyle.border}`}>
-                <Text className={`text-[10px] font-inter-semibold ${reqStyle.text}`}>{reqStyle.label}</Text>
-              </View>
-            )}
             {liveStyle && (
               <View className={`px-2 py-0.5 rounded border ${liveStyle.bg} ${liveStyle.border}`}>
                 <Text className={`text-[10px] font-inter-semibold ${liveStyle.text}`}>{liveStyle.label}</Text>

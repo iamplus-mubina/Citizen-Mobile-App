@@ -24,13 +24,19 @@ export function Button({ title, variant = 'primary', leftIcon, className = '', .
   }
 
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       className={`py-3 px-5 ${roundedClass} flex-row items-center justify-center ${bgClass} ${className}`}
       activeOpacity={0.8}
       {...props}
     >
       {leftIcon && <View className="mr-2">{leftIcon}</View>}
-      <Text className={`text-lg font-inter-bold ${textClass}`}>{title}</Text>
+      <Text 
+        className={`text-lg font-inter-bold ${textClass} text-center flex-1`}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+      >
+        {title}
+      </Text>
     </TouchableOpacity>
   );
 }
