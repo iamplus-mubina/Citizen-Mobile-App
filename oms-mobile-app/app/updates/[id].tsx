@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Platform, Image, TouchableOpacity, Modal, Dimensions, BackHandler } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Header } from '@/components/Header';
 import { PlayIcon, MegaphoneIcon, XMarkIcon } from 'react-native-heroicons/solid';
@@ -31,6 +31,7 @@ const formatDateString = (dateStr?: string) => {
 export default function UpdateDetailScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ id?: string; title?: string; summary?: string; date?: string; category?: string; imageUrl?: string }>();
+  const insets = useSafeAreaInsets();
 
   const handleBack = () => {
     if (router.canGoBack()) {
@@ -131,11 +132,11 @@ export default function UpdateDetailScreen() {
     : (detail.imageUrl ? [detail.imageUrl] : []);
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
+    <View className="flex-1 bg-background" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
       <Stack.Screen options={{ headerShown: false }} />
       <View className={containerClass}>
 
-        <Header showBack title="City Updates" onBack={handleBack} />
+        <Header showBack title="Update Detail" onBack={handleBack} />
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
 
@@ -272,9 +273,6 @@ export default function UpdateDetailScreen() {
         </Modal>
 
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
-
-
-

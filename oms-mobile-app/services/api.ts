@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Platform } from 'react-native';
+import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://mn-0042-api.digitaloms.in';
@@ -88,15 +89,28 @@ let isRedirectingToLogin = false;
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
+    // 1. Handle 401 Unauthorized
     if (error.response && error.response.status === 401 && !isRedirectingToLogin) {
       isRedirectingToLogin = true;
       await removeStoredToken();
-      // Use a small delay to allow navigation to settle
+      router.replace('/login');
       setTimeout(() => {
         isRedirectingToLogin = false;
       }, 2000);
-      // The app's auth check in home.tsx / _layout.tsx will handle redirect
     }
+
+    // 2. Handle Network Errors
+    if (error.message === 'Network Error' || error.code === 'ERR_NETWORK') {
+      router.replace('/no-internet');
+    }
+
+    // 3. Handle 500+ Server Errors
+    if (error.response && error.response.status >= 500) {
+      if (error.config && error.config.method !== 'get') {
+        router.replace('/error');
+      }
+    }
+
     return Promise.reject(error);
   }
 );

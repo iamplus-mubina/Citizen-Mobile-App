@@ -72,7 +72,7 @@ export function Header({ className = '', avatarUrl, showBack, title, notificatio
             <View className="flex-row items-center flex-1">
               <View className="w-12 h-12 bg-white rounded-full items-center justify-center mr-3 border-2 border-white/10 overflow-hidden">
                 <Image
-                  source={photoUrl && !imgError ? { uri: photoUrl } : DEFAULT_LOGO}
+                  source={photoUrl && !imgError ? { uri: Array.isArray(photoUrl) ? photoUrl[0] : photoUrl } : DEFAULT_LOGO}
                   style={{ width: '100%', height: '100%' }}
                   resizeMode="cover"
                   onError={() => setImgError(true)}
