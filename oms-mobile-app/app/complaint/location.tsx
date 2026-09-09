@@ -10,10 +10,13 @@ import { useComplaintStore } from '@/store/useComplaintStore';
 
 export default function LocationScreen() {
   const router = useRouter();
-  const [address, setAddress] = useState('');
-  const [pincode, setPincode] = useState('');
+  const storeAddress = useComplaintStore((s) => s.address);
+  const storePincode = useComplaintStore((s) => s.pincode);
   const setComplaintForm = useComplaintStore((s) => s.setComplaintForm);
 
+  // Initialize from store so data persists on back navigation
+  const [address, setAddress] = useState(storeAddress);
+  const [pincode, setPincode] = useState(storePincode);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {

@@ -14,11 +14,15 @@ import { citizenService } from '@/services/citizenService';
 
 export default function AttachmentsScreen() {
   const router = useRouter();
-  const [photos, setPhotos] = useState<{ uri: string; serverPath?: string }[]>([]);
-  const [documents, setDocuments] = useState<{ name: string; serverPath?: string }[]>([]);
+  const cachedPhotos = useComplaintStore((s) => s.cachedPhotos);
+  const cachedDocuments = useComplaintStore((s) => s.cachedDocuments);
+  const setComplaintForm = useComplaintStore((s) => s.setComplaintForm);
+
+  // Initialize from store so attachments persist on back navigation
+  const [photos, setPhotos] = useState<{ uri: string; serverPath?: string }[]>(cachedPhotos);
+  const [documents, setDocuments] = useState<{ name: string; serverPath?: string }[]>(cachedDocuments);
   const [isUploading, setIsUploading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const setComplaintForm = useComplaintStore((s) => s.setComplaintForm);
 
   useEffect(() => {
     const onBackPress = () => {
@@ -50,11 +54,18 @@ export default function AttachmentsScreen() {
 
       const res = await citizenService.uploadFile(uri, filename, type);
       const serverPath = res?.path || res?.data?.path || '';
-      setPhotos((prev) => [...prev, { uri, serverPath }]);
+      const newPhoto = { uri, serverPath };
+      const updated = [...photos, newPhoto];
+      setPhotos(updated);
+      // Save to store immediately so it persists on back
+      setComplaintForm({ cachedPhotos: updated });
       console.log('Photo uploaded successfully:', serverPath);
     } catch (err) {
       console.log('Photo upload handler error:', err);
-      setPhotos((prev) => [...prev, { uri }]);
+      const newPhoto = { uri };
+      const updated = [...photos, newPhoto];
+      setPhotos(updated);
+      setComplaintForm({ cachedPhotos: updated });
     } finally {
       setIsUploading(false);
     }
@@ -73,11 +84,18 @@ export default function AttachmentsScreen() {
         try {
           const res = await citizenService.uploadFile(file.uri, file.name, file.mimeType || 'application/pdf');
           const serverPath = res?.path || res?.data?.path || '';
-          setDocuments((prev) => [...prev, { name: file.name, serverPath }]);
+          const newDoc = { name: file.name, serverPath };
+          const updated = [...documents, newDoc];
+          setDocuments(updated);
+          // Save to store immediately so it persists on back
+          setComplaintForm({ cachedDocuments: updated });
           console.log('Document uploaded successfully:', serverPath);
         } catch (err) {
           console.log('Document upload handler error:', err);
-          setDocuments((prev) => [...prev, { name: file.name }]);
+          const newDoc = { name: file.name };
+          const updated = [...documents, newDoc];
+          setDocuments(updated);
+          setComplaintForm({ cachedDocuments: updated });
         } finally {
           setIsUploading(false);
         }
@@ -89,11 +107,15 @@ export default function AttachmentsScreen() {
   };
 
   const handleRemovePhoto = (index: number) => {
-    setPhotos((prev) => prev.filter((_, i) => i !== index));
+    const updated = photos.filter((_, i) => i !== index);
+    setPhotos(updated);
+    setComplaintForm({ cachedPhotos: updated });
   };
 
   const handleRemoveDocument = (index: number) => {
-    setDocuments((prev) => prev.filter((_, i) => i !== index));
+    const updated = documents.filter((_, i) => i !== index);
+    setDocuments(updated);
+    setComplaintForm({ cachedDocuments: updated });
   };
 
   return (

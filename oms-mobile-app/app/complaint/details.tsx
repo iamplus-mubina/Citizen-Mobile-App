@@ -11,10 +11,13 @@ import { useComplaintStore } from '@/store/useComplaintStore';
 
 export default function DetailsScreen() {
   const router = useRouter();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const storeTitle = useComplaintStore((s) => s.title);
+  const storeDescription = useComplaintStore((s) => s.description);
   const setComplaintForm = useComplaintStore((s) => s.setComplaintForm);
 
+  // Initialize from store so data persists on back navigation
+  const [title, setTitle] = useState(storeTitle);
+  const [description, setDescription] = useState(storeDescription);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -49,7 +52,7 @@ export default function DetailsScreen() {
       return;
     }
 
-    setComplaintForm({ description });
+    setComplaintForm({ title, description });
     router.push('/complaint/location');
   };
 

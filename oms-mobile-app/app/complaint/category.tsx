@@ -14,12 +14,25 @@ import type { ComplainCategory, ComplainType } from '@/services/types';
 
 export default function CategoryScreen() {
   const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+
+  // Load from store so selection persists on back navigation
+  const storeCategoryName = useComplaintStore((s) => s.selectedCategoryName);
+  const storeCategoryId = useComplaintStore((s) => s.selectedCategoryId);
+  const storeTypeName = useComplaintStore((s) => s.selectedTypeName);
+  const storeTypeId = useComplaintStore((s) => s.selectedTypeId);
+  const setComplaintForm = useComplaintStore((s) => s.setComplaintForm);
+
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(storeCategoryName || null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(storeCategoryId);
   const [categoriesList, setCategoriesList] = useState<ComplainCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Sub-type state
+  const [availableTypes, setAvailableTypes] = useState<ComplainType[]>([]);
+  const [selectedTypeName, setSelectedTypeName] = useState(storeTypeName || '');
+  const [selectedTypeId, setSelectedTypeId] = useState<number | null>(storeTypeId);
 
   useEffect(() => {
     const onBackPress = () => {
@@ -29,13 +42,6 @@ export default function CategoryScreen() {
     const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
     return () => sub.remove();
   }, [router]);
-
-  // Sub-type state
-  const [availableTypes, setAvailableTypes] = useState<ComplainType[]>([]);
-  const [selectedTypeName, setSelectedTypeName] = useState('');
-  const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
-
-  const setComplaintForm = useComplaintStore((s) => s.setComplaintForm);
 
   const fetchCategories = async () => {
     setLoading(true);
@@ -221,12 +227,38 @@ export default function CategoryScreen() {
               title="Continue"
               onPress={() => {
                 if (canContinue) {
-                  setComplaintForm({
-                    selectedCategoryId,
-                    selectedCategoryName: selectedCategory || '',
-                    selectedTypeId,
-                    selectedTypeName,
-                  });
+                  const isChanged = 
+                    selectedCategoryId !== storeCategoryId || 
+                    selectedTypeId !== storeTypeId;
+
+                  if (isChanged) {
+                    // If category changed, reset the rest of the form
+                    setComplaintForm({
+                      selectedCategoryId,
+                      selectedCategoryName: selectedCategory || '',
+                      selectedTypeId,
+                      selectedTypeName,
+                      title: '',
+                      description: '',
+                      address: '',
+                      pincode: '',
+                      photoCount: 0,
+                      documentCount: 0,
+                      uploadedPhotoUrls: [],
+                      uploadedDocumentUrls: [],
+                      cachedPhotos: [],
+                      cachedDocuments: [],
+                    });
+                  } else {
+                    // Otherwise, just update the category info
+                    setComplaintForm({
+                      selectedCategoryId,
+                      selectedCategoryName: selectedCategory || '',
+                      selectedTypeId,
+                      selectedTypeName,
+                    });
+                  }
+                  
                   router.push('/complaint/details');
                 }
               }}

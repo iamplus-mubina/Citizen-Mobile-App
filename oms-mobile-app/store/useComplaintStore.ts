@@ -25,6 +25,7 @@ interface ComplaintFormState {
   selectedCategoryName: string;
   selectedTypeId: number | null;
   selectedTypeName: string;
+  title: string;
   description: string;
   address: string;
   pincode: string;
@@ -32,6 +33,9 @@ interface ComplaintFormState {
   documentCount: number;
   uploadedPhotoUrls: string[];
   uploadedDocumentUrls: string[];
+  // Cache full objects for restoring on back navigation
+  cachedPhotos: { uri: string; serverPath?: string }[];
+  cachedDocuments: { name: string; serverPath?: string }[];
 
   // ── Complaints List ──
   submittedComplaints: SubmittedComplaint[];
@@ -115,6 +119,7 @@ const defaultComplaintForm = {
   selectedCategoryName: '',
   selectedTypeId: null as number | null,
   selectedTypeName: '',
+  title: '',
   description: '',
   address: '',
   pincode: '',
@@ -122,6 +127,8 @@ const defaultComplaintForm = {
   documentCount: 0,
   uploadedPhotoUrls: [] as string[],
   uploadedDocumentUrls: [] as string[],
+  cachedPhotos: [] as { uri: string; serverPath?: string }[],
+  cachedDocuments: [] as { name: string; serverPath?: string }[],
 };
 
 export const useComplaintStore = create<ComplaintFormState>((set) => ({
