@@ -184,6 +184,7 @@ export function Profile() {
         <View className="bg-surface border border-border rounded-xl mb-6">
           <Text className="text-sm font-inter-bold text-dark px-4 pt-4 pb-3 border-b border-border">Preferences</Text>
 
+          {/* TEMPORARILY HIDDEN - Language option
           <TouchableOpacity activeOpacity={0.7} onPress={() => setLangModalVisible(true)} className="flex-row items-center px-4 py-3 border-b border-border">
             <View className="w-10 h-10 rounded-full bg-primary-light items-center justify-center mr-4">
               <GlobeAltIcon size={20} color={colors.primary} />
@@ -194,6 +195,7 @@ export function Profile() {
             </View>
             <Text className="text-xs font-inter text-muted mr-1">›</Text>
           </TouchableOpacity>
+          */}
 
           <View className="flex-row items-center px-4 py-3">
             <View className="w-10 h-10 rounded-full bg-primary-light items-center justify-center mr-4">
