@@ -166,54 +166,55 @@ export default function ComplaintTimelineScreen() {
 
   const [complaint, setComplaint] = useState<any>(initialComplaint);
 
+
   useEffect(() => {
     let isMounted = true;
 
     const loadComplaint = async () => {
-      let current = foundComplaint;
+      // Always fetch fresh data from API so status is up-to-date (fixes stale PENDING in store)
+      try {
+        const res = await citizenService.getMyComplaints(0, 50, '');
+        const list = Array.isArray(res) ? (Array.isArray(res[0]) ? res[0] : res) : (res?.data || []);
+        const fresh = list.find(
+          (c: any) =>
+            String(c.tokenNumber) === String(ticketId) ||
+            String(c.id) === String(ticketId) ||
+            String(c.requestId) === String(ticketId) ||
+            String(c.complainId) === String(ticketId)
+        );
+        if (fresh && isMounted) {
+          setComplaint((prev: any) => ({ ...prev, ...fresh }));
 
-      // If not present in store (e.g. direct link or refresh), load from my-complaints
-      if (!current) {
-        try {
-          const res = await citizenService.getMyComplaints(0, 50, '');
-          const list = Array.isArray(res) ? (Array.isArray(res[0]) ? res[0] : res) : (res?.data || []);
-          current = list.find(
-            (c: any) =>
-              String(c.tokenNumber) === String(ticketId) ||
-              String(c.id) === String(ticketId) ||
-              String(c.requestId) === String(ticketId) ||
-              String(c.complainId) === String(ticketId)
-          );
-        } catch (e) {
-          console.log('Error locating complaint from list:', e);
-        }
-      }
-
-      if (!isMounted) return;
-
-      if (current) {
-        setComplaint((prev: any) => ({ ...prev, ...current }));
-
-        // ONLY fetch ComplainBox live details if request is APPROVED and has a valid live complainId
-        if (current.requestStatus === 'APPROVED' && current.complainId) {
-          try {
-            const data = await citizenService.getComplaintDetails(current.complainId);
-            if (data && isMounted) {
-              setComplaint((prev: any) => ({
-                ...prev,
-                title: data.type?.name || data.category?.name || prev.title,
-                description: data.description || prev.description,
-                category: data.category?.name || prev.category,
-                type: data.type?.name || prev.type,
-                liveStatus: data.status || prev.liveStatus,
-                address: data.address?.line1 || (typeof data.address === 'string' ? data.address : prev.address),
-                karyaKarta: data.karyaKarta || prev.karyaKarta,
-                comments: Array.isArray(data.comments) ? data.comments : prev.comments || [],
-              }));
+          // Fetch live details if APPROVED and has a valid complainId
+          if (fresh.requestStatus === 'APPROVED' && fresh.complainId) {
+            try {
+              const data = await citizenService.getComplaintDetails(fresh.complainId);
+              if (data && isMounted) {
+                setComplaint((prev: any) => ({
+                  ...prev,
+                  title: data.type?.name || data.category?.name || prev.title,
+                  description: data.description || prev.description,
+                  category: data.category?.name || prev.category,
+                  type: data.type?.name || prev.type,
+                  liveStatus: data.status || prev.liveStatus,
+                  address: data.address?.line1 || (typeof data.address === 'string' ? data.address : prev.address),
+                  karyaKarta: data.karyaKarta || prev.karyaKarta,
+                  comments: Array.isArray(data.comments) ? data.comments : prev.comments || [],
+                }));
+              }
+            } catch (err) {
+              console.log('Background fetch for live complaint details:', err);
             }
-          } catch (err) {
-            console.log('Background fetch for live complaint details:', err);
           }
+        } else if (!fresh && foundComplaint && isMounted) {
+          // Fallback to store data if API didn't return this complaint
+          setComplaint((prev: any) => ({ ...prev, ...foundComplaint }));
+        }
+      } catch (e) {
+        console.log('Error fetching fresh complaint list:', e);
+        // Fallback to store data on network error
+        if (foundComplaint && isMounted) {
+          setComplaint((prev: any) => ({ ...prev, ...foundComplaint }));
         }
       }
     };
@@ -223,12 +224,23 @@ export default function ComplaintTimelineScreen() {
     return () => {
       isMounted = false;
     };
-  }, [ticketId, foundComplaint]);
+  }, [ticketId]);
+
 
   const reqStyle = getRequestStatusStyles(complaint.requestStatus);
   const liveStyle = getLiveStatusStyles(complaint.liveStatus);
   const historySteps = getComplaintHistory(complaint.requestStatus, complaint.liveStatus);
   const isApproved = complaint.requestStatus === 'APPROVED';
+
+  // Safely extract string from category/type which may be an object {id, name} or a string
+  const safeStr = (val: any): string => {
+    if (!val) return '';
+    if (typeof val === 'string') return val;
+    if (typeof val === 'object' && val.name) return val.name;
+    return String(val);
+  };
+  const categoryStr = safeStr(complaint.category);
+  const typeStr = safeStr(complaint.type);
 
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background"
@@ -253,9 +265,9 @@ export default function ComplaintTimelineScreen() {
             </View>
           </View>
 
-          <Text className="text-xl font-inter-bold text-dark mb-1">{complaint.type || complaint.category || complaint.title}</Text>
+          <Text className="text-xl font-inter-bold text-dark mb-1">{typeStr || categoryStr || complaint.title}</Text>
           <Text className="text-xs font-inter text-muted">
-            {complaint.category ? `${complaint.category} • ` : ''}Submitted {complaint.date ? complaint.date.split(',')[0] : 'Recently'}
+            {categoryStr ? `${categoryStr} • ` : ''}Submitted {complaint.date ? complaint.date.split(',')[0] : 'Recently'}
           </Text>
 
           {complaint.rejectionReason && (
@@ -292,7 +304,7 @@ export default function ComplaintTimelineScreen() {
               <View className="flex-1 ml-3">
                 <Text className="text-xs font-inter text-muted mb-1">Category & Department</Text>
                 <Text className="text-sm font-inter-medium text-dark">
-                  {complaint.category || 'General'} {complaint.type ? `(${complaint.type})` : ''}
+                  {categoryStr || 'General'} {typeStr ? `(${typeStr})` : ''}
                 </Text>
               </View>
             </View>
