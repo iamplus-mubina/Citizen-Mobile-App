@@ -183,7 +183,17 @@ export default function ComplaintTimelineScreen() {
             String(c.complainId) === String(ticketId)
         );
         if (fresh && isMounted) {
-          setComplaint((prev: any) => ({ ...prev, ...fresh }));
+          // DEBUG: log raw API fields to find correct status field names
+          console.log('[Timeline] fresh complaint raw data:', JSON.stringify(fresh));
+
+          // Normalize status fields - handle various possible field names from backend
+          const normalizedFresh = {
+            ...fresh,
+            requestStatus: fresh.requestStatus || fresh.status || fresh.reqStatus || fresh.complaintStatus || 'PENDING',
+            liveStatus: fresh.liveStatus || fresh.complainStatus || fresh.currentStatus || fresh.workStatus || 'PENDING APPROVAL',
+          };
+          setComplaint((prev: any) => ({ ...prev, ...normalizedFresh }));
+
 
           // Fetch live details if APPROVED and has a valid complainId
           if (fresh.requestStatus === 'APPROVED' && fresh.complainId) {

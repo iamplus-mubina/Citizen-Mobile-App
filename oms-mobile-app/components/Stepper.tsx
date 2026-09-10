@@ -30,7 +30,7 @@ const getThemeClasses = (theme?: StepperTheme) => {
 
 export function Stepper({ steps }: StepperProps) {
   return (
-    <View className="flex-1 w-full pt-4">
+    <View className="w-full pt-4">
       {steps.map((step, index) => {
         const isLast = index === steps.length - 1;
         const themeClass = getThemeClasses(step.theme);
