@@ -227,37 +227,13 @@ export default function CategoryScreen() {
               title="Continue"
               onPress={() => {
                 if (canContinue) {
-                  const isChanged = 
-                    selectedCategoryId !== storeCategoryId || 
-                    selectedTypeId !== storeTypeId;
-
-                  if (isChanged) {
-                    // If category changed, reset the rest of the form
-                    setComplaintForm({
-                      selectedCategoryId,
-                      selectedCategoryName: selectedCategory || '',
-                      selectedTypeId,
-                      selectedTypeName,
-                      title: '',
-                      description: '',
-                      address: '',
-                      pincode: '',
-                      photoCount: 0,
-                      documentCount: 0,
-                      uploadedPhotoUrls: [],
-                      uploadedDocumentUrls: [],
-                      cachedPhotos: [],
-                      cachedDocuments: [],
-                    });
-                  } else {
-                    // Otherwise, just update the category info
-                    setComplaintForm({
-                      selectedCategoryId,
-                      selectedCategoryName: selectedCategory || '',
-                      selectedTypeId,
-                      selectedTypeName,
-                    });
-                  }
+                  // Always just update the category info, preserving other form data
+                  setComplaintForm({
+                    selectedCategoryId,
+                    selectedCategoryName: selectedCategory || '',
+                    selectedTypeId,
+                    selectedTypeName,
+                  });
                   
                   router.push('/complaint/details');
                 }
