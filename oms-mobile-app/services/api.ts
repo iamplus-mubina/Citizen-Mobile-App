@@ -2,8 +2,23 @@ import axios from 'axios';
 import { Platform } from 'react-native';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 
-export const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'https://mn-0042-api.digitaloms.in';
+const resolveBaseUrl = (): string => {
+  const envUrl = process.env.EXPO_PUBLIC_API_URL;
+  if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
+    return envUrl;
+  }
+  // Auto-resolve to Metro host IP on physical mobile devices
+  const hostUri = Constants.expoConfig?.hostUri || (Constants as any).manifest?.debuggerHost;
+  if (hostUri) {
+    const ip = hostUri.split(':')[0];
+    return `http://${ip}:8080`;
+  }
+  return envUrl || 'http://10.60.87.34:8080';
+};
+
+export const BASE_URL = resolveBaseUrl();
 
 export const api = axios.create({
   baseURL: BASE_URL,
