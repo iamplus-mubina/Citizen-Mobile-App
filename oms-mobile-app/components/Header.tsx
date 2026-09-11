@@ -18,7 +18,7 @@ interface HeaderProps {
   onBack?: () => void;
 }
 
-const DEFAULT_LOGO = require('../assets/images/oms_logo.png');
+const DEFAULT_LOGO = require('../assets/images/citizen_logo.png');
 
 export function Header({ className = '', avatarUrl, showBack, title, notificationCount, onNotificationPress, onBack }: HeaderProps) {
   const router = useRouter();
@@ -33,8 +33,8 @@ export function Header({ className = '', avatarUrl, showBack, title, notificatio
   const displayName = profileName || 'Citizen User';
   const displayAvatar = avatarUrl || profilePhoto;
 
-  const brandingTopBar = config?.BRANDING_TOPBAR_TITLE || config?.BRANDING_TITLE || 'Office Management System';
-  const brandingSub = config?.BRANDING_SUB_TITLE || 'OMS Citizen';
+  const brandingTopBar = config?.BRANDING_TOPBAR_TITLE || config?.BRANDING_TITLE || 'Citizen E-Connect';
+  const brandingSub = config?.BRANDING_SUB_TITLE || '';
   const photoUrl = getBrandingPhotoUrl('L');
   const cleanPhotoUrl = getCleanImageUrl(photoUrl);
 

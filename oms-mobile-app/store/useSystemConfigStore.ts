@@ -78,17 +78,17 @@ export const useSystemConfigStore = create<SystemConfigState>((set, get) => ({
 
   getBrandingTitle: () => {
     const { config } = get();
-    return config?.BRANDING_TITLE || 'Office Management System';
+    return config?.BRANDING_TITLE || 'Citizen E-Connect';
   },
 
   getBrandingSubTitle: () => {
     const { config } = get();
-    return config?.BRANDING_SUB_TITLE || 'OMS Citizen';
+    return config?.BRANDING_SUB_TITLE || '';
   },
 
   getBrandingTopBarTitle: () => {
     const { config } = get();
-    return config?.BRANDING_TOPBAR_TITLE || config?.BRANDING_TITLE || 'Office Management System';
+    return config?.BRANDING_TOPBAR_TITLE || config?.BRANDING_TITLE || 'Citizen E-Connect';
   },
 
   getBrandingPhotoUrl: (size: 'L' | 'M' | 'S' = 'L') => {

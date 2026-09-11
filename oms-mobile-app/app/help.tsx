@@ -116,7 +116,7 @@ export default function HelpSupportScreen() {
 
           <View className="items-center pb-8 mt-4">
             <Text className="text-xs font-inter-semibold text-muted">Version 1.0.0</Text>
-            <Text className="text-[10px] font-inter text-muted mt-1">OMS Citizen App</Text>
+            <Text className="text-[10px] font-inter text-muted mt-1">Citizen E-Connect</Text>
           </View>
         </ScrollView>
       </View>

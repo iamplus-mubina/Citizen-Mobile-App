@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "OMS Citizen",
+    "name": "Citizen E-Connect",
     "slug": "oms-mobile-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/oms_logo.png",
+    "icon": "./assets/images/citizen_logo.png",
     "scheme": "omsmobileapp",
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -15,23 +15,23 @@
       "package": "com.oms.citizen",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/oms_logo.png",
-        "backgroundColor": "#1A3B5C"
+        "foregroundImage": "./assets/images/citizen_logo.png",
+        "backgroundColor": "#182641"
       }
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/oms_logo.png"
+      "favicon": "./assets/images/citizen_logo.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/oms_logo.png",
+          "image": "./assets/images/citizen_logo.png",
           "resizeMode": "contain",
-          "backgroundColor": "#1A3B5C"
+          "backgroundColor": "#182641"
         }
       ],
       "expo-font",
@@ -39,8 +39,8 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/images/oms_logo.png",
-          "color": "#1A3B5C"
+          "icon": "./assets/images/citizen_logo.png",
+          "color": "#182641"
         }
       ]
     ],

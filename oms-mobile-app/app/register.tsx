@@ -22,7 +22,7 @@ import { colors } from '@/constants/Colors';
 import { Dropdown } from '@/components/Dropdown';
 import { AlertModal } from '@/components/AlertModal';
 import { citizenService } from '@/services/citizenService';
-import omsLogo from '../assets/images/oms_logo.png';
+import omsLogo from '../assets/images/citizen_logo.png';
 
 export default function RegisterScreen() {
   const router = useRouter();

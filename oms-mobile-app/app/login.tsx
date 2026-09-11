@@ -18,7 +18,7 @@ import { Input } from '@/components/Input';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PhoneIcon, ArrowLeftIcon } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
-import omsLogo from '../assets/images/oms_logo.png';
+import omsLogo from '../assets/images/citizen_logo.png';
 import { useComplaintStore } from '@/store/useComplaintStore';
 import { useSystemConfigStore } from '@/store/useSystemConfigStore';
 import { api, setStoredToken, getStoredToken, removeStoredToken } from '@/services/api';
@@ -240,8 +240,8 @@ export default function LoginScreen() {
 
     const photoUrl = getBrandingPhotoUrl('L');
     const cleanPhotoUrl = getCleanImageUrl(photoUrl);
-    const brandingTitle = config?.BRANDING_TITLE || 'Office Management';
-    const brandingSubTitle = config?.BRANDING_SUB_TITLE || 'Citizen App';
+    const brandingTitle = config?.BRANDING_TITLE || 'Citizen E-Connect';
+    const brandingSubTitle = config?.BRANDING_SUB_TITLE || '';
 
     if (step === 'splash') {
       return (
