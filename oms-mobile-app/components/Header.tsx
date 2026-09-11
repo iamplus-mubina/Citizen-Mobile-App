@@ -94,6 +94,23 @@ export function Header({ className = '', avatarUrl, showBack, title, notificatio
                 </Text>
               </View>
             </View>
+
+            {onNotificationPress && (
+              <TouchableOpacity
+                onPress={onNotificationPress}
+                activeOpacity={0.75}
+                className="w-10 h-10 rounded-full bg-white/10 items-center justify-center relative ml-2"
+              >
+                <BellIcon size={22} color={colors.white} />
+                {typeof notificationCount === 'number' && notificationCount > 0 && (
+                  <View className="absolute -top-1 -right-1 bg-red-500 rounded-full min-w-[18px] h-[18px] px-1 items-center justify-center border-2 border-header-bg z-10">
+                    <Text className="text-[10px] font-inter-bold text-white leading-none text-center">
+                      {notificationCount > 99 ? '99+' : notificationCount}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            )}
           </View>
 
           <View className="bg-black/20 border border-black/10 rounded-md px-3 py-2.5 flex-row items-center">

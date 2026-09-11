@@ -272,4 +272,35 @@ export const citizenService = {
     const res = await api.get('/system-manager/config/1');
     return res.data;
   },
+
+  // ─── Notifications & FCM ───
+  registerFcmToken: async (fcmToken: string, deviceType?: string) => {
+    const res = await api.post('/citizen/fcm-token', {
+      fcmToken,
+      deviceType: deviceType || Platform.OS,
+    });
+    return res.data;
+  },
+
+  getNotifications: async (page = 1, limit = 20, unreadOnly = false) => {
+    const res = await api.get('/citizen/notifications', {
+      params: { page, limit, unreadOnly },
+    });
+    return res.data;
+  },
+
+  getUnreadCount: async (): Promise<{ unreadCount: number }> => {
+    const res = await api.get('/citizen/notifications/unread-count');
+    return res.data;
+  },
+
+  markNotificationRead: async (id: number) => {
+    const res = await api.patch(`/citizen/notifications/${id}/read`);
+    return res.data;
+  },
+
+  markAllNotificationsRead: async () => {
+    const res = await api.patch('/citizen/notifications/read-all');
+    return res.data;
+  },
 };

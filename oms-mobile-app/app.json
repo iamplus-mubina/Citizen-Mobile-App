@@ -8,10 +8,12 @@
     "scheme": "omsmobileapp",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "package": "com.oms.citizen",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/oms_logo.png",
         "backgroundColor": "#1A3B5C"
@@ -33,7 +35,14 @@
         }
       ],
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/oms_logo.png",
+          "color": "#1A3B5C"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

@@ -201,3 +201,18 @@ export interface SystemConfig {
   createdBy?: number;
   updatedBy?: number;
 }
+
+// ─── Citizen Notifications ───
+export interface CitizenNotificationItem {
+  id: number;
+  visitorId: number;
+  title: string;
+  message: string;
+  type: 'COMPLAINT_STATUS' | 'NEW_UPDATE' | 'GENERAL' | string;
+  entityId?: number | null;
+  metadata?: any;
+  isRead: boolean;
+  createdDate: string;
+  updatedDate?: string;
+}
+

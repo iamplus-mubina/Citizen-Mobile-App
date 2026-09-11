@@ -18,6 +18,8 @@ import { Profile } from '@/components/Profile';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useComplaintStore } from '@/store/useComplaintStore';
+import { useNotificationStore } from '@/store/useNotificationStore';
+import { pushNotificationService } from '@/services/pushNotification.service';
 import { citizenService } from '@/services/citizenService';
 import { getCleanImageUrl } from '@/utils/image';
 
@@ -28,6 +30,7 @@ export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const [refreshing, setRefreshing] = useState(false);
   const lastBackPress = useRef(0);
+  const { unreadCount, fetchUnreadCount } = useNotificationStore();
 
   useEffect(() => {
     if (params?.tab && ['home', 'complaints', 'updates', 'profile', 'notifications'].includes(params.tab)) {
@@ -97,10 +100,32 @@ export default function HomeScreen() {
       } catch (err) {
         console.warn('Failed to load complaints in home:', err);
       }
+
+      // 3. Fetch Notification unread count
+      try {
+        await fetchUnreadCount();
+      } catch (err) {
+        console.warn('Failed to fetch unread count in home:', err);
+      }
     } finally {
       setRefreshing(false);
     }
-  }, [setProfileFromApi, setProfilePhoto, setComplaints]);
+  }, [setProfileFromApi, setProfilePhoto, setComplaints, fetchUnreadCount]);
+
+  useEffect(() => {
+    // 1. Initialize Push Notifications and sync token with backend
+    pushNotificationService.registerForPushNotificationsAsync();
+
+    // 2. Listen for incoming notifications to update badge and list in real time
+    const cleanupListeners = pushNotificationService.setupNotificationListeners(() => {
+      useNotificationStore.getState().fetchUnreadCount();
+      useNotificationStore.getState().fetchNotifications();
+    });
+
+    return () => {
+      cleanupListeners();
+    };
+  }, []);
 
   useEffect(() => {
     const loadSavedPhoto = async () => {
@@ -176,6 +201,7 @@ export default function HomeScreen() {
                   variant="quick"
                   title="Notifications" 
                   Icon={BellIcon} 
+                  badgeCount={unreadCount}
                   onPress={() => setActiveTab('notifications')}
                 />
                 <Card 
@@ -268,6 +294,8 @@ export default function HomeScreen() {
         <View className="flex-1">
           <Header
             avatarUrl={profilePhoto || undefined}
+            notificationCount={unreadCount}
+            onNotificationPress={() => setActiveTab('notifications')}
           />
           {renderTabContent()}
         </View>

@@ -23,6 +23,7 @@ import { useComplaintStore } from '@/store/useComplaintStore';
 import { useSystemConfigStore } from '@/store/useSystemConfigStore';
 import { api, setStoredToken, getStoredToken, removeStoredToken } from '@/services/api';
 import { citizenService } from '@/services/citizenService';
+import { pushNotificationService } from '@/services/pushNotification.service';
 import { AlertModal } from '@/components/AlertModal';
 import { getCleanImageUrl } from '@/utils/image';
 
@@ -157,6 +158,8 @@ export default function LoginScreen() {
         const token = response.data.accessToken;
         if (token) {
           await setStoredToken(token);
+          // Sync push token with backend
+          pushNotificationService.syncTokenOnLogin().catch(() => {});
         }
 
         setPhoneNumber(`+91 ${mobile}`);
