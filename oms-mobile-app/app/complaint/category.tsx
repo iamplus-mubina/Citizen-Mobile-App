@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Platform, ActivityIndicator, BackHandler, TextInput } from 'react-native';
+import { View, Text, ScrollView, Platform, ActivityIndicator, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Button } from '@/components/Button';
@@ -8,7 +8,6 @@ import { FormStepper } from '@/components/FormStepper';
 import { Dropdown } from '@/components/Dropdown';
 import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
-import { TagIcon, MagnifyingGlassIcon, XMarkIcon } from 'react-native-heroicons/outline';
 import { citizenService } from '@/services/citizenService';
 import type { ComplainCategory, ComplainType } from '@/services/types';
 
@@ -27,7 +26,6 @@ export default function CategoryScreen() {
   const [categoriesList, setCategoriesList] = useState<ComplainCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
   // Sub-type state
   const [availableTypes, setAvailableTypes] = useState<ComplainType[]>([]);
@@ -66,6 +64,16 @@ export default function CategoryScreen() {
     fetchCategories();
   }, []);
 
+  // Restore available types if category was already selected in store
+  useEffect(() => {
+    if (categoriesList.length > 0 && selectedCategoryId) {
+      const current = categoriesList.find((c) => c.id === selectedCategoryId);
+      if (current && Array.isArray(current.types)) {
+        setAvailableTypes(current.types);
+      }
+    }
+  }, [categoriesList, selectedCategoryId]);
+
   const handleCategorySelect = (cat: ComplainCategory) => {
     setSelectedCategory(cat.name);
     setSelectedCategoryId(cat.id);
@@ -80,16 +88,11 @@ export default function CategoryScreen() {
     setSelectedTypeId(null);
   };
 
-  const canContinue = selectedCategory && selectedCategoryId && 
-    (availableTypes.length === 0 || (selectedTypeId !== null));
-
-  // Filter categories by search query
-  const filteredCategories = searchQuery.trim()
-    ? categoriesList.filter((cat) =>
-        cat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (cat.prefix && cat.prefix.toLowerCase().includes(searchQuery.toLowerCase()))
-      )
-    : categoriesList;
+  const canContinue = !!(
+    selectedCategory &&
+    selectedCategoryId &&
+    (availableTypes.length === 0 || (selectedTypeId !== null && selectedTypeName.trim() !== ''))
+  );
 
   const containerClass = Platform.OS === 'web'
     ? "flex-1 w-full max-w-md mx-auto bg-background h-screen overflow-hidden"
@@ -100,31 +103,23 @@ export default function CategoryScreen() {
       <View className={containerClass}>
         <Header showBack title="Raise a complaint" onBack={() => router.replace('/home')} />
 
-        <ScrollView className="flex-1 px-6 pt-4" showsVerticalScrollIndicator={false}>
+        <ScrollView 
+          className="flex-1 px-6 pt-4" 
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
           <View className="mb-4">
             <FormStepper currentStep={1} totalSteps={6} />
           </View>
 
-          {/* Search Bar */}
-          {!loading && !error && categoriesList.length > 0 && (
-            <View className="flex-row items-center bg-surface border border-border rounded-xl px-3 mb-4">
-              <MagnifyingGlassIcon size={18} color={colors.muted} />
-              <TextInput
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholder="Search category..."
-                placeholderTextColor={colors.muted}
-                className="flex-1 py-3 px-2 text-sm font-inter text-dark"
-                returnKeyType="search"
-                autoCorrect={false}
-              />
-              {searchQuery.length > 0 && (
-                <TouchableOpacity onPress={() => setSearchQuery('')} activeOpacity={0.7}>
-                  <XMarkIcon size={18} color={colors.muted} />
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
+          <View className="mb-6">
+            <Text className="text-xl font-inter-bold text-dark mb-1">
+              Select Category & Type
+            </Text>
+            <Text className="text-sm font-inter text-muted">
+              Choose the category and issue type to categorize your complaint.
+            </Text>
+          </View>
 
           {loading ? (
             <View className="py-12 items-center justify-center">
@@ -141,75 +136,52 @@ export default function CategoryScreen() {
               <Text className="text-muted font-inter">No categories available</Text>
             </View>
           ) : (
-            <>
-              {/* Category list — filtered by search */}
-              {filteredCategories.length === 0 ? (
-                <View className="py-10 items-center justify-center">
-                  <Text className="text-muted font-inter text-sm">
-                    No categories found for "{searchQuery}"
-                  </Text>
-                  <TouchableOpacity onPress={() => setSearchQuery('')} className="mt-2">
-                    <Text className="text-primary font-inter-semibold text-sm">Clear search</Text>
-                  </TouchableOpacity>
-                </View>
-              ) : (
-                <View className="mb-4 mt-4">
-                  {filteredCategories.map((category) => {
-                    const isSelected = selectedCategory === category.name;
-                    return (
-                      <TouchableOpacity
-                        key={category.id}
-                        activeOpacity={0.7}
-                        onPress={() => handleCategorySelect(category)}
-                        className={`flex-row items-center justify-between p-4 mb-4 rounded-lg border ${
-                          isSelected ? 'border-primary bg-primary/10' : 'border-border bg-surface'
-                        }`}
-                      >
-                        <View className="flex-row items-center flex-1">
-                          <TagIcon size={24} color={colors.primary} />
-                          <View className="ml-4 flex-1">
-                            <Text className="text-base font-inter-semibold text-dark">
-                              {category.name}
-                            </Text>
-                            {category.prefix && (
-                              <Text className="text-xs font-inter text-muted mt-0.5">
-                                {category.prefix}
-                              </Text>
-                            )}
-                          </View>
-                        </View>
+            <View className="space-y-2">
+              {/* 1. Complaint Category Dropdown */}
+              <Dropdown
+                label="Complaint Category *"
+                value={selectedCategory || ''}
+                options={categoriesList}
+                placeholder="Select complaint category"
+                onSelect={(name, id) => {
+                  const cat = categoriesList.find((c) => c.id === id || c.name === name);
+                  if (cat) {
+                    handleCategorySelect(cat);
+                  } else {
+                    setSelectedCategory(name);
+                    setSelectedCategoryId(id ?? null);
+                    setAvailableTypes([]);
+                    setSelectedTypeName('');
+                    setSelectedTypeId(null);
+                  }
+                }}
+              />
 
-                        <View
-                          className={`w-5 h-5 rounded-full border-2 items-center justify-center ml-4 ${
-                            isSelected ? 'border-primary' : 'border-muted'
-                          }`}
-                        >
-                          {isSelected && (
-                            <View className="w-2.5 h-2.5 rounded-full bg-primary" />
-                          )}
-                        </View>
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-              )}
+              {/* 2. Complaint Type Dropdown */}
+              <Dropdown
+                label="Complaint Type *"
+                value={selectedTypeName}
+                options={availableTypes}
+                placeholder={
+                  !selectedCategory
+                    ? "Select category first"
+                    : availableTypes.length > 0
+                    ? "Select complaint type"
+                    : "No sub-types for this category"
+                }
+                disabled={!selectedCategory || availableTypes.length === 0}
+                onSelect={(name, id) => {
+                  setSelectedTypeName(name);
+                  setSelectedTypeId(id ?? null);
+                }}
+              />
 
-              {/* Complaint Type sub-dropdown */}
-              {selectedCategory && availableTypes.length > 0 && (
-                <View className="mb-4">
-                  <Dropdown
-                    label="Complaint Type *"
-                    value={selectedTypeName}
-                    options={availableTypes}
-                    placeholder="Select complaint type"
-                    onSelect={(name, id) => {
-                      setSelectedTypeName(name);
-                      setSelectedTypeId(id ?? null);
-                    }}
-                  />
-                </View>
+              {selectedCategory && availableTypes.length === 0 && (
+                <Text className="text-xs font-inter text-muted -mt-2 mb-2">
+                  No sub-types required for this category. You can proceed to the next step.
+                </Text>
               )}
-            </>
+            </View>
           )}
         </ScrollView>
 
@@ -227,7 +199,6 @@ export default function CategoryScreen() {
               title="Continue"
               onPress={() => {
                 if (canContinue) {
-                  // Always just update the category info, preserving other form data
                   setComplaintForm({
                     selectedCategoryId,
                     selectedCategoryName: selectedCategory || '',

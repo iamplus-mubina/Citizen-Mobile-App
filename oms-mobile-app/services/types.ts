@@ -95,6 +95,7 @@ export interface CitizenOnboardingPayload {
   gender?: string;
   dob?: string;
   address?: string;
+  voterID?: string;
   profileImage?: string;
   otpCode?: string;
 }
@@ -195,6 +196,12 @@ export interface SystemConfig {
   BRANDING_TITLE?: string;
   BRANDING_SUB_TITLE?: string;
   BRANDING_TOPBAR_TITLE?: string;
+  CONTACT_PHONE?: string;
+  CONTACT_EMAIL?: string;
+  CONTACT_ADDRESS?: string;
+  CONTACT_HOURS?: string;
+  CONTACT_WHATSAPP?: string;
+  CONTACT_WEBSITE?: string;
   storage?: 'LOCAL' | 'S3';
   createdDate?: string;
   updatedDate?: string;

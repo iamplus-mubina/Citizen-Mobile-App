@@ -48,7 +48,7 @@ export default function ComplaintDetailsViewScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
       <Stack.Screen options={{ headerShown: false }} />
       <View className={containerClass}>
-        <Header showBack onBack={handleBack} />
+        <Header showBack title="Complaint Details" onBack={handleBack} />
 
         <View className="px-6 pb-6 pt-2">
           <Text className="text-lg font-inter-bold text-dark">Complaint Details</Text>

@@ -261,7 +261,7 @@ export default function ComplaintTimelineScreen() {
       <Stack.Screen options={{ headerShown: false }} />
       <View className={containerClass}>
 
-        <Header showBack onBack={handleBack} />
+        <Header showBack title="Complaint Timeline" onBack={handleBack} />
 
         <View className="px-6 pb-4 pt-2 border-b border-border mb-4">
           <Text className="text-2xl font-inter-bold text-dark mb-4">Complaint details</Text>

@@ -16,6 +16,7 @@ import { useRef } from 'react';
 import { useRouter } from 'expo-router';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
+import { DatePickerInput } from '@/components/DatePickerInput';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeftIcon, PhoneIcon } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
@@ -31,9 +32,11 @@ export default function RegisterScreen() {
   const [middleName, setMiddleName] = useState('');
   const [lastName, setLastName] = useState('');
   const [gender, setGender] = useState('');
+  const [dob, setDob] = useState('');
   const [mobile, setMobile] = useState('');
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
+  const [voterID, setVoterID] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertConfig, setAlertConfig] = useState({ title: '', message: '', type: 'error' as 'error' | 'success' });
@@ -73,16 +76,28 @@ export default function RegisterScreen() {
     if (numericText.length === 10) setErrors(prev => ({ ...prev, mobile: '' }));
   };
 
+  const handleDobChange = (text: string) => {
+    const cleaned = text.replace(/[^0-9]/g, '');
+    let formatted = cleaned;
+    if (cleaned.length > 2 && cleaned.length <= 4) {
+      formatted = `${cleaned.slice(0, 2)}/${cleaned.slice(2)}`;
+    } else if (cleaned.length > 4) {
+      formatted = `${cleaned.slice(0, 2)}/${cleaned.slice(2, 4)}/${cleaned.slice(4, 8)}`;
+    }
+    setDob(formatted);
+    if (formatted.length >= 8) {
+      setErrors(prev => ({ ...prev, dob: '' }));
+    }
+  };
+
   const handleSubmit = async () => {
     const newErrors: Record<string, string> = {};
 
     if (!firstName.trim()) newErrors.firstName = 'First name is required';
     if (!lastName.trim()) newErrors.lastName = 'Last name is required';
-    if (mobile.length !== 10) newErrors.mobile = 'Please enter a valid 10-digit mobile number';
     if (!gender) newErrors.gender = 'Please select your gender';
-    if (!address.trim() || address.trim().length < 5) {
-      newErrors.address = 'Please enter your complete address';
-    }
+    if (!dob.trim() || dob.trim().length < 8) newErrors.dob = 'Date of birth is required (DD/MM/YYYY)';
+    if (mobile.length !== 10) newErrors.mobile = 'Please enter a valid 10-digit mobile number';
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -130,7 +145,9 @@ export default function RegisterScreen() {
         phone: mobile.trim(),
         email: email.trim() ? email.trim() : undefined,
         gender,
-        address: address.trim(),
+        dob: dob.trim(),
+        address: address.trim() || undefined,
+        voterID: voterID.trim() ? voterID.trim().toUpperCase() : undefined,
         otpCode: otp,
       };
       
@@ -265,51 +282,66 @@ export default function RegisterScreen() {
               error={errors.lastName}
             />
 
-          <Dropdown
-            label="Gender *"
-            value={gender}
-            options={['MALE', 'FEMALE', 'OTHER']}
-            placeholder="Select Gender"
-            onSelect={(val) => {
-              setGender(val);
-              setErrors(prev => ({ ...prev, gender: '' }));
-            }}
-            error={errors.gender}
-          />
+            <Dropdown
+              label="Gender *"
+              value={gender}
+              options={['MALE', 'FEMALE', 'OTHER']}
+              placeholder="Select Gender"
+              onSelect={(val) => {
+                setGender(val);
+                setErrors(prev => ({ ...prev, gender: '' }));
+              }}
+              error={errors.gender}
+            />
 
-          <Input
-            label="Mobile Number *"
-            placeholder="Enter 10-digit number"
-            keyboardType="number-pad"
-            value={mobile}
-            onChangeText={handleMobileChange}
-            maxLength={10}
-            leftIcon={<PhoneIcon size={20} color={colors.muted} />}
-            error={errors.mobile}
-          />
+            <DatePickerInput
+              label="Date of Birth *"
+              placeholder="DD/MM/YYYY"
+              value={dob}
+              onChangeDate={(val) => {
+                setDob(val);
+                setErrors(prev => ({ ...prev, dob: '' }));
+              }}
+              error={errors.dob}
+            />
 
-          <Input
-            label="Email (Optional)"
-            placeholder="Enter email"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            value={email}
-            onChangeText={setEmail}
-          />
+            <Input
+              label="Mobile Number *"
+              placeholder="Enter 10-digit number"
+              keyboardType="number-pad"
+              value={mobile}
+              onChangeText={handleMobileChange}
+              maxLength={10}
+              leftIcon={<PhoneIcon size={20} color={colors.muted} />}
+              error={errors.mobile}
+            />
 
-          <Input
-            label="Address *"
-            placeholder="Enter your residential address"
-            value={address}
-            onChangeText={(text) => {
-              setAddress(text);
-              if (text.trim().length >= 5) setErrors(prev => ({ ...prev, address: '' }));
-            }}
-            multiline={true}
-            numberOfLines={4}
-            style={{ minHeight: 100, textAlignVertical: 'top' }}
-            error={errors.address}
-          />
+            <Input
+              label="Email (Optional)"
+              placeholder="Enter email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              value={email}
+              onChangeText={setEmail}
+            />
+
+            <Input
+              label="Address (Optional)"
+              placeholder="Enter your residential address"
+              value={address}
+              onChangeText={setAddress}
+              multiline={true}
+              numberOfLines={3}
+              style={{ minHeight: 80, textAlignVertical: 'top' }}
+            />
+
+            <Input
+              label="Voter ID (Optional)"
+              placeholder="Enter Voter ID"
+              value={voterID}
+              onChangeText={setVoterID}
+              autoCapitalize="characters"
+            />
 
           <View className="mt-8">
             <Button title={isSubmitting ? "Sending OTP..." : "Next"} onPress={handleSubmit} disabled={isSubmitting} />

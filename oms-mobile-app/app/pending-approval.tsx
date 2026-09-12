@@ -3,6 +3,7 @@ import { View, Text, Platform, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Button } from '@/components/Button';
+import { Header } from '@/components/Header';
 import { CheckIcon } from 'react-native-heroicons/solid';
 import { colors } from '@/constants/Colors';
 
@@ -19,7 +20,9 @@ export default function PendingApprovalScreen() {
   }, [router]);
 
   const renderContent = () => (
-    <View className="flex-1 px-6 w-full max-w-md mx-auto pt-16 pb-10 justify-between">
+    <View className="flex-1 w-full max-w-md mx-auto justify-between">
+      <Header showBack title="Account Status" onBack={() => router.replace('/login')} />
+      <View className="flex-1 px-6 pt-10 pb-10 justify-between">
       <View className="items-center w-full flex-1 justify-center">
         <View className="w-24 h-24 rounded-full bg-primary justify-center items-center mb-8">
           <CheckIcon size={48} color={colors.surface} />
@@ -53,6 +56,7 @@ export default function PendingApprovalScreen() {
           onPress={() => router.replace('/login')} 
         />
       </View>
+    </View>
     </View>
   );
 

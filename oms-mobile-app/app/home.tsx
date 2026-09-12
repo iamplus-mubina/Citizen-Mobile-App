@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, Platform, ScrollView, TouchableOpacity, RefreshControl, BackHandler, ToastAndroid } from 'react-native';
+import { View, Text, Platform, ScrollView, TouchableOpacity, RefreshControl, BackHandler, ToastAndroid, Image } from 'react-native';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Header } from '@/components/Header';
@@ -9,7 +9,7 @@ import {
   ClipboardDocumentListIcon,
   BellIcon,
   MegaphoneIcon,
-  UserIcon
+  PlusCircleIcon
 } from 'react-native-heroicons/outline';
 import { MyComplaints } from '@/components/MyComplaints';
 import { Notifications } from '@/components/Notifications';
@@ -18,10 +18,13 @@ import { Profile } from '@/components/Profile';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useComplaintStore } from '@/store/useComplaintStore';
+import { useSystemConfigStore } from '@/store/useSystemConfigStore';
 import { useNotificationStore } from '@/store/useNotificationStore';
 import { pushNotificationService } from '@/services/pushNotification.service';
 import { citizenService } from '@/services/citizenService';
 import { getCleanImageUrl } from '@/utils/image';
+
+const DEFAULT_LOGO = require('../assets/images/citizen_logo.png');
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
@@ -31,6 +34,19 @@ export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const lastBackPress = useRef(0);
   const { unreadCount, fetchUnreadCount } = useNotificationStore();
+  const { config, fetchSystemConfig, getBrandingPhotoUrl } = useSystemConfigStore();
+  const [brandingImgError, setBrandingImgError] = useState(false);
+  // Specifically request 'M' size for the dashboard banner (BRANDING_PHOTO_M)
+  const photoUrlM = getBrandingPhotoUrl('M');
+  const cleanPhotoUrlM = getCleanImageUrl(photoUrlM);
+
+  useEffect(() => {
+    fetchSystemConfig();
+  }, []);
+
+  useEffect(() => {
+    setBrandingImgError(false);
+  }, [cleanPhotoUrlM]);
 
   useEffect(() => {
     if (params?.tab && ['home', 'complaints', 'updates', 'profile', 'notifications'].includes(params.tab)) {
@@ -180,17 +196,27 @@ export default function HomeScreen() {
             }
           >
 
-            <Card 
-              variant="complaint"
-              title="Raise a complaint"
-              description="Report a civic issue in simple steps with photos and location details."
-              onPress={() => router.push('/complaint/category')}
-            />
+            {/* Fit-to-screen Branding Banner Photo above Raise a complaint */}
+            <View className="w-full h-48 rounded-2xl overflow-hidden mb-6 bg-[#182641] border border-border/30 shadow-sm items-center justify-center">
+              <Image
+                key={cleanPhotoUrlM || 'default'}
+                source={cleanPhotoUrlM && !brandingImgError ? { uri: cleanPhotoUrlM } : DEFAULT_LOGO}
+                style={{ width: '100%', height: '100%' }}
+                resizeMode="cover"
+                onError={() => setBrandingImgError(true)}
+              />
+            </View>
 
-            <View className="mb-2 mt-6">
-              <Text className="text-lg font-inter-bold text-dark mb-4">Quick Actions</Text>
+            <View className="mb-4">
+              <Text className="text-lg font-inter-bold text-dark mb-3">Quick Actions</Text>
               
               <View className="flex-row flex-wrap -mx-[1%]">
+                <Card 
+                  variant="quick"
+                  title="Add Complaint" 
+                  Icon={PlusCircleIcon} 
+                  onPress={() => router.push('/complaint/category')}
+                />
                 <Card 
                   variant="quick"
                   title="My Complaints" 
@@ -209,12 +235,6 @@ export default function HomeScreen() {
                   title="Updates" 
                   Icon={MegaphoneIcon} 
                   onPress={() => setActiveTab('updates')}
-                />
-                <Card 
-                  variant="quick"
-                  title="My Profile" 
-                  Icon={UserIcon} 
-                  onPress={() => setActiveTab('profile')}
                 />
               </View>
             </View>

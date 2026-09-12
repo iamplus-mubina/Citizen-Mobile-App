@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { Header } from '@/components/Header';
 import { Input } from '@/components/Input';
+import { DatePickerInput } from '@/components/DatePickerInput';
 import { Button } from '@/components/Button';
 import { Dropdown } from '@/components/Dropdown';
 import { colors } from '@/constants/Colors';
@@ -215,6 +216,17 @@ export default function EditProfileScreen() {
     return () => { isMounted = false; };
   }, []);
 
+  const handleDobChange = (text: string) => {
+    const cleaned = text.replace(/[^0-9]/g, '');
+    let formatted = cleaned;
+    if (cleaned.length > 2 && cleaned.length <= 4) {
+      formatted = `${cleaned.slice(0, 2)}/${cleaned.slice(2)}`;
+    } else if (cleaned.length > 4) {
+      formatted = `${cleaned.slice(0, 2)}/${cleaned.slice(2, 4)}/${cleaned.slice(4, 8)}`;
+    }
+    setDob(formatted);
+  };
+
   const handleSave = async () => {
     // All fields are optional! Only validate format if filled
     const newErrors: Record<string, string> = {};
@@ -414,10 +426,10 @@ export default function EditProfileScreen() {
                 />
               </View>
 
-              <View className="mb-4">
+              {/* <View className="mb-4">
                 <Text className="text-sm font-inter-semibold text-dark mb-2">Alternate Phone</Text>
                 <Input placeholder="Enter alternate mobile number" value={alternatePhone} onChangeText={setAlternatePhone} keyboardType="phone-pad" maxLength={10} />
-              </View>
+              </View> */}
 
               {/* 2. Address & City */}
               {renderSectionHeader('Address Details')}
@@ -426,7 +438,7 @@ export default function EditProfileScreen() {
                 <Input placeholder="Enter detailed address" value={address} onChangeText={setAddress} multiline numberOfLines={2} />
               </View>
 
-              <View className="mb-4">
+              {/* <View className="mb-4">
                 <Text className="text-sm font-inter-semibold text-dark mb-2">Pincode</Text>
                 <Input 
                   placeholder="Enter 6-digit pincode" 
@@ -436,7 +448,7 @@ export default function EditProfileScreen() {
                   maxLength={6} 
                   error={errors.pincode} 
                 />
-              </View>
+              </View> */}
 
               {/* 3. Personal Details */}
               {renderSectionHeader('Personal Details')}
@@ -448,69 +460,71 @@ export default function EditProfileScreen() {
                 onSelect={(val) => setGender(val)}
               />
 
-              <View className="mb-4">
-                <Text className="text-sm font-inter-semibold text-dark mb-2">Date of Birth</Text>
-                <Input placeholder="YYYY-MM-DD" value={dob} onChangeText={setDob} />
-              </View>
+              <DatePickerInput
+                label="Date of Birth"
+                placeholder="DD/MM/YYYY"
+                value={dob}
+                onChangeDate={(val) => setDob(val)}
+              />
 
-              <View className="mb-4">
+              {/* <View className="mb-4">
                 <Text className="text-sm font-inter-semibold text-dark mb-2">Age</Text>
                 <Input placeholder="Enter age" value={age} onChangeText={setAge} keyboardType="number-pad" maxLength={3} />
-              </View>
+              </View> */}
 
-              <Dropdown
+              {/* <Dropdown
                 label="Blood Group"
                 value={bloodGroup}
                 options={BLOOD_GROUP_OPTIONS}
                 placeholder="Select blood group"
                 onSelect={(val) => setBloodGroup(val)}
-              />
+              /> */}
 
-              <Dropdown
+              {/* <Dropdown
                 label="Education"
                 value={education}
                 options={EDUCATION_OPTIONS}
                 placeholder="Select education level"
                 onSelect={(val) => setEducation(val)}
-              />
+              /> */}
 
-              <View className="mb-4">
+              {/* <View className="mb-4">
                 <Text className="text-sm font-inter-semibold text-dark mb-2">Occupation</Text>
                 <Input placeholder="Enter occupation" value={occupation} onChangeText={setOccupation} />
-              </View>
+              </View> */}
 
               {/* 4. Identity Documents */}
               {renderSectionHeader('Identity Documents')}
-              <View className="mb-4">
+              {/* <View className="mb-4">
                 <Text className="text-sm font-inter-semibold text-dark mb-2">Aadhar Card</Text>
                 <Input placeholder="XXXX-XXXX-XXXX" value={aadharCard} onChangeText={setAadharCard} keyboardType="number-pad" maxLength={16} />
-              </View>
+              </View> */}
 
-              <View className="mb-4">
+              {/* <View className="mb-4">
                 <Text className="text-sm font-inter-semibold text-dark mb-2">PAN Card</Text>
                 <Input placeholder="Enter PAN number" value={panCard} onChangeText={setPanCard} autoCapitalize="characters" maxLength={10} />
-              </View>
+              </View> */}
 
               <View className="mb-4">
                 <Text className="text-sm font-inter-semibold text-dark mb-2">Voter ID</Text>
                 <Input placeholder="Enter Voter ID" value={voterId} onChangeText={setVoterId} autoCapitalize="characters" />
               </View>
 
-              <View className="mb-4">
+              {/* <View className="mb-4">
                 <Text className="text-sm font-inter-semibold text-dark mb-2">Driving Licence</Text>
                 <Input placeholder="Enter Driving Licence number" value={drivingLicence} onChangeText={setDrivingLicence} autoCapitalize="characters" />
-              </View>
+              </View> */}
 
-              <Dropdown
+              {/* <Dropdown
                 label="Ration Card"
                 value={rationCard}
                 options={RATION_CARD_OPTIONS}
                 placeholder="Select ration card type"
                 onSelect={(val) => setRationCard(val)}
-              />
+              /> */}
 
               {/* 5. Caste & Religion (Dynamic) */}
-              {renderSectionHeader('Caste & Religion (Dynamic)')}
+              {/* {renderSectionHeader('Caste & Religion (Dynamic)')}
               <Dropdown
                 label="Religion (धर्म)"
                 value={religionName}
@@ -545,7 +559,7 @@ export default function EditProfileScreen() {
                   setSubCastName(name);
                   setSubCastId(id ?? null);
                 }}
-              />
+              /> */}
 
 
             </View>

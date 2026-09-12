@@ -21,6 +21,7 @@ import {
 import { colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { UploadModal } from '@/components/UploadModal';
+import { ContactUsModal } from '@/components/ContactUsModal';
 import { useComplaintStore } from '@/store/useComplaintStore';
 import { citizenService } from '@/services/citizenService';
 import { removeStoredToken } from '@/services/api';
@@ -40,6 +41,7 @@ export function Profile() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [notifEnabled, setNotifEnabled] = useState(true);
+  const [contactModalVisible, setContactModalVisible] = useState(false);
   const [langModalVisible, setLangModalVisible] = useState(false);
   const [selectedLang, setSelectedLang] = useState('English');
   const [refreshing, setRefreshing] = useState(false);
@@ -137,10 +139,10 @@ export function Profile() {
           </View>
 
           <DetailRow icon={PhoneIcon} label="Registered Mobile Number" value={phoneNumber} />
-          {alternatePhone ? <DetailRow icon={PhoneIcon} label="Alternate Phone" value={alternatePhone} /> : null}
+          {/* {alternatePhone ? <DetailRow icon={PhoneIcon} label="Alternate Phone" value={alternatePhone} /> : null} */}
           <DetailRow icon={EnvelopeIcon} label="Email" value={profileEmail} />
-          <DetailRow icon={MapPinIcon} label="Address" value={profileAddress} />
-          <DetailRow icon={MapIcon} label="Pincode" value={profilePincode} isLast />
+          <DetailRow icon={MapPinIcon} label="Address" value={profileAddress} isLast />
+          {/* <DetailRow icon={MapIcon} label="Pincode" value={profilePincode} isLast /> */}
         </View>
 
         {/* 2. Personal Details */}
@@ -149,11 +151,11 @@ export function Profile() {
             <Text className="text-sm font-inter-bold text-dark">Personal Details</Text>
           </View>
 
-          <DetailRow icon={CakeIcon} label="Date of Birth / Age" value={dob || age ? `${dob || '-'} / ${age ? `${age} yrs` : '-'}` : ''} />
-          <DetailRow icon={UserIcon} label="Gender" value={gender} />
-          <DetailRow icon={TagIcon} label="Blood Group" value={bloodGroup} />
-          <DetailRow icon={AcademicCapIcon} label="Education" value={education} />
-          <DetailRow icon={BriefcaseIcon} label="Occupation" value={occupation} isLast />
+          <DetailRow icon={CakeIcon} label="Date of Birth" value={dob} />
+          <DetailRow icon={UserIcon} label="Gender" value={gender} isLast />
+          {/* <DetailRow icon={TagIcon} label="Blood Group" value={bloodGroup} /> */}
+          {/* <DetailRow icon={AcademicCapIcon} label="Education" value={education} /> */}
+          {/* <DetailRow icon={BriefcaseIcon} label="Occupation" value={occupation} isLast /> */}
         </View>
 
         {/* 3. Identity Documents */}
@@ -162,15 +164,15 @@ export function Profile() {
             <Text className="text-sm font-inter-bold text-dark">Identity Documents</Text>
           </View>
 
-          <DetailRow icon={IdentificationIcon} label="Aadhar Card" value={aadharCard} />
-          <DetailRow icon={IdentificationIcon} label="PAN Card" value={panCard} />
-          <DetailRow icon={IdentificationIcon} label="Voter ID" value={voterId} />
-          <DetailRow icon={IdentificationIcon} label="Driving Licence" value={drivingLicence} />
-          <DetailRow icon={IdentificationIcon} label="Ration Card" value={rationCard} isLast />
+          {/* <DetailRow icon={IdentificationIcon} label="Aadhar Card" value={aadharCard} /> */}
+          {/* <DetailRow icon={IdentificationIcon} label="PAN Card" value={panCard} /> */}
+          <DetailRow icon={IdentificationIcon} label="Voter ID" value={voterId} isLast />
+          {/* <DetailRow icon={IdentificationIcon} label="Driving Licence" value={drivingLicence} /> */}
+          {/* <DetailRow icon={IdentificationIcon} label="Ration Card" value={rationCard} isLast /> */}
         </View>
 
         {/* 4. Caste & Religion */}
-        <View className="bg-surface border border-border rounded-xl mb-4">
+        {/* <View className="bg-surface border border-border rounded-xl mb-4">
           <View className="px-4 pt-4 pb-3 border-b border-border">
             <Text className="text-sm font-inter-bold text-dark">Caste & Religion</Text>
           </View>
@@ -178,7 +180,7 @@ export function Profile() {
           <DetailRow icon={TagIcon} label="Religion" value={religionName} />
           <DetailRow icon={TagIcon} label="Caste" value={castName || caste} />
           <DetailRow icon={TagIcon} label="Sub-Caste" value={subCastName || subCaste} isLast />
-        </View>
+        </View> */}
 
         {/* Preferences */}
         <View className="bg-surface border border-border rounded-xl mb-6">
@@ -197,7 +199,7 @@ export function Profile() {
           </TouchableOpacity>
           */}
 
-          <View className="flex-row items-center px-4 py-3">
+          <View className="flex-row items-center px-4 py-3 border-b border-border">
             <View className="w-10 h-10 rounded-full bg-primary-light items-center justify-center mr-4">
               <BellIcon size={20} color={colors.primary} />
             </View>
@@ -212,6 +214,22 @@ export function Profile() {
               thumbColor={colors.white}
             />
           </View>
+
+          {/* Contact Us Option */}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => setContactModalVisible(true)}
+            className="flex-row items-center px-4 py-3"
+          >
+            <View className="w-10 h-10 rounded-full bg-primary-light items-center justify-center mr-4">
+              <PhoneIcon size={20} color={colors.primary} />
+            </View>
+            <View className="flex-1">
+              <Text className="text-sm font-inter-bold text-dark">Contact Us</Text>
+              <Text className="text-xs font-inter text-muted">Helpline, office address & support</Text>
+            </View>
+            <Text className="text-base font-inter text-muted mr-1">›</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Logout */}
@@ -299,6 +317,11 @@ export function Profile() {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
+
+      <ContactUsModal
+        visible={contactModalVisible}
+        onClose={() => setContactModalVisible(false)}
+      />
     </View>
   );
 }

@@ -13,7 +13,7 @@ export default function ProfileScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
       <Stack.Screen options={{ headerShown: false }} />
       <View className={containerClass}>
-        <Header showBack />
+        <Header showBack title="My Profile" />
         <Profile />
       </View>
     </SafeAreaView>

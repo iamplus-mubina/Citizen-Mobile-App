@@ -39,6 +39,7 @@ export default function SuccessScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
       <View className={containerClass}>
+        <Header showBack title="Complaint Submitted" onBack={() => router.replace('/home')} />
 
         <View className="flex-1 px-6 justify-center">
           <View className="items-center mb-10">
