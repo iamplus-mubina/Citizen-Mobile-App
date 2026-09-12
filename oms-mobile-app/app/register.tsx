@@ -24,9 +24,13 @@ import { Dropdown } from '@/components/Dropdown';
 import { AlertModal } from '@/components/AlertModal';
 import { citizenService } from '@/services/citizenService';
 import omsLogo from '../assets/images/citizen_logo.png';
+import { useSystemConfigStore } from '@/store/useSystemConfigStore';
+import { getCleanImageUrl } from '@/utils/image';
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const { config, fetchSystemConfig, getBrandingPhotoUrl } = useSystemConfigStore();
+  const [logoError, setLogoError] = useState(false);
 
   const [firstName, setFirstName] = useState('');
   const [middleName, setMiddleName] = useState('');
@@ -46,6 +50,17 @@ export default function RegisterScreen() {
   const [otp, setOtp] = useState('');
   const [timeLeft, setTimeLeft] = useState(45);
   const otpRef = useRef<TextInput>(null);
+
+  const photoUrl = getBrandingPhotoUrl('L');
+  const cleanPhotoUrl = getCleanImageUrl(photoUrl);
+
+  useEffect(() => {
+    fetchSystemConfig();
+  }, []);
+
+  useEffect(() => {
+    setLogoError(false);
+  }, [cleanPhotoUrl]);
 
   useEffect(() => {
     if (step !== 'otp' || timeLeft <= 0) return;
@@ -238,9 +253,11 @@ export default function RegisterScreen() {
         {step === 'otp' && (
           <View className="mb-8 items-center">
             <Image
-              source={omsLogo}
+              key={cleanPhotoUrl || 'default'}
+              source={cleanPhotoUrl && !logoError ? { uri: cleanPhotoUrl } : omsLogo}
               style={{ width: 130, height: 130, marginBottom: 16 }}
               resizeMode="contain"
+              onError={() => setLogoError(true)}
             />
             <Text className="text-2xl font-inter-bold text-dark mb-2 text-center">
               Enter OTP
