@@ -83,6 +83,11 @@ export const citizenService = {
     return res.data;
   },
 
+  deleteAccount: async (): Promise<{ success: boolean; isLoginAllowed: boolean; message: string }> => {
+    const res = await api.delete('/citizen/account');
+    return res.data;
+  },
+
   // ─── Master Data Dropdowns ───
   getCategories: async (): Promise<ComplainCategory[]> => {
     const res = await api.get('/complainbox/categories');

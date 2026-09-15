@@ -16,7 +16,8 @@ import {
   AcademicCapIcon,
   BriefcaseIcon,
   CakeIcon,
-  TagIcon
+  TagIcon,
+  TrashIcon
 } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
@@ -53,6 +54,9 @@ export function Profile() {
   } = store;
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
   const [notifEnabled, setNotifEnabled] = useState(true);
   const [langModalVisible, setLangModalVisible] = useState(false);
   const [selectedLang, setSelectedLang] = useState('English');
@@ -96,6 +100,25 @@ export function Profile() {
     } finally {
       await removeStoredToken();
       router.replace('/login');
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    setDeleteError('');
+    try {
+      await citizenService.deleteAccount();
+      setDeleteModalVisible(false);
+      await removeStoredToken();
+      await AsyncStorage.removeItem('user_phone').catch(() => {});
+      await AsyncStorage.removeItem('complaint_storage').catch(() => {});
+      router.replace('/login');
+    } catch (err: any) {
+      console.error('Delete account error:', err);
+      const msg = err?.response?.data?.message || 'Failed to delete account. Please try again.';
+      setDeleteError(msg);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -232,10 +255,23 @@ export function Profile() {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={handleLogout}
-          className="flex-row items-center justify-center border border-primary rounded-xl py-4 mb-4 bg-surface"
+          className="flex-row items-center justify-center border border-primary rounded-xl py-4 mb-3 bg-surface"
         >
           <ArrowRightStartOnRectangleIcon size={20} color={colors.primary} />
           <Text className="text-base font-inter-bold text-primary ml-2">Log out</Text>
+        </TouchableOpacity>
+
+        {/* Delete Account */}
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => {
+            setDeleteError('');
+            setDeleteModalVisible(true);
+          }}
+          className="flex-row items-center justify-center border border-rose-200 rounded-xl py-3.5 mb-8 bg-rose-50/50"
+        >
+          <TrashIcon size={18} color="#e11d48" />
+          <Text className="text-sm font-inter-semibold text-rose-600 ml-2">Delete Account</Text>
         </TouchableOpacity>
 
       </ScrollView>
@@ -308,6 +344,63 @@ export function Profile() {
                     <Text className={`text-base font-inter-medium ${selectedLang === lang ? 'text-primary' : 'text-dark'}`}>{lang}</Text>
                   </TouchableOpacity>
                 ))}
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+      {/* Delete Account Confirmation Modal */}
+      <Modal
+        visible={deleteModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => !isDeleting && setDeleteModalVisible(false)}
+        statusBarTranslucent
+      >
+        <TouchableWithoutFeedback onPress={() => !isDeleting && setDeleteModalVisible(false)}>
+          <View className="flex-1 bg-black/60 justify-center items-center p-6">
+            <TouchableWithoutFeedback>
+              <View className="bg-surface w-full max-w-sm rounded-2xl p-6 shadow-xl items-center">
+                <View className="w-16 h-16 rounded-full bg-rose-100 justify-center items-center mb-4">
+                  <TrashIcon size={32} color="#e11d48" />
+                </View>
+
+                <Text className="text-xl font-inter-bold text-dark text-center mb-2">
+                  Delete Account
+                </Text>
+
+                <Text className="text-sm font-inter text-muted text-center mb-6 leading-5">
+                  Are you sure you want to delete your account? Your account will be deactivated, and you will not be able to log in or register again with this mobile number.
+                </Text>
+
+                {deleteError ? (
+                  <Text className="text-xs font-inter-medium text-rose-600 text-center mb-4">
+                    {deleteError}
+                  </Text>
+                ) : null}
+
+                <View className="flex-row w-full gap-3">
+                  <TouchableOpacity
+                    disabled={isDeleting}
+                    onPress={() => setDeleteModalVisible(false)}
+                    className="flex-1 py-3.5 rounded-xl border border-border items-center justify-center bg-surface"
+                    activeOpacity={0.7}
+                  >
+                    <Text className="text-sm font-inter-semibold text-dark">Cancel</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    disabled={isDeleting}
+                    onPress={handleDeleteAccount}
+                    className="flex-1 py-3.5 rounded-xl bg-rose-600 items-center justify-center"
+                    activeOpacity={0.8}
+                  >
+                    <Text className="text-sm font-inter-semibold text-white">
+                      {isDeleting ? 'Deleting...' : 'Delete'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </TouchableWithoutFeedback>
           </View>

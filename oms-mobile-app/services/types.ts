@@ -83,6 +83,7 @@ export interface CitizenProfile {
   cast?: MasterDropdownItem | null;
   subcast?: MasterDropdownItem | null;
   religion?: MasterDropdownItem | null;
+  isLoginAllowed?: boolean;
 }
 
 // ─── Onboarding ───

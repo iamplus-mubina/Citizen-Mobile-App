@@ -146,6 +146,16 @@ export default function LoginScreen() {
           return;
         }
 
+        if (data?.isLoginAllowed === false || data?.isDeleted) {
+          setAlertConfig({
+            title: 'Account Deactivated',
+            message: data?.message || 'Your account has been deleted. Login is not allowed.',
+            type: 'error',
+          });
+          setAlertVisible(true);
+          return;
+        }
+
         const rawMessage = data?.message;
         const errorMessage = Array.isArray(rawMessage)
           ? rawMessage.join(', ')

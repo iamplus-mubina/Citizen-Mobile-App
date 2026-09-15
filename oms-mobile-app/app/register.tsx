@@ -132,11 +132,16 @@ export default function RegisterScreen() {
       }, 100);
     } catch (error: any) {
       console.log('Request Onboard OTP Error:', error?.response?.data || error?.message);
+      const isDeleted = error.response?.data?.isDeleted;
       const rawMsg = error.response?.data?.message;
       const errorMessage = Array.isArray(rawMsg)
         ? rawMsg.join(', ')
         : (rawMsg || 'Failed to send OTP. Please try again.');
-      setAlertConfig({ title: 'Notice', message: errorMessage, type: 'error' });
+      setAlertConfig({
+        title: isDeleted ? 'Registration Not Allowed' : 'Notice',
+        message: errorMessage,
+        type: 'error',
+      });
       setAlertVisible(true);
     } finally {
       setIsSubmitting(false);
