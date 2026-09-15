@@ -1,13 +1,51 @@
 {
   "project_info": {
-    "project_number": "540155316288",
-    "project_id": "citizen-app-e6984",
-    "storage_bucket": "citizen-app-e6984.firebasestorage.app"
+    "project_number": "586599987081",
+    "project_id": "digital-oms-app",
+    "storage_bucket": "digital-oms-app.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:540155316288:android:528cb5f72f9b9b1d31f7a5",
+        "mobilesdk_app_id": "1:586599987081:android:ec877b0c216fa3111d5358",
+        "android_client_info": {
+          "package_name": "com.mn.staging.oms"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKA7GlrtyfbThqL3C_aUTkeSIR_dPWYnM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:586599987081:android:743993fb2ca5c3031d5358",
+        "android_client_info": {
+          "package_name": "com.mycompany.oms"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKA7GlrtyfbThqL3C_aUTkeSIR_dPWYnM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:586599987081:android:b919f4852de4fb2e1d5358",
         "android_client_info": {
           "package_name": "com.oms.citizen"
         }
@@ -15,7 +53,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAPMQ8I7gvophCprdH6_Nbz7bI38mSUxow"
+          "current_key": "AIzaSyCKA7GlrtyfbThqL3C_aUTkeSIR_dPWYnM"
         }
       ],
       "services": {

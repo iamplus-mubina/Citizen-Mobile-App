@@ -374,12 +374,12 @@ export default function EditProfileScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
       <Stack.Screen options={{ headerShown: false }} />
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
         <View className={containerClass}>
-          
+
           <Header showBack title="Edit Profile" onBack={handleBack} />
 
           <ScrollView className="flex-1 px-6 pt-2 pb-10" showsVerticalScrollIndicator={false}>
@@ -404,12 +404,12 @@ export default function EditProfileScreen() {
 
               <View className="mb-4">
                 <Text className="text-sm font-inter-semibold text-dark mb-2">Email</Text>
-                <Input 
-                  placeholder="Enter email address" 
-                  value={email} 
-                  onChangeText={(text) => { setEmail(text); setErrors(prev => ({ ...prev, email: '' })); }} 
-                  keyboardType="email-address" 
-                  error={errors.email} 
+                <Input
+                  placeholder="Enter email address"
+                  value={email}
+                  onChangeText={(text) => { setEmail(text); setErrors(prev => ({ ...prev, email: '' })); }}
+                  keyboardType="email-address"
+                  error={errors.email}
                 />
               </View>
 
@@ -420,9 +420,9 @@ export default function EditProfileScreen() {
                     <Text className="text-[10px] font-inter-medium text-muted">Fixed / Non-editable</Text>
                   </View>
                 </View>
-                <Input 
-                  value={registeredPhone ? (registeredPhone.startsWith('+91') ? registeredPhone : `+91 ${registeredPhone}`) : '-'} 
-                  editable={false} 
+                <Input
+                  value={registeredPhone ? (registeredPhone.startsWith('+91') ? registeredPhone : `+91 ${registeredPhone}`) : '-'}
+                  editable={false}
                 />
               </View>
 
@@ -571,11 +571,11 @@ export default function EditProfileScreen() {
               <Button title="Cancel" onPress={() => router.back()} variant="secondary" disabled={saving} />
             </View>
             <View style={{ flex: 1.2 }}>
-              <Button 
-                title={saving ? "Saving..." : "Update Profile"} 
-                onPress={handleSave} 
-                variant="primary" 
-                disabled={saving} 
+              <Button
+                title={saving ? "Saving..." : "Update Profile"}
+                onPress={handleSave}
+                variant="primary"
+                disabled={saving}
               />
             </View>
           </View>

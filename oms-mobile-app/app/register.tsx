@@ -170,13 +170,13 @@ export default function RegisterScreen() {
         voterID: voterID.trim() ? voterID.trim().toUpperCase() : undefined,
         otpCode: otp,
       };
-      
+
       await citizenService.onboard(payload);
-      
-      setAlertConfig({ 
-        title: 'Registration Successful', 
-        message: 'Your request has been submitted. Please wait for admin approval.', 
-        type: 'success' 
+
+      setAlertConfig({
+        title: 'Registration Successful',
+        message: 'Your request has been submitted. Please wait for admin approval.',
+        type: 'success'
       });
       setAlertVisible(true);
     } catch (error: any) {
@@ -367,10 +367,10 @@ export default function RegisterScreen() {
               autoCapitalize="characters"
             />
 
-          <View className="mt-8">
-            <Button title={isSubmitting ? "Sending OTP..." : "Next"} onPress={handleSubmit} disabled={isSubmitting} />
-          </View>
-        </ScrollView>
+            <View className="mt-8">
+              <Button title={isSubmitting ? "Sending OTP..." : "Next"} onPress={handleSubmit} disabled={isSubmitting} />
+            </View>
+          </ScrollView>
         ) : (
           <View className="w-full items-center relative">
             <View className="flex-row justify-between w-full mb-8">
@@ -399,9 +399,9 @@ export default function RegisterScreen() {
               }}
               maxLength={6}
               keyboardType="number-pad"
-              style={{ 
-                position: 'absolute', 
-                width: '100%', 
+              style={{
+                position: 'absolute',
+                width: '100%',
                 height: 56,
                 opacity: 0,
                 color: 'transparent'
@@ -434,7 +434,7 @@ export default function RegisterScreen() {
         )}
       </View>
 
-      <AlertModal 
+      <AlertModal
         visible={alertVisible}
         onClose={() => {
           setAlertVisible(false);
