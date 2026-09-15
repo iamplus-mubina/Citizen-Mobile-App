@@ -10,6 +10,20 @@ import { colors } from '@/constants/Colors';
 import { citizenService } from '@/services/citizenService';
 
 // Strict helper checks to prevent 'UNSOLVED' from matching 'SOLVED'
+const formatTimelineDate = (dateStr?: string) => {
+  if (!dateStr || dateStr === 'Recently') return 'Recently';
+  try {
+    const clean = String(dateStr).split('T')[0].split(' ')[0];
+    if (clean.includes('-')) {
+      const parts = clean.split('-');
+      if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return clean;
+  } catch {
+    return dateStr;
+  }
+};
+
 const isSolvedStatus = (status?: string) => {
   const s = (status || '').toUpperCase().trim();
   return (s.includes('SOLVED') && !s.includes('UNSOLVED')) || s.includes('RESOLVED') || s.includes('COMPLETE');
@@ -277,7 +291,7 @@ export default function ComplaintTimelineScreen() {
 
           <Text className="text-xl font-inter-bold text-dark mb-1">{typeStr || categoryStr || complaint.title}</Text>
           <Text className="text-xs font-inter text-muted">
-            {categoryStr ? `${categoryStr} • ` : ''}Submitted {complaint.date ? complaint.date.split(',')[0] : 'Recently'}
+            {categoryStr ? `${categoryStr} • ` : ''}Submitted {complaint.date ? formatTimelineDate(complaint.date) : 'Recently'}
           </Text>
 
           {complaint.rejectionReason && (
@@ -443,7 +457,7 @@ export default function ComplaintTimelineScreen() {
 
                     <View className="flex-1 border border-border rounded-lg p-3 bg-background">
                       <View className="flex-row justify-between items-center mb-2">
-                        <Text className="text-xs font-inter text-muted">{event.date}</Text>
+                        <Text className="text-xs font-inter text-muted">{formatTimelineDate(event.date)}</Text>
                         <View className="bg-gray-200/50 px-2 py-1 rounded">
                           <Text className="text-[10px] font-inter-medium text-gray-600">{event.role}</Text>
                         </View>

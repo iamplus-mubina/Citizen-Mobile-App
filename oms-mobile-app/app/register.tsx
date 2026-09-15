@@ -252,13 +252,15 @@ export default function RegisterScreen() {
 
         {step === 'otp' && (
           <View className="mb-8 items-center">
-            <Image
-              key={cleanPhotoUrl || 'default'}
-              source={cleanPhotoUrl && !logoError ? { uri: cleanPhotoUrl } : omsLogo}
-              style={{ width: 130, height: 130, marginBottom: 16 }}
-              resizeMode="contain"
-              onError={() => setLogoError(true)}
-            />
+            <View className="w-32 h-32 rounded-full overflow-hidden mb-4 bg-white items-center justify-center border-2 border-primary/20 shadow-md">
+              <Image
+                key={cleanPhotoUrl || 'default'}
+                source={cleanPhotoUrl && !logoError ? { uri: cleanPhotoUrl } : omsLogo}
+                style={{ width: '100%', height: '100%' }}
+                resizeMode="cover"
+                onError={() => setLogoError(true)}
+              />
+            </View>
             <Text className="text-2xl font-inter-bold text-dark mb-2 text-center">
               Enter OTP
             </Text>

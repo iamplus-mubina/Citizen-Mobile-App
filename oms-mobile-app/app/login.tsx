@@ -79,6 +79,16 @@ export default function LoginScreen() {
   }, []);
 
   useEffect(() => {
+    if (step !== 'splash') return;
+
+    const timer = setTimeout(() => {
+      setStep('mobile');
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [step]);
+
+  useEffect(() => {
     if (step !== 'otp' || timeLeft <= 0) return;
 
     const timer = setInterval(() => {
@@ -251,13 +261,15 @@ export default function LoginScreen() {
           onTouchEnd={handleTouchEnd}
         >
           <View className="items-center px-6">
-            <Image
-              key={cleanPhotoUrl || 'default'}
-              source={cleanPhotoUrl && !logoError ? { uri: cleanPhotoUrl } : omsLogo}
-              style={{ width: 160, height: 160, marginBottom: 28 }}
-              resizeMode="contain"
-              onError={() => setLogoError(true)}
-            />
+            <View className="w-40 h-40 rounded-full overflow-hidden mb-7 bg-white items-center justify-center border-2 border-primary/20 shadow-md">
+              <Image
+                key={cleanPhotoUrl || 'default'}
+                source={cleanPhotoUrl && !logoError ? { uri: cleanPhotoUrl } : omsLogo}
+                style={{ width: '100%', height: '100%' }}
+                resizeMode="cover"
+                onError={() => setLogoError(true)}
+              />
+            </View>
             <Text className="text-3xl font-inter-bold text-dark mb-2 text-center leading-10">
               {brandingTitle}
             </Text>
@@ -307,21 +319,34 @@ export default function LoginScreen() {
 
         <View className="flex-1 justify-center pb-14">
           <View className="mb-10 items-center">
-            <Image
-              source={getCleanImageUrl(photoUrl) && !logoError ? { uri: getCleanImageUrl(photoUrl)! } : omsLogo}
-              style={{ width: 140, height: 140, marginBottom: 20 }}
-              resizeMode="contain"
-              onError={() => setLogoError(true)}
-            />
+            <View className="w-36 h-36 rounded-full overflow-hidden mb-5 bg-white items-center justify-center border-2 border-primary/20 shadow-md">
+              <Image
+                key={cleanPhotoUrl || 'default'}
+                source={cleanPhotoUrl && !logoError ? { uri: cleanPhotoUrl } : omsLogo}
+                style={{ width: '100%', height: '100%' }}
+                resizeMode="cover"
+                onError={() => setLogoError(true)}
+              />
+            </View>
             <Text className="text-3xl font-inter-bold text-dark mb-2 text-center">
               {step === 'mobile' ? (config?.BRANDING_TITLE || 'Welcome') : 'Enter OTP'}
             </Text>
-            <Text className="text-muted text-lg font-inter text-center">
-              {step === 'mobile'
-                ? (config?.BRANDING_SUB_TITLE ? `${config.BRANDING_SUB_TITLE} - Please enter your mobile number.` : 'Please enter your mobile number.')
-                : `We have sent a 6-digit code to ${mobile}`
-              }
-            </Text>
+            {step === 'mobile' ? (
+              <View className="items-center">
+                {config?.BRANDING_SUB_TITLE ? (
+                  <Text className="text-muted text-base font-inter text-center mb-1">
+                    {config.BRANDING_SUB_TITLE}
+                  </Text>
+                ) : null}
+                <Text className="text-muted text-base font-inter text-center">
+                  Please enter your mobile number.
+                </Text>
+              </View>
+            ) : (
+              <Text className="text-muted text-lg font-inter text-center">
+                We have sent a 6-digit code to {mobile}
+              </Text>
+            )}
           </View>
 
           {step === 'mobile' && (

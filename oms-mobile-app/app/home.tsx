@@ -15,6 +15,7 @@ import { MyComplaints } from '@/components/MyComplaints';
 import { Notifications } from '@/components/Notifications';
 import { Updates } from '@/components/Updates';
 import { Profile } from '@/components/Profile';
+import { ContactUs } from '@/components/ContactUs';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useComplaintStore } from '@/store/useComplaintStore';
@@ -49,7 +50,7 @@ export default function HomeScreen() {
   }, [cleanPhotoUrlM]);
 
   useEffect(() => {
-    if (params?.tab && ['home', 'complaints', 'updates', 'profile', 'notifications'].includes(params.tab)) {
+    if (params?.tab && ['home', 'complaints', 'updates', 'profile', 'notifications', 'contact'].includes(params.tab)) {
       setActiveTab(params.tab as TabType);
     }
   }, [params?.tab]);
@@ -303,6 +304,8 @@ export default function HomeScreen() {
         return <Updates />;
       case 'notifications':
         return <Notifications />;
+      case 'contact':
+        return <ContactUs />;
       case 'profile':
         return <Profile />;
     }

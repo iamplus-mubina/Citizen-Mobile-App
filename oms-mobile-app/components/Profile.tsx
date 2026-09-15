@@ -1,36 +1,49 @@
 import React, { useState, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, ScrollView, TouchableOpacity, Image, Switch, Modal, TouchableWithoutFeedback, RefreshControl } from 'react-native';
-import { 
-  UserIcon, 
-  CameraIcon, 
-  PencilIcon, 
-  PhoneIcon, 
-  EnvelopeIcon, 
-  MapPinIcon, 
-  MapIcon, 
-  ArrowRightStartOnRectangleIcon, 
-  GlobeAltIcon, 
-  BellIcon, 
-  IdentificationIcon, 
-  AcademicCapIcon, 
-  BriefcaseIcon, 
-  CakeIcon, 
+import {
+  UserIcon,
+  CameraIcon,
+  PencilIcon,
+  PhoneIcon,
+  EnvelopeIcon,
+  MapPinIcon,
+  MapIcon,
+  ArrowRightStartOnRectangleIcon,
+  GlobeAltIcon,
+  BellIcon,
+  IdentificationIcon,
+  AcademicCapIcon,
+  BriefcaseIcon,
+  CakeIcon,
   TagIcon
 } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { UploadModal } from '@/components/UploadModal';
-import { ContactUsModal } from '@/components/ContactUsModal';
 import { useComplaintStore } from '@/store/useComplaintStore';
 import { citizenService } from '@/services/citizenService';
 import { removeStoredToken } from '@/services/api';
 import { getCleanImageUrl } from '@/utils/image';
 
+const formatDob = (dateStr?: string) => {
+  if (!dateStr) return '';
+  try {
+    const clean = String(dateStr).split('T')[0].split(' ')[0];
+    if (clean.includes('-')) {
+      const parts = clean.split('-');
+      if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return clean;
+  } catch {
+    return dateStr;
+  }
+};
+
 export function Profile() {
   const router = useRouter();
   const store = useComplaintStore();
-  const { 
+  const {
     profilePhoto, setProfilePhoto, phoneNumber, profileName, profileEmail, profileAddress, profilePincode,
     alternatePhone,
     dob, age, gender, bloodGroup, education, occupation,
@@ -41,7 +54,6 @@ export function Profile() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [notifEnabled, setNotifEnabled] = useState(true);
-  const [contactModalVisible, setContactModalVisible] = useState(false);
   const [langModalVisible, setLangModalVisible] = useState(false);
   const [selectedLang, setSelectedLang] = useState('English');
   const [refreshing, setRefreshing] = useState(false);
@@ -89,7 +101,7 @@ export function Profile() {
 
   return (
     <View className="flex-1 w-full bg-background pt-6 px-5">
-      <ScrollView 
+      <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
         refreshControl={
@@ -106,11 +118,11 @@ export function Profile() {
           >
             <View className="w-24 h-24 rounded-full bg-primary-light items-center justify-center overflow-hidden border-2 border-primary/20">
               {avatarUri ? (
-                <Image 
+                <Image
                   key={avatarUri}
-                  source={{ uri: avatarUri }} 
-                  className="w-full h-full" 
-                  resizeMode="cover" 
+                  source={{ uri: avatarUri }}
+                  className="w-full h-full"
+                  resizeMode="cover"
                   onError={() => setImgError(true)}
                 />
               ) : (
@@ -151,7 +163,7 @@ export function Profile() {
             <Text className="text-sm font-inter-bold text-dark">Personal Details</Text>
           </View>
 
-          <DetailRow icon={CakeIcon} label="Date of Birth" value={dob} />
+          <DetailRow icon={CakeIcon} label="Date of Birth" value={formatDob(dob)} />
           <DetailRow icon={UserIcon} label="Gender" value={gender} isLast />
           {/* <DetailRow icon={TagIcon} label="Blood Group" value={bloodGroup} /> */}
           {/* <DetailRow icon={AcademicCapIcon} label="Education" value={education} /> */}
@@ -199,7 +211,7 @@ export function Profile() {
           </TouchableOpacity>
           */}
 
-          <View className="flex-row items-center px-4 py-3 border-b border-border">
+          <View className="flex-row items-center px-4 py-3">
             <View className="w-10 h-10 rounded-full bg-primary-light items-center justify-center mr-4">
               <BellIcon size={20} color={colors.primary} />
             </View>
@@ -214,22 +226,6 @@ export function Profile() {
               thumbColor={colors.white}
             />
           </View>
-
-          {/* Contact Us Option */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => setContactModalVisible(true)}
-            className="flex-row items-center px-4 py-3"
-          >
-            <View className="w-10 h-10 rounded-full bg-primary-light items-center justify-center mr-4">
-              <PhoneIcon size={20} color={colors.primary} />
-            </View>
-            <View className="flex-1">
-              <Text className="text-sm font-inter-bold text-dark">Contact Us</Text>
-              <Text className="text-xs font-inter text-muted">Helpline, office address & support</Text>
-            </View>
-            <Text className="text-base font-inter text-muted mr-1">›</Text>
-          </TouchableOpacity>
         </View>
 
         {/* Logout */}
@@ -252,22 +248,22 @@ export function Profile() {
           setImgError(false);
           setProfilePhoto(uri);
           setModalVisible(false);
-          
+
           try {
             const rawFilename = uri.split('/').pop() || `profile_${Date.now()}.jpg`;
             const filename = rawFilename.includes('.') ? rawFilename : `${rawFilename}.jpg`;
             const match = /\.(\w+)$/.exec(filename);
             const type = match ? `image/${match[1]}` : 'image/jpeg';
-            
+
             // 1. Upload to server
             const res = await citizenService.uploadFile(uri, filename, type);
             const serverPath = res?.path || res?.data?.path || '';
-            
+
             if (serverPath) {
               // 2. Update citizen profile with new image path
               await citizenService.updateProfile({ ProfileImage: serverPath });
-              AsyncStorage.setItem('user_profile_photo', serverPath).catch(() => {});
-              
+              AsyncStorage.setItem('user_profile_photo', serverPath).catch(() => { });
+
               // 3. Re-fetch to sync store perfectly
               try {
                 const freshProfile = await citizenService.getProfile();
@@ -317,11 +313,6 @@ export function Profile() {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-
-      <ContactUsModal
-        visible={contactModalVisible}
-        onClose={() => setContactModalVisible(false)}
-      />
     </View>
   );
 }
