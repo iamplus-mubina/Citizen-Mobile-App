@@ -14,10 +14,16 @@
     "android": {
       "package": "com.oms.citizen",
       "googleServicesFile": "./google-services.json",
+      "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/citizen_logo.png",
         "backgroundColor": "#182641"
       }
+    },
+    "androidStatusBar": {
+      "translucent": true,
+      "backgroundColor": "#00000000",
+      "barStyle": "light-content"
     },
     "web": {
       "bundler": "metro",

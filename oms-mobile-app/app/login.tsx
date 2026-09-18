@@ -11,7 +11,8 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
-  BackHandler
+  BackHandler,
+  ScrollView
 } from 'react-native';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
@@ -46,7 +47,16 @@ export default function LoginScreen() {
   const [timeLeft, setTimeLeft] = useState(45);
 
   const [alertVisible, setAlertVisible] = useState(false);
-  const [alertConfig, setAlertConfig] = useState({ title: '', message: '', type: 'error' as 'error' | 'success' });
+  const [alertConfig, setAlertConfig] = useState<{
+    title: string;
+    message: string;
+    type?: 'error' | 'success' | 'info';
+    primaryButtonText?: string;
+    onPrimaryPress?: () => void;
+    secondaryButtonText?: string;
+    onSecondaryPress?: () => void;
+    showSecondaryButton?: boolean;
+  }>({ title: '', message: '', type: 'error' });
 
   const otpRef = useRef<TextInput>(null);
   const touchStartX = useRef(0);
@@ -160,8 +170,42 @@ export default function LoginScreen() {
         const errorMessage = Array.isArray(rawMessage)
           ? rawMessage.join(', ')
           : (rawMessage || 'Failed to send OTP. Please try again.');
-        
-        setAlertConfig({ title: 'Notice', message: errorMessage, type: 'error' });
+
+        const isUnregistered =
+          errorMessage.toLowerCase().includes('account not found') ||
+          errorMessage.toLowerCase().includes('not registered') ||
+          errorMessage.toLowerCase().includes('complete onboarding') ||
+          errorMessage.toLowerCase().includes('user not found') ||
+          errorMessage.toLowerCase().includes('visitor account not found') ||
+          errorMessage.toLowerCase().includes('visitor not found') ||
+          data?.isNotRegistered;
+
+        if (isUnregistered) {
+          setAlertConfig({
+            title: 'Alert',
+            message: 'User is not registered, Please click bellow to register',
+            type: 'error',
+            showSecondaryButton: true,
+            primaryButtonText: 'Register',
+            onPrimaryPress: () => {
+              setAlertVisible(false);
+              router.push({ pathname: '/register', params: { mobile } });
+            },
+            secondaryButtonText: 'Cancel',
+            onSecondaryPress: () => {
+              setAlertVisible(false);
+            },
+          });
+          setAlertVisible(true);
+          return;
+        }
+
+        setAlertConfig({
+          title: 'Alert',
+          message: errorMessage,
+          type: 'error',
+          showSecondaryButton: false,
+        });
         setAlertVisible(true);
       }
     }
@@ -327,8 +371,14 @@ export default function LoginScreen() {
           ) : null}
         </View>
 
-        <View className="flex-1 justify-center pb-14">
-          <View className="mb-10 items-center">
+        <ScrollView 
+          className="flex-1 w-full"
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingBottom: 24 }}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+        >
+          <View className="mb-8 items-center">
             <View className="w-36 h-36 rounded-full overflow-hidden mb-5 bg-white items-center justify-center border-2 border-primary/20 shadow-md">
               <Image
                 key={cleanPhotoUrl || 'default'}
@@ -376,7 +426,7 @@ export default function LoginScreen() {
                 <Button title="Send OTP" onPress={handleSendOtp} />
               </View>
 
-              <View className="items-center mt-20">
+              <View className="items-center mt-8">
                 <Text className="text-muted font-inter text-base mb-2">
                   New user?
                 </Text>
@@ -460,13 +510,18 @@ export default function LoginScreen() {
               </View>
             </View>
           )}
-        </View>
+        </ScrollView>
         <AlertModal 
           visible={alertVisible}
           onClose={() => setAlertVisible(false)}
           title={alertConfig.title}
           message={alertConfig.message}
           type={alertConfig.type}
+          primaryButtonText={alertConfig.primaryButtonText}
+          onPrimaryPress={alertConfig.onPrimaryPress}
+          secondaryButtonText={alertConfig.secondaryButtonText}
+          onSecondaryPress={alertConfig.onSecondaryPress}
+          showSecondaryButton={alertConfig.showSecondaryButton}
         />
       </View>
     );
@@ -483,7 +538,7 @@ export default function LoginScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
         className="flex-1"
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

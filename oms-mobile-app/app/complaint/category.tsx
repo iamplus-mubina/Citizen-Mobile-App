@@ -99,7 +99,7 @@ export default function CategoryScreen() {
     : "flex-1 bg-background";
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-background" edges={['bottom']}>
       <View className={containerClass}>
         <Header showBack title="Raise a complaint" onBack={() => router.replace('/home')} />
 

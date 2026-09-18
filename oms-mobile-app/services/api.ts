@@ -4,21 +4,40 @@ import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 
+
 const resolveBaseUrl = (): string => {
   const envUrl = process.env.EXPO_PUBLIC_API_URL;
-  if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
+
+  // 1. Always prefer the .env value (set via EXPO_PUBLIC_API_URL)
+  if (envUrl) {
+    // If it's a real server URL (not localhost), use it directly
+    if (!envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
+      return envUrl;
+    }
+    // If it's a localhost URL, try to resolve Metro host IP for physical devices
+    const hostUri = Constants.expoConfig?.hostUri || (Constants as any).manifest?.debuggerHost;
+    if (hostUri) {
+      const ip = hostUri.split(':')[0];
+      return `http://${ip}:8080`;
+    }
+    // Otherwise use the localhost URL as-is (emulator)
     return envUrl;
   }
-  // Auto-resolve to Metro host IP on physical mobile devices
+
+  // 2. No .env set — try Metro host IP (dev mode on physical device)
   const hostUri = Constants.expoConfig?.hostUri || (Constants as any).manifest?.debuggerHost;
   if (hostUri) {
     const ip = hostUri.split(':')[0];
     return `http://${ip}:8080`;
   }
-  return envUrl || 'http://10.60.87.34:8080';
+
+  // 3. No .env, no Metro — warn and use a safe empty string
+  console.warn('[OMS] EXPO_PUBLIC_API_URL is not set in .env! API calls will fail.');
+  return '';
 };
 
 export const BASE_URL = resolveBaseUrl();
+console.log('[OMS] Resolved BASE_URL:', BASE_URL);
 
 export const api = axios.create({
   baseURL: BASE_URL,

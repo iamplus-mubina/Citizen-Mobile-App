@@ -273,7 +273,7 @@ export default function HomeScreen() {
 
               {submittedComplaints.length > 0 ? (
                 submittedComplaints.slice(0, 5).map((item) => (
-                  <View key={item.ticketId || item.id} className="mb-3">
+                  <View key={item.tokenNumber || item.requestId || item.id} className="mb-3">
                     <Card 
                       variant="recent"
                       ticketId={item.ticketId}
@@ -283,7 +283,7 @@ export default function HomeScreen() {
                       requestStatus={item.requestStatus}
                       liveStatus={item.liveStatus}
                       rejectionReason={item.rejectionReason}
-                      onPress={() => router.push(`/complaint/timeline/${item.ticketId}`)}
+                      onPress={() => router.push(`/complaint/timeline/${item.tokenNumber || item.requestId || item.id}`)}
                     />
                   </View>
                 ))
@@ -312,7 +312,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <View className="flex-1 bg-background" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
+    <View className="flex-1 bg-background" style={{ paddingBottom: insets.bottom }}>
       <View className={containerClass}>
         <View className="flex-1">
           <Header

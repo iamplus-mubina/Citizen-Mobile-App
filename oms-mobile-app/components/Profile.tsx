@@ -110,8 +110,8 @@ export function Profile() {
       await citizenService.deleteAccount();
       setDeleteModalVisible(false);
       await removeStoredToken();
-      await AsyncStorage.removeItem('user_phone').catch(() => {});
-      await AsyncStorage.removeItem('complaint_storage').catch(() => {});
+      await AsyncStorage.removeItem('user_phone').catch(() => { });
+      await AsyncStorage.removeItem('complaint_storage').catch(() => { });
       router.replace('/login');
     } catch (err: any) {
       console.error('Delete account error:', err);
@@ -268,11 +268,18 @@ export function Profile() {
             setDeleteError('');
             setDeleteModalVisible(true);
           }}
-          className="flex-row items-center justify-center border border-rose-200 rounded-xl py-3.5 mb-8 bg-rose-50/50"
+          className="flex-row items-center justify-center border border-rose-200 rounded-xl py-3.5 mb-4 bg-rose-50/50"
         >
           <TrashIcon size={18} color="#e11d48" />
           <Text className="text-sm font-inter-semibold text-rose-600 ml-2">Delete Account</Text>
         </TouchableOpacity>
+
+        {/* Powered by */}
+        <View className="items-center justify-center pt-2 pb-8">
+          <Text className="text-xs font-inter-medium text-muted tracking-wider">
+            Powered by fussionloops solutions
+          </Text>
+        </View>
 
       </ScrollView>
 

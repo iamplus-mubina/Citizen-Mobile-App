@@ -135,7 +135,7 @@ const getComplaintHistory = (reqStatus?: string, liveStatus?: string): StepperSt
 export default function ComplaintTimelineScreen() {
   const router = useRouter();
   const { id, fromSuccess } = useLocalSearchParams();
-  const ticketId = Array.isArray(id) ? id[0] : (id || 'REQ-1');
+  const targetId = Array.isArray(id) ? id[0] : (id || '');
   const submittedComplaints = useComplaintStore((state) => state.submittedComplaints);
 
   const handleBack = () => {
@@ -158,13 +158,17 @@ export default function ComplaintTimelineScreen() {
   }, [router]);
 
   const foundComplaint = submittedComplaints.find(
-    c => c.ticketId === ticketId ||
-      c.ticketId === `REQ-${ticketId}` ||
-      (ticketId.replace(/\D/g, '') !== '' && c.ticketId.replace(/\D/g, '') === ticketId.replace(/\D/g, ''))
+    c =>
+      (c.tokenNumber && String(c.tokenNumber) === String(targetId)) ||
+      (c.ticketId && String(c.ticketId) === String(targetId)) ||
+      String(c.id) === String(targetId) ||
+      String(c.requestId) === String(targetId) ||
+      String(c.complainId) === String(targetId)
   );
 
   const initialComplaint = foundComplaint || {
-    ticketId: ticketId.startsWith('REQ-') || ticketId.startsWith('CMP-') ? ticketId : `REQ-${ticketId}`,
+    ticketId: '',
+    tokenNumber: null,
     title: 'Complaint Details',
     category: 'General',
     type: 'Complaint',
@@ -191,10 +195,10 @@ export default function ComplaintTimelineScreen() {
         const list = Array.isArray(res) ? (Array.isArray(res[0]) ? res[0] : res) : (res?.data || []);
         const fresh = list.find(
           (c: any) =>
-            String(c.tokenNumber) === String(ticketId) ||
-            String(c.id) === String(ticketId) ||
-            String(c.requestId) === String(ticketId) ||
-            String(c.complainId) === String(ticketId)
+            (c.tokenNumber && String(c.tokenNumber) === String(targetId)) ||
+            String(c.id) === String(targetId) ||
+            String(c.requestId) === String(targetId) ||
+            String(c.complainId) === String(targetId)
         );
         if (fresh && isMounted) {
           // DEBUG: log raw API fields to find correct status field names
@@ -203,6 +207,8 @@ export default function ComplaintTimelineScreen() {
           // Normalize status fields - handle various possible field names from backend
           const normalizedFresh = {
             ...fresh,
+            ticketId: fresh.tokenNumber ? String(fresh.tokenNumber) : '',
+            tokenNumber: fresh.tokenNumber || null,
             requestStatus: fresh.requestStatus || fresh.status || fresh.reqStatus || fresh.complaintStatus || 'PENDING',
             liveStatus: fresh.liveStatus || fresh.complainStatus || fresh.currentStatus || fresh.workStatus || 'PENDING APPROVAL',
           };
@@ -248,7 +254,7 @@ export default function ComplaintTimelineScreen() {
     return () => {
       isMounted = false;
     };
-  }, [ticketId]);
+  }, [targetId]);
 
 
   const reqStyle = getRequestStatusStyles(complaint.requestStatus);
@@ -271,7 +277,7 @@ export default function ComplaintTimelineScreen() {
     : "flex-1 bg-background";
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-background" edges={['bottom']}>
       <Stack.Screen options={{ headerShown: false }} />
       <View className={containerClass}>
 
@@ -281,7 +287,13 @@ export default function ComplaintTimelineScreen() {
           <Text className="text-2xl font-inter-bold text-dark mb-4">Complaint details</Text>
 
           <View className="flex-row justify-between items-center mb-3">
-            <Text className="text-sm font-inter-bold text-header-bg">{complaint.ticketId}</Text>
+            {complaint.tokenNumber || complaint.ticketId ? (
+              <Text className="text-sm font-inter-bold text-header-bg">
+                Token: {complaint.tokenNumber || complaint.ticketId}
+              </Text>
+            ) : (
+              <View />
+            )}
             <View className="flex-row items-center gap-1.5 flex-wrap justify-end">
               <View className={`px-2.5 py-1 rounded-md border ${liveStyle.bg} ${liveStyle.border}`}>
                 <Text className={`text-[10px] font-inter-bold ${liveStyle.text}`}>{liveStyle.label}</Text>

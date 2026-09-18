@@ -372,17 +372,22 @@ export default function EditProfileScreen() {
     : "flex-1 bg-background";
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-background" edges={['bottom']}>
       <Stack.Screen options={{ headerShown: false }} />
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
         className="flex-1"
       >
         <View className={containerClass}>
 
           <Header showBack title="Edit Profile" onBack={handleBack} />
 
-          <ScrollView className="flex-1 px-6 pt-2 pb-10" showsVerticalScrollIndicator={false}>
+          <ScrollView 
+            className="flex-1 px-6 pt-2 pb-10" 
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+          >
             <View className="pb-10">
 
               {/* 1. Basic Details */}

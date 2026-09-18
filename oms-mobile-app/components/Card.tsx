@@ -125,7 +125,13 @@ export function Card({
         className="bg-surface border border-border p-4 rounded-xl mb-3"
       >
         <View className="flex-row justify-between items-center mb-2">
-          <Text className="text-sm font-inter-bold text-header-bg">{ticketId}</Text>
+          {ticketId ? (
+            <Text className="text-sm font-inter-bold text-header-bg">
+              {ticketId.toLowerCase().startsWith('token') ? ticketId : `Token: ${ticketId}`}
+            </Text>
+          ) : (
+            <View />
+          )}
           <View className="flex-row items-center gap-1.5 flex-wrap justify-end">
             {liveStyle && (
               <View className={`px-2 py-0.5 rounded border ${liveStyle.bg} ${liveStyle.border}`}>

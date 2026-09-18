@@ -135,7 +135,7 @@ export default function UpdateDetailScreen() {
     .filter((img): img is string => typeof img === 'string' && img.length > 0);
 
   return (
-    <View className="flex-1 bg-background" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
+    <View className="flex-1 bg-background" style={{ paddingBottom: insets.bottom }}>
       <Stack.Screen options={{ headerShown: false }} />
       <View className={containerClass}>
 

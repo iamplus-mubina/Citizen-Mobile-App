@@ -80,7 +80,7 @@ export function MyComplaints() {
       const query = searchQuery.trim().toLowerCase();
       const matchesSearch = 
         !query ||
-        complaint.ticketId.toLowerCase().includes(query) ||
+        (complaint.ticketId ? complaint.ticketId.toLowerCase().includes(query) : false) ||
         (complaint.type || '').toLowerCase().includes(query) ||
         (complaint.category || '').toLowerCase().includes(query) ||
         (complaint.description || '').toLowerCase().includes(query);
@@ -123,7 +123,7 @@ export function MyComplaints() {
         {filteredComplaints.length > 0 ? (
           filteredComplaints.map((complaint) => (
             <Card
-              key={complaint.ticketId || complaint.id}
+              key={complaint.tokenNumber || complaint.requestId || complaint.id}
               variant="recent"
               ticketId={complaint.ticketId}
               title={complaint.type || complaint.category || 'Complaint'}
@@ -132,7 +132,7 @@ export function MyComplaints() {
               requestStatus={complaint.requestStatus}
               liveStatus={complaint.liveStatus}
               rejectionReason={complaint.rejectionReason}
-              onPress={() => router.push(`/complaint/timeline/${complaint.ticketId}` as any)}
+              onPress={() => router.push(`/complaint/timeline/${complaint.tokenNumber || complaint.requestId || complaint.id}` as any)}
             />
           ))
         ) : (

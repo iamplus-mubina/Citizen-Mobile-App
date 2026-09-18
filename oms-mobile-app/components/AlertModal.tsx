@@ -9,20 +9,52 @@ interface AlertModalProps {
   title: string;
   message: string;
   type?: 'error' | 'success' | 'info';
+  primaryButtonText?: string;
+  onPrimaryPress?: () => void;
+  secondaryButtonText?: string;
+  onSecondaryPress?: () => void;
+  showSecondaryButton?: boolean;
 }
 
-export function AlertModal({ visible, onClose, title, message, type = 'error' }: AlertModalProps) {
+export function AlertModal({
+  visible,
+  onClose,
+  title,
+  message,
+  type = 'error',
+  primaryButtonText = 'OK',
+  onPrimaryPress,
+  secondaryButtonText = 'Cancel',
+  onSecondaryPress,
+  showSecondaryButton = false,
+}: AlertModalProps) {
   
   const getIcon = () => {
     if (type === 'success') return <CheckCircleIcon size={32} color={colors.success} />;
     if (type === 'error') return <ExclamationTriangleIcon size={32} color={colors.error} />;
-    return null;
+    return <ExclamationTriangleIcon size={32} color={colors.warning || colors.primary} />;
   };
 
   const getBgStyle = () => {
     if (type === 'success') return { backgroundColor: colors.success + '1A' }; // 10% opacity
     if (type === 'error') return { backgroundColor: colors.error + '1A' };
-    return { backgroundColor: colors.primary + '1A' };
+    return { backgroundColor: (colors.warning || colors.primary) + '1A' };
+  };
+
+  const handlePrimaryPress = () => {
+    if (onPrimaryPress) {
+      onPrimaryPress();
+    } else {
+      onClose();
+    }
+  };
+
+  const handleSecondaryPress = () => {
+    if (onSecondaryPress) {
+      onSecondaryPress();
+    } else {
+      onClose();
+    }
   };
 
   return (
@@ -59,9 +91,28 @@ export function AlertModal({ visible, onClose, title, message, type = 'error' }:
                 {message}
               </Text>
 
-              <View className="w-full">
-                <Button title="OK" onPress={onClose} />
-              </View>
+              {showSecondaryButton ? (
+                <View className="w-full flex-row space-x-3 gap-3">
+                  <View className="flex-1">
+                    <Button 
+                      title={secondaryButtonText} 
+                      variant="outline" 
+                      onPress={handleSecondaryPress} 
+                    />
+                  </View>
+                  <View className="flex-1">
+                    <Button 
+                      title={primaryButtonText} 
+                      variant="primary" 
+                      onPress={handlePrimaryPress} 
+                    />
+                  </View>
+                </View>
+              ) : (
+                <View className="w-full">
+                  <Button title={primaryButtonText} onPress={handlePrimaryPress} />
+                </View>
+              )}
               
             </View>
           </TouchableWithoutFeedback>

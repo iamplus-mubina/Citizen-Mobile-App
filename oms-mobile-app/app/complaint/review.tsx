@@ -125,7 +125,7 @@ export default function ReviewScreen() {
   ].filter(Boolean).join(', ') || 'No files attached';
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-background" edges={['bottom']}>
       <View className={containerClass}>
 
         <Header 

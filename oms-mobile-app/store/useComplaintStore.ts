@@ -7,6 +7,7 @@ export interface SubmittedComplaint {
   requestId: number;
   complainId: number | null;
   ticketId: string;
+  tokenNumber: string | null;
   category: string;
   type: string;
   description: string;
@@ -207,7 +208,8 @@ export const useComplaintStore = create<ComplaintFormState>((set) => ({
       id: c.id,
       requestId: c.requestId || c.id,
       complainId: c.complainId || null,
-      ticketId: c.tokenNumber || `REQ-${c.requestId || c.id}`,
+      ticketId: c.tokenNumber ? String(c.tokenNumber) : '',
+      tokenNumber: c.tokenNumber || null,
       category: c.category?.name || '',
       type: c.type?.name || '',
       description: c.description || '',

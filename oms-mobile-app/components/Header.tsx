@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, ImageBackground } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ImageBackground, StatusBar } from 'react-native';
 import { ArrowLeftIcon, BellIcon } from 'react-native-heroicons/outline';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
 import { useSystemConfigStore } from '@/store/useSystemConfigStore';
@@ -29,13 +30,13 @@ export function Header({
   showBack, 
   title, 
   subtitle,
-  bottomText,
   notificationCount, 
   onNotificationPress, 
   onBack 
 }: HeaderProps) {
   const router = useRouter();
-  const { profileName, profilePhoto } = useComplaintStore();
+  const insets = useSafeAreaInsets();
+  const { profilePhoto } = useComplaintStore();
   const { config, fetchSystemConfig, getBrandingPhotoUrl } = useSystemConfigStore();
   const storeUnreadCount = useNotificationStore(state => state.unreadCount);
   const [imgError, setImgError] = useState(false);
@@ -43,8 +44,6 @@ export function Header({
   useEffect(() => {
     fetchSystemConfig();
   }, []);
-
-  const displayName = profileName || 'Citizen User';
   const brandingTopBar = config?.BRANDING_TOPBAR_TITLE || config?.BRANDING_TITLE || 'Citizen E-Connect';
   const brandingSub = config?.BRANDING_SUB_TITLE || '';
   const photoUrl = getBrandingPhotoUrl('L');
@@ -78,8 +77,10 @@ export function Header({
     <ImageBackground
       source={HEADER_BG}
       resizeMode="cover"
-      className={`px-4 pt-3 pb-3 bg-header-bg z-10 overflow-hidden ${className}`}
+      className={`px-4 pb-3 bg-header-bg z-10 overflow-hidden ${className}`}
+      style={{ paddingTop: insets.top + 8 }}
     >
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center flex-1">
           {showBack && (
@@ -128,12 +129,6 @@ export function Header({
             </View>
           )}
         </TouchableOpacity>
-      </View>
-
-      <View className="bg-black/20 border border-black/10 rounded-md px-3 py-2 mt-3 flex-row items-center">
-        <Text className="text-xs font-inter-medium text-white/90" numberOfLines={1}>
-          {bottomText || `Welcome, ${displayName}`}
-        </Text>
       </View>
     </ImageBackground>
   );

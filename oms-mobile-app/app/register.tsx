@@ -13,7 +13,7 @@ import {
   Image
 } from 'react-native';
 import { useRef } from 'react';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { DatePickerInput } from '@/components/DatePickerInput';
@@ -29,6 +29,7 @@ import { getCleanImageUrl } from '@/utils/image';
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ mobile?: string }>();
   const { config, fetchSystemConfig, getBrandingPhotoUrl } = useSystemConfigStore();
   const [logoError, setLogoError] = useState(false);
 
@@ -37,7 +38,7 @@ export default function RegisterScreen() {
   const [lastName, setLastName] = useState('');
   const [gender, setGender] = useState('');
   const [dob, setDob] = useState('');
-  const [mobile, setMobile] = useState('');
+  const [mobile, setMobile] = useState(params.mobile ? String(params.mobile).replace(/[^0-9]/g, '') : '');
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [voterID, setVoterID] = useState('');
@@ -61,6 +62,14 @@ export default function RegisterScreen() {
   useEffect(() => {
     setLogoError(false);
   }, [cleanPhotoUrl]);
+
+  useEffect(() => {
+    if (params.mobile && !mobile) {
+      const clean = String(params.mobile).replace(/[^0-9]/g, '');
+      setMobile(clean);
+      if (clean.length === 10) setErrors(prev => ({ ...prev, mobile: '' }));
+    }
+  }, [params.mobile]);
 
   useEffect(() => {
     if (step !== 'otp' || timeLeft <= 0) return;
@@ -138,7 +147,7 @@ export default function RegisterScreen() {
         ? rawMsg.join(', ')
         : (rawMsg || 'Failed to send OTP. Please try again.');
       setAlertConfig({
-        title: isDeleted ? 'Registration Not Allowed' : 'Notice',
+        title: isDeleted ? 'Registration Not Allowed' : 'Alert',
         message: errorMessage,
         type: 'error',
       });
@@ -207,7 +216,7 @@ export default function RegisterScreen() {
         const errorMessage = Array.isArray(rawMsg)
           ? rawMsg.join(', ')
           : (rawMsg || 'Failed to resend OTP.');
-        setAlertConfig({ title: 'Notice', message: errorMessage, type: 'error' });
+        setAlertConfig({ title: 'Alert', message: errorMessage, type: 'error' });
         setAlertVisible(true);
       }
     }
@@ -276,161 +285,177 @@ export default function RegisterScreen() {
         )}
 
         {step === 'details' ? (
-          <ScrollView className="flex-1 w-full" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 60 }}>
-            <Input
-              label="First Name *"
-              placeholder="First name"
-              value={firstName}
-              onChangeText={(text) => {
-                setFirstName(text);
-                if (text.trim()) setErrors(prev => ({ ...prev, firstName: '' }));
-              }}
-              error={errors.firstName}
-            />
+          <View className="flex-1 w-full">
+            <ScrollView 
+              className="flex-1 w-full" 
+              showsVerticalScrollIndicator={false} 
+              contentContainerStyle={{ paddingBottom: 24 }}
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="on-drag"
+            >
+              <Input
+                label="First Name *"
+                placeholder="First name"
+                value={firstName}
+                onChangeText={(text) => {
+                  setFirstName(text);
+                  if (text.trim()) setErrors(prev => ({ ...prev, firstName: '' }));
+                }}
+                error={errors.firstName}
+              />
 
-            <Input
-              label="Middle Name (Optional)"
-              placeholder="Middle name"
-              value={middleName}
-              onChangeText={setMiddleName}
-            />
+              <Input
+                label="Middle Name"
+                placeholder="Middle name"
+                value={middleName}
+                onChangeText={setMiddleName}
+              />
 
-            <Input
-              label="Last Name *"
-              placeholder="Last name"
-              value={lastName}
-              onChangeText={(text) => {
-                setLastName(text);
-                if (text.trim()) setErrors(prev => ({ ...prev, lastName: '' }));
-              }}
-              error={errors.lastName}
-            />
+              <Input
+                label="Last Name *"
+                placeholder="Last name"
+                value={lastName}
+                onChangeText={(text) => {
+                  setLastName(text);
+                  if (text.trim()) setErrors(prev => ({ ...prev, lastName: '' }));
+                }}
+                error={errors.lastName}
+              />
 
-            <Dropdown
-              label="Gender *"
-              value={gender}
-              options={['MALE', 'FEMALE', 'OTHER']}
-              placeholder="Select Gender"
-              onSelect={(val) => {
-                setGender(val);
-                setErrors(prev => ({ ...prev, gender: '' }));
-              }}
-              error={errors.gender}
-            />
+              <Dropdown
+                label="Gender *"
+                value={gender}
+                options={['Male', 'Female', 'Other']}
+                placeholder="Select Gender"
+                onSelect={(val) => {
+                  setGender(val);
+                  setErrors(prev => ({ ...prev, gender: '' }));
+                }}
+                error={errors.gender}
+              />
 
-            <DatePickerInput
-              label="Date of Birth *"
-              placeholder="DD/MM/YYYY"
-              value={dob}
-              onChangeDate={(val) => {
-                setDob(val);
-                setErrors(prev => ({ ...prev, dob: '' }));
-              }}
-              error={errors.dob}
-            />
+              <DatePickerInput
+                label="Date of Birth *"
+                placeholder="DD/MM/YYYY"
+                value={dob}
+                onChangeDate={(val) => {
+                  setDob(val);
+                  setErrors(prev => ({ ...prev, dob: '' }));
+                }}
+                error={errors.dob}
+              />
 
-            <Input
-              label="Mobile Number *"
-              placeholder="Enter 10-digit number"
-              keyboardType="number-pad"
-              value={mobile}
-              onChangeText={handleMobileChange}
-              maxLength={10}
-              leftIcon={<PhoneIcon size={20} color={colors.muted} />}
-              error={errors.mobile}
-            />
+              <Input
+                label="Mobile Number *"
+                placeholder="Enter 10-digit mobile number"
+                value={mobile}
+                onChangeText={handleMobileChange}
+                keyboardType="phone-pad"
+                maxLength={10}
+                error={errors.mobile}
+                leftIcon={<PhoneIcon size={20} color={colors.muted} />}
+              />
 
-            <Input
-              label="Email (Optional)"
-              placeholder="Enter email"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              value={email}
-              onChangeText={setEmail}
-            />
+              <Input
+                label="Email Address (Optional)"
+                placeholder="Enter email address"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
 
-            <Input
-              label="Address (Optional)"
-              placeholder="Enter your residential address"
-              value={address}
-              onChangeText={setAddress}
-              multiline={true}
-              numberOfLines={3}
-              style={{ minHeight: 80, textAlignVertical: 'top' }}
-            />
+              <Input
+                label="Address (Optional)"
+                placeholder="Enter your residential address"
+                value={address}
+                onChangeText={setAddress}
+                multiline={true}
+                numberOfLines={3}
+                style={{ minHeight: 80, textAlignVertical: 'top' }}
+              />
 
-            <Input
-              label="Voter ID (Optional)"
-              placeholder="Enter Voter ID"
-              value={voterID}
-              onChangeText={setVoterID}
-              autoCapitalize="characters"
-            />
+              <Input
+                label="Voter ID (Optional)"
+                placeholder="Enter Voter ID"
+                value={voterID}
+                onChangeText={setVoterID}
+                autoCapitalize="characters"
+              />
+            </ScrollView>
 
-            <View className="mt-8">
+            <View className="py-3 border-t border-border bg-background w-full">
               <Button title={isSubmitting ? "Sending OTP..." : "Next"} onPress={handleSubmit} disabled={isSubmitting} />
             </View>
-          </ScrollView>
-        ) : (
-          <View className="w-full items-center relative">
-            <View className="flex-row justify-between w-full mb-8">
-              {Array.from({ length: 6 }).map((_, index) => {
-                const digit = otp[index] || '';
-                const isFocused = otp.length === index;
-                return (
-                  <View
-                    key={index}
-                    className={`w-12 h-14 border rounded-md justify-center items-center bg-surface ${isFocused ? 'border-primary' : 'border-border'}`}
-                  >
-                    <Text className="text-xl font-inter-semibold text-dark">
-                      {digit}
-                    </Text>
-                  </View>
-                );
-              })}
-            </View>
-
-            <TextInput
-              ref={otpRef}
-              value={otp}
-              onChangeText={(text) => {
-                const cleanText = text.replace(/[^0-9]/g, '');
-                setOtp(cleanText);
-              }}
-              maxLength={6}
-              keyboardType="number-pad"
-              style={{
-                position: 'absolute',
-                width: '100%',
-                height: 56,
-                opacity: 0,
-                color: 'transparent'
-              }}
-              caretHidden
-              autoFocus
-            />
-
-            <View className="items-center mb-8">
-              <Text className="text-dark font-inter-medium text-base mb-2">
-                {formatTime(timeLeft)}
-              </Text>
-
-              <TouchableOpacity
-                onPress={handleResendOtp}
-                disabled={timeLeft > 0}
-              >
-                <Text
-                  className={`text-base font-inter-semibold underline ${timeLeft > 0 ? 'text-muted opacity-50' : 'text-primary'}`}
-                >
-                  Resend OTP
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <View className="w-full mt-2">
-              <Button title={isSubmitting ? "Verifying..." : "Verify OTP & Register"} onPress={handleVerifyOtp} disabled={isSubmitting} />
-            </View>
           </View>
+        ) : (
+          <ScrollView 
+            className="flex-1 w-full" 
+            showsVerticalScrollIndicator={false} 
+            contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingBottom: 24 }}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+          >
+            <View className="w-full items-center relative">
+              <View className="flex-row justify-between w-full mb-8">
+                {Array.from({ length: 6 }).map((_, index) => {
+                  const digit = otp[index] || '';
+                  const isFocused = otp.length === index;
+                  return (
+                    <View
+                      key={index}
+                      className={`w-12 h-14 border rounded-md justify-center items-center bg-surface ${isFocused ? 'border-primary' : 'border-border'}`}
+                    >
+                      <Text className="text-xl font-inter-semibold text-dark">
+                        {digit}
+                      </Text>
+                    </View>
+                  );
+                })}
+              </View>
+
+              <TextInput
+                ref={otpRef}
+                value={otp}
+                onChangeText={(text) => {
+                  const cleanText = text.replace(/[^0-9]/g, '');
+                  setOtp(cleanText);
+                }}
+                maxLength={6}
+                keyboardType="number-pad"
+                style={{
+                  position: 'absolute',
+                  width: '100%',
+                  height: 56,
+                  opacity: 0,
+                  color: 'transparent'
+                }}
+                caretHidden
+                autoFocus
+              />
+
+              <View className="items-center mb-8">
+                <Text className="text-dark font-inter-medium text-base mb-2">
+                  {formatTime(timeLeft)}
+                </Text>
+
+                <TouchableOpacity
+                  onPress={handleResendOtp}
+                  disabled={timeLeft > 0}
+                >
+                  <Text
+                    className={`text-base font-inter-semibold underline ${timeLeft > 0 ? 'text-muted opacity-50' : 'text-primary'}`}
+                  >
+                    Resend OTP
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View className="w-full mt-2">
+                <Button title={isSubmitting ? "Verifying..." : "Verify OTP & Register"} onPress={handleVerifyOtp} disabled={isSubmitting} />
+              </View>
+            </View>
+          </ScrollView>
         )}
       </View>
 
@@ -460,7 +485,7 @@ export default function RegisterScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background">
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
         className="flex-1"
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

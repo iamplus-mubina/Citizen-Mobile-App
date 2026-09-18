@@ -23,7 +23,7 @@ export default function ContactUsScreen() {
     : "flex-1 bg-background justify-between";
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-background" edges={['bottom']}>
       <Stack.Screen options={{ headerShown: false }} />
       <View className={containerClass}>
         <View className="flex-1">

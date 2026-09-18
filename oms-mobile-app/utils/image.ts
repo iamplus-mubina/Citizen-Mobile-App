@@ -1,5 +1,8 @@
 import { BASE_URL } from '@/services/api';
 
+// One-time diagnostic log to verify image URL resolution in release builds
+let _imageUrlLogged = false;
+
 /**
  * Safely resolves any photo representation (string, JSON string, Array of objects/strings, or object)
  * into a valid, single image URI string, or null.
@@ -64,7 +67,15 @@ export function getCleanImageUrl(photo: any): string | null {
     // system-config (branding images) and other entities are in S3 and served via downloadS3
     const baseUrl = BASE_URL;
     const endpoint = trimmed.startsWith('citizen-complaints/') ? 'file2' : 'downloadS3';
-    return `${baseUrl}/file-uploader/${endpoint}?path=${encodeURIComponent(trimmed)}`;
+    const resolvedUrl = `${baseUrl}/file-uploader/${endpoint}?path=${encodeURIComponent(trimmed)}`;
+
+    // Log the first resolved image URL to help diagnose release build issues
+    if (!_imageUrlLogged) {
+      _imageUrlLogged = true;
+      console.log('[OMS Image] BASE_URL:', baseUrl, '| Resolved:', resolvedUrl);
+    }
+
+    return resolvedUrl;
   }
 
   return null;
