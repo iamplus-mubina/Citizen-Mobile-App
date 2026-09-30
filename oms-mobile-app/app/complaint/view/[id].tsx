@@ -1,0 +1,103 @@
+import { useEffect } from 'react';
+import { View, Text, ScrollView, Platform, BackHandler } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { Header } from '@/components/Header';
+import { Button } from '@/components/Button';
+
+const getComplaintDetails = (id: string | string[] | undefined) => {
+  const finalId = Array.isArray(id) ? id[0] : id;
+  return {
+    id: finalId || 'CMP-1025',
+    status: 'Pending Verification',
+    category: 'Water Supply',
+    title: 'Pipeline Leakage',
+    description: 'Water leakage near my street for last 3 days.',
+    address: 'Street 12, Green Park, Ward 5, Bhopal - 462001',
+    priority: 'Medium'
+  };
+};
+
+export default function ComplaintDetailsViewScreen() {
+  const { id } = useLocalSearchParams();
+  const router = useRouter();
+  const complaint = getComplaintDetails(id);
+
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace({ pathname: '/home', params: { tab: 'complaints' } });
+    }
+  };
+
+  useEffect(() => {
+    const onBackPress = () => {
+      handleBack();
+      return true;
+    };
+    const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => sub.remove();
+  }, [router]);
+
+  const containerClass = Platform.OS === 'web'
+    ? "flex-1 w-full max-w-md mx-auto bg-background"
+    : "flex-1 bg-background";
+
+  return (
+    <SafeAreaView className="flex-1 bg-background" edges={['bottom']}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <View className={containerClass}>
+        <Header showBack title="Complaint Details" onBack={handleBack} />
+
+        <View className="px-6 pb-6 pt-2">
+          <Text className="text-lg font-inter-bold text-dark">Complaint Details</Text>
+        </View>
+
+        <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
+          <View className="flex-row justify-between items-center mb-6 py-2">
+            <Text className="text-base font-inter-bold text-dark">{complaint.id}</Text>
+            <View className="bg-warning-light px-3 py-1 rounded-md border border-warning/20">
+              <Text className="text-xs font-inter-semibold text-warning">{complaint.status}</Text>
+            </View>
+          </View>
+
+          <View>
+            <View className="mb-6">
+              <Text className="text-xs font-inter-semibold text-muted mb-1">Category</Text>
+              <Text className="text-sm font-inter-bold text-dark">{complaint.category}</Text>
+            </View>
+
+            <View className="mb-6">
+              <Text className="text-xs font-inter-semibold text-muted mb-1">Title</Text>
+              <Text className="text-sm font-inter-bold text-dark">{complaint.title}</Text>
+            </View>
+
+            <View className="mb-6">
+              <Text className="text-xs font-inter-semibold text-muted mb-1">Description</Text>
+              <Text className="text-sm font-inter-bold text-dark leading-5">{complaint.description}</Text>
+            </View>
+
+            <View className="mb-6">
+              <Text className="text-xs font-inter-semibold text-muted mb-1">Address</Text>
+              <Text className="text-sm font-inter-bold text-dark leading-5">{complaint.address}</Text>
+            </View>
+
+            <View className="mb-8">
+              <Text className="text-xs font-inter-semibold text-muted mb-1">Priority</Text>
+              <Text className="text-sm font-inter-bold text-dark">{complaint.priority}</Text>
+            </View>
+          </View>
+        </ScrollView>
+
+        <View className="px-6 py-4 bg-background border-t border-border">
+          <Button 
+            title="View Timeline" 
+            onPress={() => router.push({ pathname: '/complaint/timeline/[id]', params: { id: complaint.id } })}  
+            variant="primary"
+          />
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+}

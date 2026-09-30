@@ -1,12 +1,18 @@
 export const colors = {
-  primary: '#0369a1', // Tailwind sky-700
-  secondary: '#0f766e', // Tailwind teal-700
-  background: '#f8fafc', // Tailwind slate-50
-  surface: '#ffffff', // White
-  text: '#0f172a', // Tailwind slate-900
-  muted: '#64748b', // Tailwind slate-500
-  success: '#15803d', // Tailwind green-700
-  warning: '#eab308', // Tailwind yellow-500
-  error: '#b91c1c', // Tailwind red-700
-  border: '#e2e8f0', // Tailwind slate-200
+  primary: '#f4c237',
+  secondary: '#0f766e',
+  background: '#fafafa',
+  surface: '#ffffff',
+  dark: '#171717',
+  muted: '#737373',
+  success: '#008800',
+  warning: '#cc5f00',
+  error: '#dc2626',
+  border: '#e5e5e5',
+  checkmark: '#171717',
+  white: '#ffffff',
+  headerBg: '#11274c',
+  iconMuted: '#525252',
+  primaryLight: '#fef3c7',
+  warningLight: '#fff4cc',
 };

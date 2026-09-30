@@ -9,8 +9,8 @@ import {
   Inter_600SemiBold, 
   Inter_700Bold 
 } from '@expo-google-fonts/inter';
+import { useSystemConfigStore } from '@/store/useSystemConfigStore';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -20,6 +20,10 @@ export default function RootLayout() {
     Inter_600SemiBold,
     Inter_700Bold,
   });
+
+  useEffect(() => {
+    useSystemConfigStore.getState().fetchSystemConfig();
+  }, []);
 
   useEffect(() => {
     if (fontsLoaded || error) {
@@ -35,6 +39,18 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="login" options={{ headerShown: false }} />
+      <Stack.Screen name="register" options={{ headerShown: false }} />
+      <Stack.Screen name="pending-approval" options={{ headerShown: false }} />
+      <Stack.Screen name="home" options={{ headerShown: false }} />
+      <Stack.Screen name="complaint/category" options={{ headerShown: false }} />
+      <Stack.Screen name="complaint/details" options={{ headerShown: false }} />
+      <Stack.Screen name="complaint/location" options={{ headerShown: false }} />
+      <Stack.Screen name="complaint/attachments" options={{ headerShown: false }} />
+      <Stack.Screen name="complaint/review" options={{ headerShown: false }} />
+      <Stack.Screen name="complaint/success" options={{ headerShown: false }} />
+      <Stack.Screen name="help" options={{ headerShown: false }} />
+      <Stack.Screen name="no-internet" options={{ headerShown: false }} />
+      <Stack.Screen name="error" options={{ headerShown: false }} />
     </Stack>
   );
 }

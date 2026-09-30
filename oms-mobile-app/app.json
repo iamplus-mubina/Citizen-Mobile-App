@@ -1,41 +1,54 @@
 {
   "expo": {
-    "name": "oms-mobile-app",
+    "name": "Citizen E-Connect",
     "slug": "oms-mobile-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/citizen_logo.png",
     "scheme": "omsmobileapp",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
+      "package": "com.oms.citizen",
+      "googleServicesFile": "./google-services.json",
+      "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
-      },
-      "predictiveBackGestureEnabled": false
+        "foregroundImage": "./assets/images/citizen_logo.png",
+        "backgroundColor": "#182641"
+      }
+    },
+    "androidStatusBar": {
+      "translucent": true,
+      "backgroundColor": "#00000000",
+      "barStyle": "light-content"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/citizen_logo.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/citizen_logo.png",
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#182641"
         }
       ],
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/citizen_logo.png",
+          "color": "#182641"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
