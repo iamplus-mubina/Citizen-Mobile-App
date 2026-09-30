@@ -128,9 +128,9 @@ export default function ReviewScreen() {
     <SafeAreaView className="flex-1 bg-background" edges={['bottom']}>
       <View className={containerClass}>
 
-        <Header 
-          showBack 
-          title="Raise a complaint" 
+        <Header
+          showBack
+          title="Raise a complaint"
           onBack={() => router.replace('/home')}
         />
 
@@ -140,7 +140,7 @@ export default function ReviewScreen() {
             <FormStepper currentStep={5} totalSteps={5} />
             <Text className="text-2xl font-inter-bold text-dark mt-6 mb-2">Review your complaint</Text>
             <Text className="text-sm font-inter text-muted mb-6">
-              Check the information before sending it to the Municipal Corporation.
+              Check the information before sending it to the Administration.
             </Text>
           </View>
 
@@ -172,7 +172,7 @@ export default function ReviewScreen() {
             <View className="p-4 rounded-xl mb-4 bg-primary/10">
               <Text className="font-inter-bold text-dark text-[15px] mb-1">What happens next</Text>
               <Text className="font-inter text-dark/80 text-sm leading-5">
-                Your complaint will enter Pending verification. You can track every public status change.
+                Your complaint will enter Pending verification from Administration. You can track every status change.
               </Text>
             </View>
           </View>
@@ -183,10 +183,10 @@ export default function ReviewScreen() {
             <Button title="Back" onPress={() => router.back()} variant="outline" />
           </View>
           <View className="flex-[1.2]">
-            <Button 
-              title={isSubmitting ? "Submitting..." : "Submit complaint"} 
-              onPress={handleSubmit} 
-              variant="primary" 
+            <Button
+              title={isSubmitting ? "Submitting..." : "Submit complaint"}
+              onPress={handleSubmit}
+              variant="primary"
               disabled={isSubmitting}
             />
           </View>
