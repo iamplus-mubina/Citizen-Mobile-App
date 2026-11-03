@@ -32,7 +32,7 @@ export function StepperTimeline({ steps }: StepperTimelineProps) {
                 />
               )}
               
-              <View className="z-10 mt-1 h-6 w-6 items-center justify-center bg-background">
+              <View className="z-10 mt-1 h-6 w-6 items-center justify-center bg-surface">
                 {step.status === 'completed' && (
                   <View className="h-4 w-4 rounded-full border-2 border-primary items-center justify-center">
                     <View className="h-2 w-2 rounded-full bg-primary" />

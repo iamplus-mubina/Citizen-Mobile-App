@@ -36,7 +36,7 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack>
+    <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="register" options={{ headerShown: false }} />
@@ -51,6 +51,13 @@ export default function RootLayout() {
       <Stack.Screen name="help" options={{ headerShown: false }} />
       <Stack.Screen name="no-internet" options={{ headerShown: false }} />
       <Stack.Screen name="error" options={{ headerShown: false }} />
+      <Stack.Screen name="services/index" options={{ headerShown: false }} />
+      <Stack.Screen name="services/category/[categoryId]" options={{ headerShown: false }} />
+      <Stack.Screen name="services/detail/[serviceId]" options={{ headerShown: false }} />
+      <Stack.Screen name="services/apply/[serviceId]" options={{ headerShown: false }} />
+      <Stack.Screen name="services/appointment/[serviceId]" options={{ headerShown: false }} />
+      <Stack.Screen name="services/success" options={{ headerShown: false }} />
+      <Stack.Screen name="services/request/[requestId]" options={{ headerShown: false }} />
     </Stack>
   );
 }

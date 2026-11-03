@@ -11,6 +11,9 @@ import {
   MegaphoneIcon,
   PlusCircleIcon
 } from 'react-native-heroicons/outline';
+import { colors } from '@/constants/Colors';
+import { ServiceCategoryIcon } from '@/components/ServiceCategoryIcon';
+import { POPULAR_SERVICE_CATEGORIES } from '@/services/mock/popularServices.data';
 import { MyComplaints } from '@/components/MyComplaints';
 import { Notifications } from '@/components/Notifications';
 import { Updates } from '@/components/Updates';
@@ -295,6 +298,29 @@ export default function HomeScreen() {
                   </Text>
                 </View>
               )}
+            </View>
+
+            {/* Popular Services */}
+            <View className="mb-8">
+              <Text className="text-lg font-inter-bold text-dark mb-3">Popular Services</Text>
+
+              <View className="flex-row flex-wrap -mx-[1%]">
+                {POPULAR_SERVICE_CATEGORIES.map((cat) => (
+                  <Card
+                    key={cat.id}
+                    variant="quick"
+                    title={cat.title}
+                    Icon={(props) => (
+                      <ServiceCategoryIcon
+                        category={cat.id}
+                        size={props.size}
+                        color={props.color}
+                      />
+                    )}
+                    onPress={() => router.push(`/services/category/${cat.id}` as any)}
+                  />
+                ))}
+              </View>
             </View>
           </ScrollView>
         );
