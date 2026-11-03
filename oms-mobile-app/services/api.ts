@@ -24,19 +24,18 @@ const resolveBaseUrl = (): string => {
     return envUrl;
   }
 
-  // 2. No .env set — try Metro host IP (dev mode on physical device)
+  // 2. No .env set on mobile device with Metro
   const hostUri = Constants.expoConfig?.hostUri || (Constants as any).manifest?.debuggerHost;
-  if (hostUri) {
+  if (hostUri && Platform.OS !== 'web') {
     const ip = hostUri.split(':')[0];
     return `http://${ip}:8080`;
   }
 
-  // 3. No .env, no Metro — warn and use a safe empty string
-  console.warn('[OMS] EXPO_PUBLIC_API_URL is not set in .env! API calls will fail.');
-  return '';
+  // 3. Fallback to live deployed OMS API (per rules.md)
+  return 'https://mn-0042-api.digitaloms.in';
 };
 
-export const BASE_URL = resolveBaseUrl();
+export const BASE_URL = resolveBaseUrl().replace(/\/+$/, '');
 console.log('[OMS] Resolved BASE_URL:', BASE_URL);
 
 export const api = axios.create({

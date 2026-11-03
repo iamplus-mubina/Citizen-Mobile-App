@@ -19,6 +19,8 @@ import { Notifications } from '@/components/Notifications';
 import { Updates } from '@/components/Updates';
 import { Profile } from '@/components/Profile';
 import { ContactUs } from '@/components/ContactUs';
+import { HomeAnnouncements } from '@/components/HomeAnnouncements';
+import { useUpdatesStore } from '@/store/useUpdatesStore';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useComplaintStore } from '@/store/useComplaintStore';
@@ -126,6 +128,13 @@ export default function HomeScreen() {
         await fetchUnreadCount();
       } catch (err) {
         console.warn('Failed to fetch unread count in home:', err);
+      }
+
+      // 4. Fetch Updates
+      try {
+        await useUpdatesStore.getState().fetchUpdates();
+      } catch (err) {
+        console.warn('Failed to fetch updates in home:', err);
       }
     } finally {
       setRefreshing(false);
@@ -322,6 +331,9 @@ export default function HomeScreen() {
                 ))}
               </View>
             </View>
+
+            {/* Announcements (LMC-Style Carousel from Existing OMS Updates) */}
+            <HomeAnnouncements onViewAll={() => setActiveTab('updates')} />
           </ScrollView>
         );
       case 'complaints':

@@ -1,131 +1,18 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Image, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MegaphoneIcon } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
-import { api, getStoredToken } from '@/services/api';
 import { getCleanImageUrl } from '@/utils/image';
+import { useUpdatesStore, FormattedUpdateItem } from '@/store/useUpdatesStore';
 
-const formatDateString = (dateStr?: string) => {
-  if (!dateStr) return 'Recently';
-  try {
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return dateStr;
-    const day = String(d.getDate()).padStart(2, '0');
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const month = months[d.getMonth()];
-    const year = d.getFullYear();
-    return `${day} ${month} ${year}`;
-  } catch {
-    return dateStr;
-  }
-};
-
-export interface FormattedUpdateItem {
-  id: string;
-  title: string;
-  date: string;
-  summary: string;
-  place: string;
-  imageUrl: string;
-  images: string[];
-  read: boolean;
-  fullItem: any;
-}
+export type { FormattedUpdateItem };
 
 export function Updates() {
   const router = useRouter();
-  const [updates, setUpdates] = useState<FormattedUpdateItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-
-  const fetchUpdates = useCallback(async () => {
-    try {
-      const token = await getStoredToken();
-      let res: any;
-      const endpoints = [
-        { method: 'post', url: '/updates/citizen/list', body: { page: { number: 0, size: 20 }, search: '' } },
-        { method: 'get', url: '/updates/citizen/list' },
-        { method: 'get', url: '/citizen/updates' },
-        { method: 'get', url: '/updates' },
-      ];
-
-      for (const ep of endpoints) {
-        try {
-          if (ep.method === 'post') {
-            res = await api.post(ep.url, ep.body || {});
-          } else {
-            res = await api.get(ep.url);
-          }
-          if (res?.data) {
-            const possibleList = Array.isArray(res.data)
-              ? res.data
-              : res.data.data || res.data.content || res.data.list || res.data.rows || res.data.items;
-            if (Array.isArray(possibleList) && possibleList.length > 0) {
-              res.data = possibleList;
-              break;
-            }
-          }
-        } catch (e) {
-          // continue trying fallback endpoint
-        }
-      }
-
-      if (res?.data) {
-        const list = Array.isArray(res.data)
-          ? res.data
-          : res.data.data || res.data.content || res.data.list || res.data.rows || res.data.items;
-        if (Array.isArray(list) && list.length > 0) {
-          const formatted: FormattedUpdateItem[] = list.map((item: any, idx: number) => {
-            let imageList: string[] = [];
-            if (Array.isArray(item.images)) {
-              imageList = item.images;
-            } else if (typeof item.images === 'string') {
-              try {
-                const parsed = JSON.parse(item.images);
-                if (Array.isArray(parsed)) imageList = parsed;
-              } catch {
-                if (item.images.length > 0) imageList = [item.images];
-              }
-            }
-
-            const primaryImg = imageList.length > 0
-              ? imageList[0]
-              : (item.imageUrl || item.image || item.banner || '');
-
-            const rawDate = item.createdDate || item.createdAt || item.date || item.updateDate;
-
-            return {
-              id: String(item.id || item.updateId || `upd-${idx}`),
-              title: item.title || item.heading || item.name || 'City Update',
-              date: formatDateString(rawDate),
-              summary: item.description || item.summary || item.content || item.place || item.location || '',
-              place: item.place || item.location || '',
-              imageUrl: primaryImg,
-              images: imageList,
-              read: !!item.read || !!item.isRead,
-              fullItem: item,
-            };
-          });
-          setUpdates(formatted);
-        } else {
-          setUpdates([]);
-        }
-      }
-    } catch (err) {
-      console.log('Updates API fetch result error:', err);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
+  const { updates, loading, isRefreshing, fetchUpdates, refreshUpdates } = useUpdatesStore();
 
   useEffect(() => {
-    fetchUpdates();
-  }, [fetchUpdates]);
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
     fetchUpdates();
   }, [fetchUpdates]);
 
@@ -135,7 +22,7 @@ export function Updates() {
         className="flex-1 px-6"
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={isRefreshing} onRefresh={refreshUpdates} />
         }
       >
         {loading ? (
