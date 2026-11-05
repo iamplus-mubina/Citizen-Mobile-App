@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity } from 'react-native';
-import { PlusIcon, ClockIcon, ChevronRightIcon } from 'react-native-heroicons/outline';
+import { PlusIcon, ClockIcon, ChevronRightIcon, ExclamationCircleIcon } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 
 interface CardProps {
@@ -72,21 +72,27 @@ export function Card({
   className
 }: CardProps) {
   if (variant === 'complaint') {
+    const ComplaintIcon = Icon || ExclamationCircleIcon;
     return (
       <TouchableOpacity 
         onPress={onPress}
-        activeOpacity={0.9}
-        className="bg-primary-light border border-primary/20 p-5 rounded-lg flex-row items-center justify-between mb-8"
+        activeOpacity={0.85}
+        className={`bg-header-bg rounded-2xl p-4 flex-row items-center justify-between mb-8 ${className || ''}`}
+        style={{ backgroundColor: colors.headerBg }}
       >
-        <View className="flex-1 mr-4">
-          <Text className="text-xl font-inter-bold text-dark mb-1">{title}</Text>
+        <View 
+          className="w-12 h-12 rounded-xl items-center justify-center mr-3.5"
+          style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)' }}
+        >
+          <ComplaintIcon size={24} color={colors.white} />
+        </View>
+        <View className="flex-1 mr-3">
+          <Text className="text-base font-inter-bold text-white mb-0.5">{title}</Text>
           {description && (
-            <Text className="text-sm font-inter text-muted">{description}</Text>
+            <Text className="text-xs font-inter text-white/80 leading-relaxed">{description}</Text>
           )}
         </View>
-        <View className="w-12 h-12 rounded-full bg-primary justify-center items-center">
-          <PlusIcon size={24} color={colors.dark} />
-        </View>
+        <ChevronRightIcon size={20} color="rgba(255, 255, 255, 0.8)" />
       </TouchableOpacity>
     );
   }

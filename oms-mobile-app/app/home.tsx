@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Header } from '@/components/Header';
 import { BottomNavigation, TabType } from '@/components/BottomNavigation';
 import { Card } from '@/components/Card';
+
 import { 
   ClipboardDocumentListIcon,
   BellIcon,
@@ -220,6 +221,21 @@ export default function HomeScreen() {
               />
             </View>
 
+            {/* Raise a Complaint Button */}
+            <TouchableOpacity
+              onPress={() => router.push('/complaint/category')}
+              activeOpacity={0.8}
+              className="w-full h-14 bg-primary rounded-2xl flex-row items-center justify-center px-4 mb-6"
+              style={{ backgroundColor: colors.primary }}
+            >
+              <PlusCircleIcon size={26} color="#142B50" />
+              <Text className="text-lg font-inter-bold text-[#142B50] ml-2.5">
+                Raise a Complaint
+              </Text>
+            </TouchableOpacity>
+
+            {/* ─── Temporarily Hidden: Quick Actions (Can be re-enabled) ─── */}
+            {/* 
             <View className="mb-4">
               <Text className="text-lg font-inter-bold text-dark mb-3">Quick Actions</Text>
               
@@ -251,7 +267,10 @@ export default function HomeScreen() {
                 />
               </View>
             </View>
+            */}
 
+            {/* ─── Temporarily Hidden: Your Complaint Position (Can be re-enabled) ─── */}
+            {/* 
             <View className="mb-8">
               <Text className="text-lg font-inter-bold text-dark mb-4">Your complaint position</Text>
               
@@ -274,7 +293,10 @@ export default function HomeScreen() {
                 </View>
               </View>
             </View>
+            */}
 
+            {/* ─── Temporarily Hidden: Recent Activities (Can be re-enabled) ─── */}
+            {/* 
             <View className="mb-8">
               <View className="flex-row justify-between items-center mb-4">
                 <Text className="text-lg font-inter-bold text-dark">Recent activity</Text>
@@ -308,6 +330,13 @@ export default function HomeScreen() {
                 </View>
               )}
             </View>
+            */}
+
+            {/* Announcements (LMC-Style Carousel from Existing OMS Updates) */}
+            <HomeAnnouncements 
+              isActive={activeTab === 'home'} 
+              onViewAll={() => setActiveTab('updates')} 
+            />
 
             {/* Popular Services */}
             <View className="mb-8">
@@ -332,8 +361,6 @@ export default function HomeScreen() {
               </View>
             </View>
 
-            {/* Announcements (LMC-Style Carousel from Existing OMS Updates) */}
-            <HomeAnnouncements onViewAll={() => setActiveTab('updates')} />
           </ScrollView>
         );
       case 'complaints':

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,8 +8,11 @@ import {
   ActivityIndicator,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  Platform,
+  AppState,
+  AppStateStatus,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { ChevronRightIcon, MegaphoneIcon } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 import { getCleanImageUrl } from '@/utils/image';
@@ -17,26 +20,199 @@ import { useUpdatesStore, FormattedUpdateItem } from '@/store/useUpdatesStore';
 
 interface HomeAnnouncementsProps {
   onViewAll: () => void;
+  isActive?: boolean;
 }
 
-export function HomeAnnouncements({ onViewAll }: HomeAnnouncementsProps) {
+const AUTO_SLIDE_INTERVAL_MS = 3000;
+
+export function HomeAnnouncements({ onViewAll, isActive = true }: HomeAnnouncementsProps) {
   const router = useRouter();
   const { updates, loading, fetchUpdates } = useUpdatesStore();
   const [activeIndex, setActiveIndex] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
+  const [isScreenFocused, setIsScreenFocused] = useState(true);
+  const [isAppActive, setIsAppActive] = useState(
+    AppState.currentState ? AppState.currentState === 'active' : true
+  );
+
   const scrollViewRef = useRef<ScrollView>(null);
+  const activeIndexRef = useRef(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrollAnimTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const interactionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isAutoScrollingRef = useRef(false);
+  const isUserInteractingRef = useRef(false);
+  const isMomentumRef = useRef(false);
 
   useEffect(() => {
     fetchUpdates();
   }, [fetchUpdates]);
 
+  useFocusEffect(
+    useCallback(() => {
+      setIsScreenFocused(true);
+      return () => {
+        setIsScreenFocused(false);
+      };
+    }, [])
+  );
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
+      setIsAppActive(nextAppState === 'active');
+    });
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  const clearTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    if (scrollAnimTimeoutRef.current) {
+      clearTimeout(scrollAnimTimeoutRef.current);
+      scrollAnimTimeoutRef.current = null;
+    }
+    if (interactionTimeoutRef.current) {
+      clearTimeout(interactionTimeoutRef.current);
+      interactionTimeoutRef.current = null;
+    }
+  }, []);
+
+  const startTimer = useCallback(() => {
+    clearTimer();
+
+    if (
+      !isActive ||
+      !isScreenFocused ||
+      !isAppActive ||
+      updates.length <= 1 ||
+      containerWidth <= 0
+    ) {
+      return;
+    }
+
+    if (isUserInteractingRef.current) {
+      return;
+    }
+
+    timerRef.current = setTimeout(() => {
+      if (isUserInteractingRef.current) {
+        return;
+      }
+
+      const total = updates.length;
+      if (total <= 1 || containerWidth <= 0) return;
+
+      const nextIndex = (activeIndexRef.current + 1) % total;
+      isAutoScrollingRef.current = true;
+      activeIndexRef.current = nextIndex;
+      setActiveIndex(nextIndex);
+
+      scrollViewRef.current?.scrollTo({
+        x: nextIndex * containerWidth,
+        animated: true,
+      });
+
+      scrollAnimTimeoutRef.current = setTimeout(() => {
+        isAutoScrollingRef.current = false;
+      }, 450);
+
+      startTimer();
+    }, AUTO_SLIDE_INTERVAL_MS);
+  }, [isActive, isScreenFocused, isAppActive, updates.length, containerWidth, clearTimer]);
+
+  useEffect(() => {
+    startTimer();
+    return () => {
+      clearTimer();
+    };
+  }, [startTimer, clearTimer]);
+
+  useEffect(() => {
+    if (updates.length > 0 && activeIndexRef.current >= updates.length) {
+      activeIndexRef.current = 0;
+      setActiveIndex(0);
+      scrollViewRef.current?.scrollTo({ x: 0, animated: false });
+    }
+  }, [updates.length]);
+
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (isAutoScrollingRef.current) return;
     if (containerWidth <= 0) return;
     const scrollOffset = event.nativeEvent.contentOffset.x;
     const index = Math.round(scrollOffset / containerWidth);
-    if (index !== activeIndex && index >= 0 && index < updates.length) {
+    if (index !== activeIndexRef.current && index >= 0 && index < updates.length) {
+      activeIndexRef.current = index;
       setActiveIndex(index);
     }
+  };
+
+  const handleScrollBeginDrag = () => {
+    isUserInteractingRef.current = true;
+    clearTimer();
+  };
+
+  const handleScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const velocity = Math.abs(event.nativeEvent.velocity?.x || 0);
+    if (velocity < 0.1 || Platform.OS === 'web') {
+      if (interactionTimeoutRef.current) {
+        clearTimeout(interactionTimeoutRef.current);
+      }
+      interactionTimeoutRef.current = setTimeout(() => {
+        if (!isMomentumRef.current) {
+          isUserInteractingRef.current = false;
+          if (containerWidth > 0) {
+            const scrollOffset = event.nativeEvent.contentOffset.x;
+            const index = Math.round(scrollOffset / containerWidth);
+            if (index >= 0 && index < updates.length) {
+              activeIndexRef.current = index;
+              setActiveIndex(index);
+            }
+          }
+          startTimer();
+        }
+      }, 100);
+    }
+  };
+
+  const handleMomentumScrollBegin = () => {
+    isMomentumRef.current = true;
+  };
+
+  const handleMomentumScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    isMomentumRef.current = false;
+    isUserInteractingRef.current = false;
+    isAutoScrollingRef.current = false;
+
+    if (containerWidth > 0) {
+      const scrollOffset = event.nativeEvent.contentOffset.x;
+      const index = Math.round(scrollOffset / containerWidth);
+      if (index >= 0 && index < updates.length) {
+        activeIndexRef.current = index;
+        setActiveIndex(index);
+      }
+    }
+
+    startTimer();
+  };
+
+  const handleDotPress = (index: number) => {
+    if (containerWidth <= 0 || index === activeIndexRef.current) return;
+    clearTimer();
+    isAutoScrollingRef.current = true;
+    activeIndexRef.current = index;
+    setActiveIndex(index);
+    scrollViewRef.current?.scrollTo({
+      x: index * containerWidth,
+      animated: true,
+    });
+    scrollAnimTimeoutRef.current = setTimeout(() => {
+      isAutoScrollingRef.current = false;
+    }, 450);
+    startTimer();
   };
 
   const handleOpenAnnouncement = (item: FormattedUpdateItem) => {
@@ -60,6 +236,12 @@ export function HomeAnnouncements({ onViewAll }: HomeAnnouncementsProps) {
         const width = e.nativeEvent.layout.width;
         if (width > 0 && width !== containerWidth) {
           setContainerWidth(width);
+          if (activeIndexRef.current > 0) {
+            scrollViewRef.current?.scrollTo({
+              x: activeIndexRef.current * width,
+              animated: false,
+            });
+          }
         }
       }}
     >
@@ -108,6 +290,10 @@ export function HomeAnnouncements({ onViewAll }: HomeAnnouncementsProps) {
             showsHorizontalScrollIndicator={false}
             onScroll={handleScroll}
             scrollEventThrottle={16}
+            onScrollBeginDrag={handleScrollBeginDrag}
+            onScrollEndDrag={handleScrollEndDrag}
+            onMomentumScrollBegin={handleMomentumScrollBegin}
+            onMomentumScrollEnd={handleMomentumScrollEnd}
             decelerationRate="fast"
             snapToInterval={containerWidth > 0 ? containerWidth : undefined}
             snapToAlignment="center"
@@ -186,14 +372,20 @@ export function HomeAnnouncements({ onViewAll }: HomeAnnouncementsProps) {
           {updates.length > 1 && (
             <View className="flex-row items-center justify-center mt-3 gap-1.5">
               {updates.map((_, dotIdx) => {
-                const isActive = dotIdx === activeIndex;
+                const isActiveDot = dotIdx === activeIndex;
                 return (
-                  <View
+                  <TouchableOpacity
                     key={dotIdx}
-                    className={`h-1.5 rounded-full ${
-                      isActive ? 'w-6 bg-primary' : 'w-1.5 bg-border'
-                    }`}
-                  />
+                    activeOpacity={0.7}
+                    onPress={() => handleDotPress(dotIdx)}
+                    hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+                  >
+                    <View
+                      className={`h-1.5 rounded-full ${
+                        isActiveDot ? 'w-6 bg-primary' : 'w-1.5 bg-border'
+                      }`}
+                    />
+                  </TouchableOpacity>
                 );
               })}
             </View>
