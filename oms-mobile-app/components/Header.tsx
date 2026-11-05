@@ -7,6 +7,7 @@ import { colors } from '@/constants/Colors';
 import { useComplaintStore } from '@/store/useComplaintStore';
 import { useSystemConfigStore } from '@/store/useSystemConfigStore';
 import { useNotificationStore } from '@/store/useNotificationStore';
+import { useTranslation } from '@/store/useLanguageStore';
 import { getCleanImageUrl } from '@/utils/image';
 
 interface HeaderProps {
@@ -36,6 +37,7 @@ export function Header({
 }: HeaderProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const { profilePhoto } = useComplaintStore();
   const { config, fetchSystemConfig, getBrandingPhotoUrl } = useSystemConfigStore();
   const storeUnreadCount = useNotificationStore(state => state.unreadCount);
@@ -109,7 +111,7 @@ export function Header({
               {title || brandingTopBar}
             </Text>
             <Text className="text-xs font-inter-semibold text-white/70" numberOfLines={1}>
-              {subtitle || (title ? brandingTopBar : (brandingSub || 'Citizen Portal'))}
+              {subtitle || (title ? brandingTopBar : (brandingSub || t('header.citizenPortal')))}
             </Text>
           </View>
         </View>

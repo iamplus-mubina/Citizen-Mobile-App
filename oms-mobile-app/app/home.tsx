@@ -30,12 +30,14 @@ import { useNotificationStore } from '@/store/useNotificationStore';
 import { pushNotificationService } from '@/services/pushNotification.service';
 import { citizenService } from '@/services/citizenService';
 import { getCleanImageUrl } from '@/utils/image';
+import { useTranslation } from '@/store/useLanguageStore';
 
 const DEFAULT_LOGO = require('../assets/images/citizen_logo.png');
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { t } = useTranslation();
   const params = useLocalSearchParams<{ tab?: string }>();
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const [refreshing, setRefreshing] = useState(false);
@@ -74,7 +76,7 @@ export default function HomeScreen() {
       }
       lastBackPress.current = now;
       if (Platform.OS === 'android') {
-        ToastAndroid.show('Press back again to exit', ToastAndroid.SHORT);
+        ToastAndroid.show(t('home.pressBackAgain'), ToastAndroid.SHORT);
       }
       return true;
     };
@@ -230,7 +232,7 @@ export default function HomeScreen() {
             >
               <PlusCircleIcon size={26} color="#142B50" />
               <Text className="text-lg font-inter-bold text-[#142B50] ml-2.5">
-                Raise a Complaint
+                {t('home.raiseComplaint')}
               </Text>
             </TouchableOpacity>
 
@@ -340,14 +342,14 @@ export default function HomeScreen() {
 
             {/* Popular Services */}
             <View className="mb-8">
-              <Text className="text-lg font-inter-bold text-dark mb-3">Popular Services</Text>
+              <Text className="text-lg font-inter-bold text-dark mb-3">{t('home.popularServices')}</Text>
 
               <View className="flex-row flex-wrap -mx-[1%]">
                 {POPULAR_SERVICE_CATEGORIES.map((cat) => (
                   <Card
                     key={cat.id}
                     variant="quick"
-                    title={cat.title}
+                    title={t(`services.${cat.id}`, cat.title)}
                     Icon={(props) => (
                       <ServiceCategoryIcon
                         category={cat.id}

@@ -17,6 +17,7 @@ import { ChevronRightIcon, MegaphoneIcon } from 'react-native-heroicons/outline'
 import { colors } from '@/constants/Colors';
 import { getCleanImageUrl } from '@/utils/image';
 import { useUpdatesStore, FormattedUpdateItem } from '@/store/useUpdatesStore';
+import { useTranslation } from '@/store/useLanguageStore';
 
 interface HomeAnnouncementsProps {
   onViewAll: () => void;
@@ -27,6 +28,7 @@ const AUTO_SLIDE_INTERVAL_MS = 3000;
 
 export function HomeAnnouncements({ onViewAll, isActive = true }: HomeAnnouncementsProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const { updates, loading, fetchUpdates } = useUpdatesStore();
   const [activeIndex, setActiveIndex] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -248,7 +250,7 @@ export function HomeAnnouncements({ onViewAll, isActive = true }: HomeAnnounceme
       {/* Section Header */}
       <View className="flex-row items-center justify-between mb-3 px-1">
         <Text className="text-xl font-inter-bold text-dark">
-          Announcements
+          {t('home.announcements')}
         </Text>
         <TouchableOpacity
           onPress={onViewAll}
@@ -256,7 +258,7 @@ export function HomeAnnouncements({ onViewAll, isActive = true }: HomeAnnounceme
           className="flex-row items-center py-1"
         >
           <Text className="text-sm font-inter-semibold text-primary mr-1">
-            View all
+            {t('home.viewAll')}
           </Text>
           <ChevronRightIcon size={16} color={colors.primary} />
         </TouchableOpacity>

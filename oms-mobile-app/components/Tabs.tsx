@@ -6,6 +6,7 @@ interface TabsProps<T extends string> {
   onTabPress: (tab: T) => void;
   counts?: Record<T, number>;
   className?: string;
+  renderLabel?: (tab: T) => string;
 }
 
 export function Tabs<T extends string>({ 
@@ -13,7 +14,8 @@ export function Tabs<T extends string>({
   activeTab, 
   onTabPress, 
   counts,
-  className = ''
+  className = '',
+  renderLabel,
 }: TabsProps<T>) {
   return (
     <ScrollView 
@@ -26,7 +28,8 @@ export function Tabs<T extends string>({
       {tabs.map((tab) => {
         const isActive = activeTab === tab;
         const count = counts ? counts[tab] : undefined;
-        const displayLabel = count !== undefined ? `${tab} (${count})` : tab;
+        const labelText = renderLabel ? renderLabel(tab) : tab;
+        const displayLabel = count !== undefined ? `${labelText} (${count})` : labelText;
 
         return (
           <TouchableOpacity

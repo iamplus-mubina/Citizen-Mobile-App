@@ -13,11 +13,13 @@ import { Tabs } from '@/components/Tabs';
 import { useNotificationStore } from '@/store/useNotificationStore';
 import type { CitizenNotificationItem } from '@/services/types';
 import { colors } from '@/constants/Colors';
+import { useTranslation } from '@/store/useLanguageStore';
 
 type NotificationTab = 'All' | 'Unread';
 const NOTIF_TABS: NotificationTab[] = ['All', 'Unread'];
 
 export function Notifications() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<NotificationTab>('All');
   const {
     notifications,
@@ -135,6 +137,7 @@ export function Notifications() {
             activeTab={activeTab}
             onTabPress={setActiveTab}
             counts={counts}
+            renderLabel={(tab) => (tab === 'All' ? t('notifications.all') : t('notifications.unread'))}
           />
         </View>
 
@@ -146,7 +149,7 @@ export function Notifications() {
           >
             <EnvelopeOpenIcon size={14} color={colors.primary} />
             <Text className="text-xs font-inter-semibold text-primary ml-1.5">
-              Read All
+              {t('notifications.markAllRead')}
             </Text>
           </TouchableOpacity>
         )}
@@ -221,12 +224,12 @@ export function Notifications() {
               <BellIcon size={28} color={colors.muted} />
             </View>
             <Text className="text-base font-inter-bold text-dark">
-              {activeTab === 'Unread' ? 'No unread notifications' : 'No notifications yet'}
+              {activeTab === 'Unread' ? t('notifications.noUnread') : t('notifications.noNotificationsYet')}
             </Text>
             <Text className="text-xs font-inter text-muted text-center max-w-[260px] mt-1.5 leading-4">
               {activeTab === 'Unread'
-                ? 'All caught up! Any new updates or complaint status changes will show up here.'
-                : 'Complaint updates and announcements from the office will be listed here.'}
+                ? t('notifications.allCaughtUp')
+                : t('notifications.complaintUpdatesList')}
             </Text>
           </View>
         )}

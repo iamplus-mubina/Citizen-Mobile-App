@@ -14,6 +14,7 @@ import {
   PhoneIcon as PhoneSolid,
 } from 'react-native-heroicons/solid';
 import { colors } from '@/constants/Colors';
+import { useTranslation } from '@/store/useLanguageStore';
 
 export type TabType = 'home' | 'complaints' | 'updates' | 'contact' | 'profile' | 'notifications';
 
@@ -24,12 +25,14 @@ interface BottomNavigationProps {
 }
 
 export function BottomNavigation({ activeTab, onTabPress, updatesBadgeCount }: BottomNavigationProps) {
+  const { t } = useTranslation();
+
   const tabs = [
-    { id: 'complaints' as TabType, label: 'Complaints', OutlineIcon: DocumentOutline, SolidIcon: DocumentSolid },
-    { id: 'updates' as TabType, label: 'Updates', OutlineIcon: MegaphoneOutline, SolidIcon: MegaphoneSolid, badge: updatesBadgeCount },
-    { id: 'home' as TabType, label: 'Home', OutlineIcon: HomeOutline, SolidIcon: HomeSolid },
-    { id: 'contact' as TabType, label: 'Contact Us', OutlineIcon: PhoneOutline, SolidIcon: PhoneSolid },
-    { id: 'profile' as TabType, label: 'Profile', OutlineIcon: UserOutline, SolidIcon: UserSolid },
+    { id: 'complaints' as TabType, label: t('nav.complaints'), OutlineIcon: DocumentOutline, SolidIcon: DocumentSolid },
+    { id: 'updates' as TabType, label: t('nav.updates'), OutlineIcon: MegaphoneOutline, SolidIcon: MegaphoneSolid, badge: updatesBadgeCount },
+    { id: 'home' as TabType, label: t('nav.home'), OutlineIcon: HomeOutline, SolidIcon: HomeSolid },
+    { id: 'contact' as TabType, label: t('nav.contact'), OutlineIcon: PhoneOutline, SolidIcon: PhoneSolid },
+    { id: 'profile' as TabType, label: t('nav.profile'), OutlineIcon: UserOutline, SolidIcon: UserSolid },
   ];
 
   return (

@@ -8,6 +8,7 @@ import { colors } from '@/constants/Colors';
 import { useComplaintStore, SubmittedComplaint } from '@/store/useComplaintStore';
 import { Tabs } from '@/components/Tabs';
 import { citizenService } from '@/services/citizenService';
+import { useTranslation } from '@/store/useLanguageStore';
 
 type FilterTab = 'All' | 'Pending Approval' | 'Unsolved' | 'In-Progress' | 'Solved' | 'Rejected';
 
@@ -15,10 +16,23 @@ const TABS: FilterTab[] = ['All', 'Pending Approval', 'Unsolved', 'In-Progress',
 
 export function MyComplaints() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { submittedComplaints, setComplaints } = useComplaintStore();
   const [activeTab, setActiveTab] = useState<FilterTab>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+
+  const getTabLabel = (tab: FilterTab): string => {
+    switch (tab) {
+      case 'All': return t('complaints.all');
+      case 'Pending Approval': return t('complaints.pendingApproval');
+      case 'Unsolved': return t('complaints.unsolved');
+      case 'In-Progress': return t('complaints.inProgress');
+      case 'Solved': return t('complaints.solved');
+      case 'Rejected': return t('complaints.rejected');
+      default: return tab;
+    }
+  };
 
   const fetchComplaints = useCallback(async () => {
     try {
@@ -96,7 +110,7 @@ export function MyComplaints() {
       <View className="pt-4 pb-2 bg-background z-10">
         <View className="px-6">
           <Input
-            placeholder="Search by ID, Category, or Description..."
+            placeholder={t('complaints.searchPlaceholder')}
             value={searchQuery}
             onChangeText={setSearchQuery}
             leftIcon={<MagnifyingGlassIcon size={20} color={colors.muted} />}
@@ -109,6 +123,7 @@ export function MyComplaints() {
           activeTab={activeTab}
           onTabPress={setActiveTab}
           counts={counts}
+          renderLabel={getTabLabel}
         />
       </View>
 
@@ -137,9 +152,11 @@ export function MyComplaints() {
           ))
         ) : (
           <View className="flex-1 items-center justify-center pt-20">
-            <Text className="text-lg font-inter-medium text-muted mb-2">No complaints found</Text>
+            <Text className="text-lg font-inter-medium text-muted mb-2">
+              {t('complaints.noComplaintsFound')}
+            </Text>
             <Text className="text-sm font-inter text-muted text-center">
-              Try adjusting your filters or search query.
+              {t('complaints.noComplaintsMatch')}
             </Text>
           </View>
         )}

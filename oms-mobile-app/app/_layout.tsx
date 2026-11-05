@@ -10,6 +10,7 @@ import {
   Inter_700Bold 
 } from '@expo-google-fonts/inter';
 import { useSystemConfigStore } from '@/store/useSystemConfigStore';
+import { useLanguageStore } from '@/store/useLanguageStore';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -23,6 +24,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     useSystemConfigStore.getState().fetchSystemConfig();
+    useLanguageStore.getState().initLanguage();
   }, []);
 
   useEffect(() => {

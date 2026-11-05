@@ -17,7 +17,10 @@ import {
   BriefcaseIcon,
   CakeIcon,
   TagIcon,
-  TrashIcon
+  TrashIcon,
+  LanguageIcon,
+  ChevronRightIcon,
+  XMarkIcon
 } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
@@ -26,6 +29,7 @@ import { useComplaintStore } from '@/store/useComplaintStore';
 import { citizenService } from '@/services/citizenService';
 import { removeStoredToken } from '@/services/api';
 import { getCleanImageUrl } from '@/utils/image';
+import { useTranslation, SUPPORTED_LANGUAGES } from '@/store/useLanguageStore';
 
 const formatDob = (dateStr?: string) => {
   if (!dateStr) return '';
@@ -43,6 +47,7 @@ const formatDob = (dateStr?: string) => {
 
 export function Profile() {
   const router = useRouter();
+  const { language, setLanguage, t } = useTranslation();
   const store = useComplaintStore();
   const {
     profilePhoto, setProfilePhoto, phoneNumber, profileName, profileEmail, profileAddress, profilePincode,
@@ -59,7 +64,6 @@ export function Profile() {
   const [deleteError, setDeleteError] = useState('');
   const [notifEnabled, setNotifEnabled] = useState(true);
   const [langModalVisible, setLangModalVisible] = useState(false);
-  const [selectedLang, setSelectedLang] = useState('English');
   const [refreshing, setRefreshing] = useState(false);
   const [imgError, setImgError] = useState(false);
 
@@ -70,8 +74,6 @@ export function Profile() {
   }, [cleanProfileUri]);
 
   const avatarUri = !imgError ? cleanProfileUri : null;
-
-  const LANGUAGES = ['English', 'हिंदी', 'मराठी'];
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -122,6 +124,15 @@ export function Profile() {
     }
   };
 
+  const getDisplayGender = (val?: string | null) => {
+    if (!val) return '-';
+    const upper = val.toUpperCase();
+    if (upper === 'MALE') return t('profile.male');
+    if (upper === 'FEMALE') return t('profile.female');
+    if (upper === 'OTHER') return t('profile.other');
+    return val;
+  };
+
   return (
     <View className="flex-1 w-full bg-background pt-6 px-5">
       <ScrollView
@@ -163,7 +174,7 @@ export function Profile() {
         {/* 1. Contact & Address */}
         <View className="bg-surface border border-border rounded-xl mb-4">
           <View className="flex-row justify-between items-center px-4 pt-4 pb-3 border-b border-border">
-            <Text className="text-sm font-inter-bold text-dark">Contact and Address</Text>
+            <Text className="text-sm font-inter-bold text-dark">{t('profile.contactAndAddress')}</Text>
             <TouchableOpacity
               onPress={() => router.push('/profile/edit')}
               activeOpacity={0.7}
@@ -173,21 +184,21 @@ export function Profile() {
             </TouchableOpacity>
           </View>
 
-          <DetailRow icon={PhoneIcon} label="Registered Mobile Number" value={phoneNumber} />
+          <DetailRow icon={PhoneIcon} label={t('profile.mobileNumber')} value={phoneNumber} />
           {/* {alternatePhone ? <DetailRow icon={PhoneIcon} label="Alternate Phone" value={alternatePhone} /> : null} */}
-          <DetailRow icon={EnvelopeIcon} label="Email" value={profileEmail} />
-          <DetailRow icon={MapPinIcon} label="Address" value={profileAddress} isLast />
+          <DetailRow icon={EnvelopeIcon} label={t('profile.email')} value={profileEmail} />
+          <DetailRow icon={MapPinIcon} label={t('profile.address')} value={profileAddress} isLast />
           {/* <DetailRow icon={MapIcon} label="Pincode" value={profilePincode} isLast /> */}
         </View>
 
         {/* 2. Personal Details */}
         <View className="bg-surface border border-border rounded-xl mb-4">
           <View className="px-4 pt-4 pb-3 border-b border-border">
-            <Text className="text-sm font-inter-bold text-dark">Personal Details</Text>
+            <Text className="text-sm font-inter-bold text-dark">{t('profile.personalDetails')}</Text>
           </View>
 
-          <DetailRow icon={CakeIcon} label="Date of Birth" value={formatDob(dob)} />
-          <DetailRow icon={UserIcon} label="Gender" value={gender} isLast />
+          <DetailRow icon={CakeIcon} label={t('profile.dob')} value={formatDob(dob)} />
+          <DetailRow icon={UserIcon} label={t('profile.gender')} value={getDisplayGender(gender)} isLast />
           {/* <DetailRow icon={TagIcon} label="Blood Group" value={bloodGroup} /> */}
           {/* <DetailRow icon={AcademicCapIcon} label="Education" value={education} /> */}
           {/* <DetailRow icon={BriefcaseIcon} label="Occupation" value={occupation} isLast /> */}
@@ -196,51 +207,30 @@ export function Profile() {
         {/* 3. Identity Documents */}
         <View className="bg-surface border border-border rounded-xl mb-4">
           <View className="px-4 pt-4 pb-3 border-b border-border">
-            <Text className="text-sm font-inter-bold text-dark">Identity Documents</Text>
+            <Text className="text-sm font-inter-bold text-dark">{t('profile.identityDocs')}</Text>
           </View>
 
           {/* <DetailRow icon={IdentificationIcon} label="Aadhar Card" value={aadharCard} /> */}
           {/* <DetailRow icon={IdentificationIcon} label="PAN Card" value={panCard} /> */}
-          <DetailRow icon={IdentificationIcon} label="Voter ID" value={voterId} isLast />
+          <DetailRow icon={IdentificationIcon} label={t('profile.voterId')} value={voterId} isLast />
           {/* <DetailRow icon={IdentificationIcon} label="Driving Licence" value={drivingLicence} /> */}
           {/* <DetailRow icon={IdentificationIcon} label="Ration Card" value={rationCard} isLast /> */}
         </View>
 
-        {/* 4. Caste & Religion */}
-        {/* <View className="bg-surface border border-border rounded-xl mb-4">
-          <View className="px-4 pt-4 pb-3 border-b border-border">
-            <Text className="text-sm font-inter-bold text-dark">Caste & Religion</Text>
-          </View>
-
-          <DetailRow icon={TagIcon} label="Religion" value={religionName} />
-          <DetailRow icon={TagIcon} label="Caste" value={castName || caste} />
-          <DetailRow icon={TagIcon} label="Sub-Caste" value={subCastName || subCaste} isLast />
-        </View> */}
-
         {/* Preferences */}
         <View className="bg-surface border border-border rounded-xl mb-6">
-          <Text className="text-sm font-inter-bold text-dark px-4 pt-4 pb-3 border-b border-border">Preferences</Text>
+          <Text className="text-sm font-inter-bold text-dark px-4 pt-4 pb-3 border-b border-border">
+            {t('profile.preferences')}
+          </Text>
 
-          {/* TEMPORARILY HIDDEN - Language option
-          <TouchableOpacity activeOpacity={0.7} onPress={() => setLangModalVisible(true)} className="flex-row items-center px-4 py-3 border-b border-border">
-            <View className="w-10 h-10 rounded-full bg-primary-light items-center justify-center mr-4">
-              <GlobeAltIcon size={20} color={colors.primary} />
-            </View>
-            <View className="flex-1">
-              <Text className="text-sm font-inter-bold text-dark">Language</Text>
-              <Text className="text-xs font-inter text-muted">{selectedLang}</Text>
-            </View>
-            <Text className="text-xs font-inter text-muted mr-1">›</Text>
-          </TouchableOpacity>
-          */}
-
-          <View className="flex-row items-center px-4 py-3">
-            <View className="w-10 h-10 rounded-full bg-primary-light items-center justify-center mr-4">
+          {/* In-app notifications */}
+          <View className="flex-row items-center px-4 py-3 border-b border-border">
+            <View className="w-10 h-10 rounded-xl bg-primary-light items-center justify-center mr-4">
               <BellIcon size={20} color={colors.primary} />
             </View>
             <View className="flex-1">
-              <Text className="text-sm font-inter-bold text-dark">In-app notifications</Text>
-              <Text className="text-xs font-inter text-muted">Status and registration updates</Text>
+              <Text className="text-sm font-inter-bold text-dark">{t('profile.inAppNotifications')}</Text>
+              <Text className="text-xs font-inter text-muted">{t('profile.notificationsDesc')}</Text>
             </View>
             <Switch
               value={notifEnabled}
@@ -249,6 +239,24 @@ export function Profile() {
               thumbColor={colors.white}
             />
           </View>
+
+          {/* Language option - placed below In-app notifications */}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => setLangModalVisible(true)}
+            className="flex-row items-center px-4 py-3.5"
+          >
+            <View className="w-10 h-10 rounded-xl bg-primary-light items-center justify-center mr-4">
+              <LanguageIcon size={20} color={colors.primary} />
+            </View>
+            <View className="flex-1">
+              <Text className="text-sm font-inter-bold text-dark">{t('profile.language')}</Text>
+              <Text className="text-xs font-inter text-muted mt-0.5">
+                {language === 'mr' ? 'मराठी' : 'English'}
+              </Text>
+            </View>
+            <ChevronRightIcon size={18} color={colors.muted} />
+          </TouchableOpacity>
         </View>
 
         {/* Logout */}
@@ -258,7 +266,7 @@ export function Profile() {
           className="flex-row items-center justify-center border border-primary rounded-xl py-4 mb-3 bg-surface"
         >
           <ArrowRightStartOnRectangleIcon size={20} color={colors.primary} />
-          <Text className="text-base font-inter-bold text-primary ml-2">Log out</Text>
+          <Text className="text-base font-inter-bold text-primary ml-2">{t('profile.logout')}</Text>
         </TouchableOpacity>
 
         {/* Delete Account */}
@@ -271,13 +279,13 @@ export function Profile() {
           className="flex-row items-center justify-center border border-rose-200 rounded-xl py-3.5 mb-4 bg-rose-50/50"
         >
           <TrashIcon size={18} color="#e11d48" />
-          <Text className="text-sm font-inter-semibold text-rose-600 ml-2">Delete Account</Text>
+          <Text className="text-sm font-inter-semibold text-rose-600 ml-2">{t('profile.deleteAccount')}</Text>
         </TouchableOpacity>
 
         {/* Powered by */}
         <View className="items-center justify-center pt-2 pb-8">
           <Text className="text-xs font-inter-medium text-muted tracking-wider">
-            Powered by fussionloops solutions
+            {t('profile.poweredBy')}
           </Text>
         </View>
 
@@ -333,24 +341,63 @@ export function Profile() {
         <TouchableWithoutFeedback onPress={() => setLangModalVisible(false)}>
           <View className="flex-1 bg-black/60 justify-end items-center">
             <TouchableWithoutFeedback>
-              <View className="bg-surface w-full max-w-md rounded-t-2xl pt-4 pb-10 border-t border-border">
-                <View className="w-10 h-1 rounded-full bg-border self-center mb-5" />
-                <Text className="text-base font-inter-bold text-dark px-6 mb-4">Choose language</Text>
-                {LANGUAGES.map((lang) => (
+              <View className="bg-surface w-full max-w-md rounded-t-3xl pt-3 pb-8 px-5 border-t border-border">
+                {/* Drag handle */}
+                <View className="w-12 h-1.5 rounded-full bg-border self-center mb-4" />
+
+                {/* Header with Title & Close X */}
+                <View className="flex-row items-center justify-between mb-5 px-1">
+                  <Text className="text-lg font-inter-bold text-dark">
+                    {t('profile.chooseLanguage')}
+                  </Text>
                   <TouchableOpacity
-                    key={lang}
                     activeOpacity={0.7}
-                    onPress={() => { setSelectedLang(lang); setLangModalVisible(false); }}
-                    className="flex-row items-center px-6 py-4"
+                    onPress={() => setLangModalVisible(false)}
+                    hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                    className="p-1 rounded-full active:bg-border/30"
                   >
-                    <View className={`w-5 h-5 rounded-full border-2 items-center justify-center mr-4 ${selectedLang === lang ? 'border-primary' : 'border-border'}`}>
-                      {selectedLang === lang && (
-                        <View className="w-2.5 h-2.5 rounded-full bg-primary" />
-                      )}
-                    </View>
-                    <Text className={`text-base font-inter-medium ${selectedLang === lang ? 'text-primary' : 'text-dark'}`}>{lang}</Text>
+                    <XMarkIcon size={22} color={colors.dark} />
                   </TouchableOpacity>
-                ))}
+                </View>
+
+                {/* Only 2 Languages: English and Marathi */}
+                {SUPPORTED_LANGUAGES.map((lang) => {
+                  const isSelected = language === lang.id;
+                  return (
+                    <TouchableOpacity
+                      key={lang.id}
+                      activeOpacity={0.7}
+                      onPress={async () => {
+                        await setLanguage(lang.id);
+                        setLangModalVisible(false);
+                      }}
+                      className={`flex-row items-center p-4 mb-3 rounded-2xl border ${
+                        isSelected
+                          ? 'border-primary bg-primary/10'
+                          : 'border-border bg-surface'
+                      }`}
+                    >
+                      <View
+                        className={`w-5 h-5 rounded-full border-2 items-center justify-center mr-3.5 ${
+                          isSelected ? 'border-primary' : 'border-gray-400'
+                        }`}
+                      >
+                        {isSelected && (
+                          <View className="w-2.5 h-2.5 rounded-full bg-primary" />
+                        )}
+                      </View>
+                      <Text
+                        className={`text-base ${
+                          isSelected
+                            ? 'font-inter-bold text-dark'
+                            : 'font-inter-medium text-dark'
+                        }`}
+                      >
+                        {lang.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
             </TouchableWithoutFeedback>
           </View>
@@ -374,11 +421,11 @@ export function Profile() {
                 </View>
 
                 <Text className="text-xl font-inter-bold text-dark text-center mb-2">
-                  Delete Account
+                  {t('profile.deleteModalTitle')}
                 </Text>
 
                 <Text className="text-sm font-inter text-muted text-center mb-6 leading-5">
-                  Are you sure you want to delete your account? Your account will be deactivated, and you will not be able to log in or register again with this mobile number.
+                  {t('profile.deleteModalDesc')}
                 </Text>
 
                 {deleteError ? (
@@ -394,7 +441,7 @@ export function Profile() {
                     className="flex-1 py-3.5 rounded-xl border border-border items-center justify-center bg-surface"
                     activeOpacity={0.7}
                   >
-                    <Text className="text-sm font-inter-semibold text-dark">Cancel</Text>
+                    <Text className="text-sm font-inter-semibold text-dark">{t('profile.cancel')}</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -404,7 +451,7 @@ export function Profile() {
                     activeOpacity={0.8}
                   >
                     <Text className="text-sm font-inter-semibold text-white">
-                      {isDeleting ? 'Deleting...' : 'Delete'}
+                      {isDeleting ? t('profile.deleting') : t('profile.delete')}
                     </Text>
                   </TouchableOpacity>
                 </View>

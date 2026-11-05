@@ -19,8 +19,10 @@ import {
 } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 import { useSystemConfigStore } from '@/store/useSystemConfigStore';
+import { useTranslation } from '@/store/useLanguageStore';
 
 export function ContactUs() {
+  const { t } = useTranslation();
   const { config, fetchSystemConfig } = useSystemConfigStore();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -95,7 +97,7 @@ export function ContactUs() {
       {/* Heading */}
       <View className="mb-4">
         <Text className="text-xl font-inter-bold text-dark">
-          Official Helpline and Support
+          {t('contact.helplineTitle')}
         </Text>
       </View>
 
@@ -110,8 +112,8 @@ export function ContactUs() {
           <View className="w-11 h-11 rounded-full bg-primary-light items-center justify-center mb-2">
             <PhoneIcon size={22} color={colors.primary} />
           </View>
-          <Text className="text-xs font-inter-bold text-dark">Call Us</Text>
-          <Text className="text-[10px] font-inter text-muted mt-0.5">Direct Call</Text>
+          <Text className="text-xs font-inter-bold text-dark">{t('contact.callUs')}</Text>
+          <Text className="text-[10px] font-inter text-muted mt-0.5">{t('contact.directCall')}</Text>
         </TouchableOpacity>
 
         {/* WhatsApp Button */}
@@ -123,8 +125,8 @@ export function ContactUs() {
           <View className="w-11 h-11 rounded-full bg-green-100 items-center justify-center mb-2">
             <ChatBubbleLeftRightIcon size={22} color="#16a34a" />
           </View>
-          <Text className="text-xs font-inter-bold text-dark">WhatsApp</Text>
-          <Text className="text-[10px] font-inter text-muted mt-0.5">Chat Support</Text>
+          <Text className="text-xs font-inter-bold text-dark">{t('contact.whatsapp')}</Text>
+          <Text className="text-[10px] font-inter text-muted mt-0.5">{t('contact.chatSupport')}</Text>
         </TouchableOpacity>
 
         {/* Email Button */}
@@ -136,15 +138,15 @@ export function ContactUs() {
           <View className="w-11 h-11 rounded-full bg-blue-100 items-center justify-center mb-2">
             <EnvelopeIcon size={22} color="#2563eb" />
           </View>
-          <Text className="text-xs font-inter-bold text-dark">Email</Text>
-          <Text className="text-[10px] font-inter text-muted mt-0.5">Email Support</Text>
+          <Text className="text-xs font-inter-bold text-dark">{t('contact.emailUs')}</Text>
+          <Text className="text-[10px] font-inter text-muted mt-0.5">{t('contact.emailSupport')}</Text>
         </TouchableOpacity>
       </View>
 
       {/* 3. Detailed Contact Information List */}
       <View className="bg-surface border border-border rounded-2xl p-4 mb-5 shadow-sm space-y-4">
         <Text className="text-sm font-inter-bold text-dark mb-1">
-          Office Contact Details
+          {t('contact.officeContactDetails')}
         </Text>
 
         {/* Helpline */}
@@ -155,7 +157,7 @@ export function ContactUs() {
                 <PhoneIcon size={18} color={colors.primary} />
               </View>
               <View className="flex-1">
-                <Text className="text-[11px] font-inter-medium text-muted">Helpline Number</Text>
+                <Text className="text-[11px] font-inter-medium text-muted">{t('contact.helplineNumber')}</Text>
                 <Text className="text-sm font-inter-semibold text-dark">{phone}</Text>
               </View>
             </View>
@@ -164,7 +166,7 @@ export function ContactUs() {
               className="bg-primary px-3 py-1.5 rounded-lg"
               activeOpacity={0.8}
             >
-              <Text className="text-xs font-inter-bold text-dark">Call</Text>
+              <Text className="text-xs font-inter-bold text-dark">{t('contact.call')}</Text>
             </TouchableOpacity>
           </View>
         ) : null}
@@ -177,7 +179,7 @@ export function ContactUs() {
                 <ChatBubbleLeftRightIcon size={18} color="#16a34a" />
               </View>
               <View className="flex-1">
-                <Text className="text-[11px] font-inter-medium text-muted">WhatsApp Support</Text>
+                <Text className="text-[11px] font-inter-medium text-muted">{t('contact.whatsAppSupport')}</Text>
                 <Text className="text-sm font-inter-semibold text-dark">{whatsapp}</Text>
               </View>
             </View>
@@ -186,7 +188,7 @@ export function ContactUs() {
               className="bg-green-600 px-3 py-1.5 rounded-lg"
               activeOpacity={0.8}
             >
-              <Text className="text-xs font-inter-bold text-white">Chat</Text>
+              <Text className="text-xs font-inter-bold text-white">{t('contact.chat')}</Text>
             </TouchableOpacity>
           </View>
         ) : null}
@@ -199,7 +201,7 @@ export function ContactUs() {
                 <EnvelopeIcon size={18} color="#2563eb" />
               </View>
               <View className="flex-1">
-                <Text className="text-[11px] font-inter-medium text-muted">Email Address</Text>
+                <Text className="text-[11px] font-inter-medium text-muted">{t('contact.emailAddress')}</Text>
                 <Text className="text-sm font-inter-semibold text-dark" numberOfLines={1}>
                   {email}
                 </Text>
@@ -210,7 +212,7 @@ export function ContactUs() {
               className="bg-blue-600 px-3 py-1.5 rounded-lg"
               activeOpacity={0.8}
             >
-              <Text className="text-xs font-inter-bold text-white">Send</Text>
+              <Text className="text-xs font-inter-bold text-white">{t('contact.send')}</Text>
             </TouchableOpacity>
           </View>
         ) : null}
@@ -223,7 +225,7 @@ export function ContactUs() {
                 <MapPinIcon size={18} color="#dc2626" />
               </View>
               <View className="flex-1">
-                <Text className="text-[11px] font-inter-medium text-muted">Office Address</Text>
+                <Text className="text-[11px] font-inter-medium text-muted">{t('contact.officeAddress')}</Text>
                 <Text className="text-sm font-inter-semibold text-dark leading-snug mt-0.5">
                   {address}
                 </Text>
@@ -234,7 +236,7 @@ export function ContactUs() {
               className="bg-gray-100 border border-border px-3 py-1.5 rounded-lg self-start mt-1"
               activeOpacity={0.8}
             >
-              <Text className="text-xs font-inter-bold text-dark">Map</Text>
+              <Text className="text-xs font-inter-bold text-dark">{t('contact.map')}</Text>
             </TouchableOpacity>
           </View>
         ) : null}
@@ -246,7 +248,7 @@ export function ContactUs() {
               <ClockIcon size={18} color="#d97706" />
             </View>
             <View className="flex-1">
-              <Text className="text-[11px] font-inter-medium text-muted">Working Hours</Text>
+              <Text className="text-[11px] font-inter-medium text-muted">{t('contact.workingHours')}</Text>
               <Text className="text-sm font-inter-semibold text-dark">{hours}</Text>
             </View>
           </View>
@@ -260,7 +262,7 @@ export function ContactUs() {
                 <GlobeAltIcon size={18} color="#7c3aed" />
               </View>
               <View className="flex-1">
-                <Text className="text-[11px] font-inter-medium text-muted">Official Website</Text>
+                <Text className="text-[11px] font-inter-medium text-muted">{t('contact.officialWebsite')}</Text>
                 <Text className="text-sm font-inter-semibold text-dark" numberOfLines={1}>
                   {website}
                 </Text>
@@ -271,7 +273,7 @@ export function ContactUs() {
               className="bg-purple-600 px-3 py-1.5 rounded-lg flex-row items-center"
               activeOpacity={0.8}
             >
-              <Text className="text-xs font-inter-bold text-white mr-1">Visit</Text>
+              <Text className="text-xs font-inter-bold text-white mr-1">{t('contact.visit')}</Text>
               <ArrowTopRightOnSquareIcon size={12} color="#ffffff" />
             </TouchableOpacity>
           </View>

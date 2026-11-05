@@ -5,11 +5,13 @@ import { MegaphoneIcon } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 import { getCleanImageUrl } from '@/utils/image';
 import { useUpdatesStore, FormattedUpdateItem } from '@/store/useUpdatesStore';
+import { useTranslation } from '@/store/useLanguageStore';
 
 export type { FormattedUpdateItem };
 
 export function Updates() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { updates, loading, isRefreshing, fetchUpdates, refreshUpdates } = useUpdatesStore();
 
   useEffect(() => {
@@ -82,10 +84,7 @@ export function Updates() {
               <MegaphoneIcon size={28} color={colors.primary} />
             </View>
             <Text className="text-lg font-inter-bold text-dark text-center mb-2">
-              No Updates Available
-            </Text>
-            <Text className="text-sm font-inter text-muted text-center leading-5">
-              There are currently no new city announcements or updates published from the administration.
+              {t('updates.noUpdates')}
             </Text>
           </View>
         )}
