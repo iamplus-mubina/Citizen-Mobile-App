@@ -339,65 +339,97 @@ export function Profile() {
         statusBarTranslucent={true}
       >
         <TouchableWithoutFeedback onPress={() => setLangModalVisible(false)}>
-          <View className="flex-1 bg-black/60 justify-end items-center">
+          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end', alignItems: 'center' }}>
             <TouchableWithoutFeedback>
-              <View className="bg-surface w-full max-w-md rounded-t-3xl pt-3 pb-8 px-5 border-t border-border">
-                {/* Drag handle */}
-                <View className="w-12 h-1.5 rounded-full bg-border self-center mb-4" />
+              <View style={{ width: '100%', maxWidth: 460 }}>
+                {/* Floating drag handle above sheet */}
+                <View style={{ width: 44, height: 4.5, borderRadius: 3, backgroundColor: '#D1D5DB', alignSelf: 'center', marginBottom: 8 }} />
 
-                {/* Header with Title & Close X */}
-                <View className="flex-row items-center justify-between mb-5 px-1">
-                  <Text className="text-lg font-inter-bold text-dark">
-                    {t('profile.chooseLanguage')}
-                  </Text>
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={() => setLangModalVisible(false)}
-                    hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-                    className="p-1 rounded-full active:bg-border/30"
-                  >
-                    <XMarkIcon size={22} color={colors.dark} />
-                  </TouchableOpacity>
-                </View>
-
-                {/* Only 2 Languages: English and Marathi */}
-                {SUPPORTED_LANGUAGES.map((lang) => {
-                  const isSelected = language === lang.id;
-                  return (
+                {/* White bottom sheet */}
+                <View
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    borderTopLeftRadius: 24,
+                    borderTopRightRadius: 24,
+                    paddingTop: 20,
+                    paddingBottom: 36,
+                    paddingHorizontal: 20,
+                  }}
+                >
+                  {/* Header with Title & Close X */}
+                  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+                    <Text style={{ fontSize: 18, fontWeight: '700', color: '#111827' }}>
+                      {t('profile.chooseLanguage', 'Language')}
+                    </Text>
                     <TouchableOpacity
-                      key={lang.id}
                       activeOpacity={0.7}
-                      onPress={async () => {
-                        await setLanguage(lang.id);
-                        setLangModalVisible(false);
-                      }}
-                      className={`flex-row items-center p-4 mb-3 rounded-2xl border ${
-                        isSelected
-                          ? 'border-primary bg-primary/10'
-                          : 'border-border bg-surface'
-                      }`}
+                      onPress={() => setLangModalVisible(false)}
+                      hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                      style={{ padding: 4, borderRadius: 20 }}
                     >
-                      <View
-                        className={`w-5 h-5 rounded-full border-2 items-center justify-center mr-3.5 ${
-                          isSelected ? 'border-primary' : 'border-gray-400'
-                        }`}
-                      >
-                        {isSelected && (
-                          <View className="w-2.5 h-2.5 rounded-full bg-primary" />
-                        )}
-                      </View>
-                      <Text
-                        className={`text-base ${
-                          isSelected
-                            ? 'font-inter-bold text-dark'
-                            : 'font-inter-medium text-dark'
-                        }`}
-                      >
-                        {lang.label}
-                      </Text>
+                      <XMarkIcon size={22} color="#111827" />
                     </TouchableOpacity>
-                  );
-                })}
+                  </View>
+
+                  {/* Languages: English and Marathi (matching reference image) */}
+                  {SUPPORTED_LANGUAGES.map((lang) => {
+                    const isSelected = language === lang.id;
+                    return (
+                      <TouchableOpacity
+                        key={lang.id}
+                        activeOpacity={0.7}
+                        onPress={async () => {
+                          await setLanguage(lang.id);
+                          setLangModalVisible(false);
+                        }}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          height: 56,
+                          paddingHorizontal: 16,
+                          marginBottom: 12,
+                          borderRadius: 14,
+                          borderWidth: isSelected ? 1.5 : 1,
+                          borderColor: isSelected ? '#5B3FC8' : '#E5E7EB',
+                          backgroundColor: isSelected ? '#F5F3FF' : '#FFFFFF',
+                        }}
+                      >
+                        <View
+                          style={{
+                            width: 22,
+                            height: 22,
+                            borderRadius: 11,
+                            borderWidth: isSelected ? 2.5 : 2,
+                            borderColor: isSelected ? '#5B3FC8' : '#9CA3AF',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginRight: 14,
+                          }}
+                        >
+                          {isSelected && (
+                            <View
+                              style={{
+                                width: 10,
+                                height: 10,
+                                borderRadius: 5,
+                                backgroundColor: '#5B3FC8',
+                              }}
+                            />
+                          )}
+                        </View>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            fontWeight: isSelected ? '700' : '500',
+                            color: isSelected ? '#111827' : '#374151',
+                          }}
+                        >
+                          {lang.label}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
               </View>
             </TouchableWithoutFeedback>
           </View>

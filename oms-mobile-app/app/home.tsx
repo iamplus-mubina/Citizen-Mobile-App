@@ -204,7 +204,7 @@ export default function HomeScreen() {
       case 'home':
         return (
           <ScrollView 
-            className="flex-1 px-5 pt-6" 
+            className="flex-1" 
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 40 }}
             refreshControl={
@@ -212,8 +212,8 @@ export default function HomeScreen() {
             }
           >
 
-            {/* Fit-to-screen Branding Banner Photo above Raise a complaint */}
-            <View className="w-full h-48 rounded-2xl overflow-hidden mb-6 bg-[#182641] border border-border/30 shadow-sm items-center justify-center">
+            {/* Full-width Branding Banner Photo without border */}
+            <View className="w-full h-48 overflow-hidden mb-6 bg-white items-center justify-center">
               <Image
                 key={cleanPhotoUrlM || 'default'}
                 source={cleanPhotoUrlM && !brandingImgError ? { uri: cleanPhotoUrlM } : DEFAULT_LOGO}
@@ -223,18 +223,19 @@ export default function HomeScreen() {
               />
             </View>
 
-            {/* Raise a Complaint Button */}
-            <TouchableOpacity
-              onPress={() => router.push('/complaint/category')}
-              activeOpacity={0.8}
-              className="w-full h-14 bg-primary rounded-2xl flex-row items-center justify-center px-4 mb-6"
-              style={{ backgroundColor: colors.primary }}
-            >
-              <PlusCircleIcon size={26} color="#142B50" />
-              <Text className="text-lg font-inter-bold text-[#142B50] ml-2.5">
-                {t('home.raiseComplaint')}
-              </Text>
-            </TouchableOpacity>
+            <View className="px-5">
+              {/* Raise a Complaint Button */}
+              <TouchableOpacity
+                onPress={() => router.push('/complaint/category')}
+                activeOpacity={0.8}
+                className="w-full h-14 bg-primary rounded-2xl flex-row items-center justify-center px-4 mb-6"
+                style={{ backgroundColor: colors.primary }}
+              >
+                <PlusCircleIcon size={26} color="#142B50" />
+                <Text className="text-lg font-inter-bold text-[#142B50] ml-2.5">
+                  {t('home.raiseComplaint')}
+                </Text>
+              </TouchableOpacity>
 
             {/* ─── Temporarily Hidden: Quick Actions (Can be re-enabled) ─── */}
             {/* 
@@ -363,6 +364,7 @@ export default function HomeScreen() {
               </View>
             </View>
 
+            </View>
           </ScrollView>
         );
       case 'complaints':
