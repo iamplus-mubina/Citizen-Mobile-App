@@ -10,7 +10,9 @@ import {
   ClipboardDocumentListIcon,
   BellIcon,
   MegaphoneIcon,
-  PlusCircleIcon
+  PlusCircleIcon,
+  ClockIcon,
+  ChevronRightIcon,
 } from 'react-native-heroicons/outline';
 import { colors } from '@/constants/Colors';
 import { ServiceCategoryIcon } from '@/components/ServiceCategoryIcon';
@@ -343,7 +345,16 @@ export default function HomeScreen() {
 
             {/* Popular Services */}
             <View className="mb-8">
-              <Text className="text-lg font-inter-bold text-dark mb-3">{t('home.popularServices')}</Text>
+              <View className="flex-row items-center justify-between mb-3">
+                <Text className="text-lg font-inter-bold text-dark">{t('home.popularServices')}</Text>
+                <TouchableOpacity onPress={() => router.push('/services/my-applications' as any)} activeOpacity={0.7}>
+                  <View className="flex-row items-center">
+                    <ClockIcon size={14} color={colors.primary} />
+                    <Text className="text-xs font-inter-semibold text-primary ml-1">{t('services.myApplications', 'My Applications')}</Text>
+                    <ChevronRightIcon size={12} color={colors.primary} />
+                  </View>
+                </TouchableOpacity>
+              </View>
 
               <View className="flex-row flex-wrap -mx-[1%]">
                 {POPULAR_SERVICE_CATEGORIES.map((cat) => (

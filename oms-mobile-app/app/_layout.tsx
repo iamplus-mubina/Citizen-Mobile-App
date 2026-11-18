@@ -58,6 +58,7 @@ export default function RootLayout() {
       <Stack.Screen name="services/detail/[serviceId]" options={{ headerShown: false }} />
       <Stack.Screen name="services/apply/[serviceId]" options={{ headerShown: false }} />
       <Stack.Screen name="services/appointment/[serviceId]" options={{ headerShown: false }} />
+      <Stack.Screen name="services/my-applications" options={{ headerShown: false }} />
       <Stack.Screen name="services/success" options={{ headerShown: false }} />
       <Stack.Screen name="services/request/[requestId]" options={{ headerShown: false }} />
     </Stack>

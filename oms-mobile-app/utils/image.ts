@@ -63,10 +63,13 @@ export function getCleanImageUrl(photo: any): string | null {
     }
 
     // Relative server path from file-uploader
-    // citizen-complaints are saved locally via upload2 and served via file2
+    // citizen-complaints/ and popular-services/ are saved locally via upload2 and served via file2
     // system-config (branding images) and other entities are in S3 and served via downloadS3
     const baseUrl = BASE_URL;
-    const endpoint = trimmed.startsWith('citizen-complaints/') ? 'file2' : 'downloadS3';
+    const isLocalEntity =
+      trimmed.startsWith('citizen-complaints/') ||
+      trimmed.startsWith('popular-services/');
+    const endpoint = isLocalEntity ? 'file2' : 'downloadS3';
     const resolvedUrl = `${baseUrl}/file-uploader/${endpoint}?path=${encodeURIComponent(trimmed)}`;
 
     // Log the first resolved image URL to help diagnose release build issues

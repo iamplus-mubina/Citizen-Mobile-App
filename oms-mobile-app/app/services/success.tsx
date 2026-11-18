@@ -15,14 +15,23 @@ import { usePopularServicesStore } from '@/store/usePopularServicesStore';
 
 export default function ServiceSubmissionSuccessScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ requestId?: string }>();
+  const params = useLocalSearchParams<{
+    requestId?: string;
+    tokenNumber?: string;
+    applicationId?: string;
+    serviceName?: string;
+  }>();
   const requestId = params.requestId ? String(params.requestId) : '';
+  const tokenNumber = params.tokenNumber ? String(params.tokenNumber) : '';
+  const applicationId = params.applicationId ? String(params.applicationId) : '';
+  const serviceName = params.serviceName ? String(params.serviceName) : '';
 
   const getAppointmentById = usePopularServicesStore((s) => s.getAppointmentById);
 
   // Retrieve exact submitted request using its request ID
   const appointment = requestId ? getAppointmentById(requestId) : undefined;
-  const displayRequestId = appointment?.appointmentId || requestId || '—';
+  const displayRequestId = tokenNumber || appointment?.appointmentId || requestId || '—';
+  const targetId = applicationId || requestId || tokenNumber;
 
   useEffect(() => {
     const onBackPress = () => {
@@ -95,13 +104,13 @@ export default function ServiceSubmissionSuccessScreen() {
             title="View my request"
             variant="primary"
             onPress={() => {
-              if (displayRequestId && displayRequestId !== '—') {
+              if (targetId && targetId !== '—') {
                 router.push({
                   pathname: '/services/request/[requestId]' as any,
-                  params: { requestId: displayRequestId },
+                  params: { requestId: targetId },
                 });
               } else {
-                router.replace('/home');
+                router.replace('/services/my-applications' as any);
               }
             }}
             className="w-full"

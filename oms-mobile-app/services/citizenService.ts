@@ -18,7 +18,13 @@ export const getFileViewUrl = (path?: string | null): string | null => {
   const trimmed = path.trim();
   if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) return trimmed;
   const baseUrl = api.defaults.baseURL || BASE_URL;
-  const endpoint = trimmed.startsWith('citizen-complaints/') ? 'file2' : 'downloadS3';
+  // Files stored locally are served via /file-uploader/file2?path=<relative>
+  // This covers citizen-complaints/, popular-services/, and any other local entityName folder
+  const isLocal =
+    trimmed.startsWith('citizen-complaints/') ||
+    trimmed.startsWith('popular-services/') ||
+    trimmed.startsWith('uploads/');
+  const endpoint = isLocal ? 'file2' : 'downloadS3';
   return `${baseUrl}/file-uploader/${endpoint}?path=${encodeURIComponent(trimmed)}`;
 };
 
@@ -197,7 +203,7 @@ export const citizenService = {
   },
 
   // ─── File Upload ───
-  uploadFile: async (fileUri: string, fileName?: string, fileType?: string) => {
+  uploadFile: async (fileUri: string, fileName?: string, fileType?: string, entityName: string = 'citizen-complaints') => {
     let filename = fileName || `file_${Date.now()}.jpg`;
     if (!filename.includes('.')) {
       filename = `${filename}.jpg`;
@@ -206,7 +212,7 @@ export const citizenService = {
 
     const token = await getStoredToken();
     const baseUrl = api.defaults.baseURL || BASE_URL;
-    const uploadUrl = `${baseUrl}/file-uploader/upload2?entityName=citizen-complaints`;
+    const uploadUrl = `${baseUrl}/file-uploader/upload2?entityName=${entityName}`;
 
     console.log('[uploadFile] Starting upload to:', uploadUrl, 'fileUri:', fileUri, 'name:', filename, 'type:', type);
 

@@ -9,7 +9,7 @@ export default function ServiceDetailRedirect() {
 
   useEffect(() => {
     if (serviceId) {
-      router.replace(`/services/appointment/${serviceId}` as any);
+      router.replace(`/services/apply/${serviceId}` as any);
     } else {
       router.replace('/services' as any);
     }
