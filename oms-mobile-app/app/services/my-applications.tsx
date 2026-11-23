@@ -18,6 +18,7 @@ import {
   XCircleIcon,
   ExclamationCircleIcon,
   Squares2X2Icon,
+  CalendarDaysIcon,
 } from 'react-native-heroicons/outline';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/Button';
@@ -49,13 +50,13 @@ const getStatusBadge = (status: string) => {
       Icon: XCircleIcon,
     };
   }
-  if (s === 'IN_PROGRESS') {
+  if (s === 'SCHEDULED') {
     return {
-      bg: 'bg-blue-50',
-      border: 'border-blue-300',
-      text: 'text-blue-700',
-      label: 'Under Scrutiny',
-      Icon: ClockIcon,
+      bg: 'bg-indigo-50',
+      border: 'border-indigo-300',
+      text: 'text-indigo-700',
+      label: 'Meeting Scheduled',
+      Icon: CalendarDaysIcon,
     };
   }
   return {
@@ -107,7 +108,7 @@ export default function MyApplicationsScreen() {
   const filterTabs = [
     { key: 'ALL', label: t('common.all', 'All') },
     { key: 'PENDING', label: t('services.pending', 'Pending') },
-    { key: 'IN_PROGRESS', label: t('services.underScrutiny', 'In Progress') },
+    { key: 'SCHEDULED', label: t('services.scheduled', 'Scheduled') },
     { key: 'APPROVED', label: t('services.approved', 'Approved') },
     { key: 'REJECTED', label: t('services.rejected', 'Rejected') },
   ];
@@ -248,6 +249,32 @@ export default function MyApplicationsScreen() {
                         {categoryTitle}
                       </Text>
                     ) : null}
+
+                    {/* Scheduled Meeting Notice on Card */}
+                    {app.status === 'SCHEDULED' && (app.scheduleDate || app.schedulePlace) && (
+                      <View className="mt-2.5 bg-indigo-50 border border-indigo-200 rounded-xl p-2.5 flex-row items-start">
+                        <CalendarDaysIcon size={16} color="#4338ca" className="mt-0.5" />
+                        <View className="ml-2 flex-1">
+                          <Text className="text-[11px] font-inter-bold text-indigo-900">
+                            {t('services.meetingScheduled', 'Meeting Scheduled')}:
+                          </Text>
+                          {app.scheduleDate ? (
+                            <Text className="text-[11px] font-inter text-indigo-700 mt-0.5">
+                              📅 {new Date(app.scheduleDate).toLocaleDateString('en-IN', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                              })}
+                            </Text>
+                          ) : null}
+                          {app.schedulePlace ? (
+                            <Text className="text-[11px] font-inter text-indigo-700 mt-0.5" numberOfLines={1}>
+                              📍 {app.schedulePlace}
+                            </Text>
+                          ) : null}
+                        </View>
+                      </View>
+                    )}
 
                     {/* Rejection Note */}
                     {app.status === 'REJECTED' && app.rejectionReason && (

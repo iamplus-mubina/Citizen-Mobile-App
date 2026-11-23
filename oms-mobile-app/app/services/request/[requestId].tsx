@@ -22,6 +22,8 @@ import {
   ArrowTopRightOnSquareIcon,
   UserIcon,
   PhoneIcon,
+  CalendarDaysIcon,
+  MapPinIcon,
 } from 'react-native-heroicons/outline';
 import { Header } from '@/components/Header';
 import { StepperTimeline, StepperTimelineStep } from '@/components/StepperTimeline';
@@ -43,11 +45,12 @@ export default function ServiceRequestDetailsScreen() {
   const requestId = params.requestId ? String(params.requestId) : '';
 
   const getAppointmentById = usePopularServicesStore((s) => s.getAppointmentById);
+
   const [application, setApplication] = useState<PopularServiceApplication | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  const fetchApplicationDetails = useCallback(async () => {
+  const fetchApplication = useCallback(async () => {
     if (!requestId) {
       setLoading(false);
       return;
@@ -58,7 +61,7 @@ export default function ServiceRequestDetailsScreen() {
         setApplication(data);
       }
     } catch (err) {
-      console.error('[ServiceRequestDetailsScreen] fetchApplicationDetails error:', err);
+      console.error('[ServiceRequestDetailsScreen] Fetch error:', err);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -66,17 +69,16 @@ export default function ServiceRequestDetailsScreen() {
   }, [requestId]);
 
   useEffect(() => {
-    fetchApplicationDetails();
-  }, [fetchApplicationDetails]);
+    fetchApplication();
+  }, [fetchApplication]);
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchApplicationDetails();
+    fetchApplication();
   };
 
-  // Fallback to store appointment if not found in backend API
   const appointment = useMemo(() => {
-    if (application) return null;
+    if (application) return undefined;
     return requestId ? getAppointmentById(requestId) : undefined;
   }, [application, requestId, getAppointmentById]);
 
@@ -92,6 +94,8 @@ export default function ServiceRequestDetailsScreen() {
   const displayRemarks = application?.remarks || '';
   const status = application?.status || (appointment ? 'SUBMITTED' : 'PENDING');
   const rejectionReason = application?.rejectionReason || '';
+  const scheduleDate = application?.scheduleDate || '';
+  const schedulePlace = application?.schedulePlace || '';
 
   const formattedDate = useMemo(() => {
     if (application?.createdAt) {
@@ -109,10 +113,28 @@ export default function ServiceRequestDetailsScreen() {
     return appointment?.formattedDate || '';
   }, [application, appointment]);
 
+  const formattedScheduleDate = useMemo(() => {
+    if (!scheduleDate) return '';
+    try {
+      const d = new Date(scheduleDate);
+      return `${d.toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      })}, ${d.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      })}`;
+    } catch {
+      return String(scheduleDate);
+    }
+  }, [scheduleDate]);
+
   const progressSteps: StepperTimelineStep[] = useMemo(() => {
     const isApproved = status === 'APPROVED';
     const isRejected = status === 'REJECTED';
-    const isInProgress = status === 'IN_PROGRESS';
+    const isScheduled = status === 'SCHEDULED';
 
     return [
       {
@@ -124,18 +146,17 @@ export default function ServiceRequestDetailsScreen() {
       },
       {
         id: 'step-2',
-        title: t('services.stepReview', 'Under Review'),
-        description: t('services.stepReviewDesc', 'Municipal officer is reviewing the application.'),
-        status: isApproved || isRejected || isInProgress ? 'completed' : 'current',
+        title: t('services.stepScheduled', 'Meeting Scheduled'),
+        date: formattedScheduleDate || undefined,
+        description: isScheduled
+          ? `${t('services.meetAt', 'Venue')}: ${schedulePlace || 'Municipal Office'}`
+          : isApproved || isRejected
+          ? t('services.stepReviewCompleted', 'Application reviewed by officer.')
+          : t('services.stepReviewDesc', 'Municipal officer will review and schedule meeting.'),
+        status: isApproved || isRejected ? 'completed' : isScheduled ? 'current' : 'future',
       },
       {
         id: 'step-3',
-        title: t('services.stepInProgress', 'Scrutiny & Processing'),
-        description: t('services.stepInProgressDesc', 'Documents verification and field scrutiny.'),
-        status: isApproved || isRejected ? 'completed' : isInProgress ? 'current' : 'future',
-      },
-      {
-        id: 'step-4',
         title: isRejected
           ? t('services.stepRejected', 'Application Rejected')
           : isApproved
@@ -146,10 +167,10 @@ export default function ServiceRequestDetailsScreen() {
           : isApproved
           ? t('services.approvedDefaultDesc', 'Service request has been approved.')
           : t('services.pendingFinalDesc', 'Approval decision will be notified here.'),
-        status: isApproved || isRejected ? (isRejected ? 'future' : 'completed') : 'future',
+        status: isApproved ? 'completed' : isRejected ? 'future' : 'future',
       },
     ];
-  }, [status, formattedDate, rejectionReason, t]);
+  }, [status, formattedDate, formattedScheduleDate, schedulePlace, rejectionReason, t]);
 
   const handleOpenDoc = (url: string) => {
     if (!url) return;
@@ -167,12 +188,12 @@ export default function ServiceRequestDetailsScreen() {
       <View className={containerClass}>
         <Header
           showBack
-          title={displayToken}
+          title={t('services.requestDetails', 'Application Details')}
           onBack={() => router.back()}
         />
 
         <ScrollView
-          className="flex-1 px-4 pt-4"
+          className="flex-1 px-5 pt-4"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 40 }}
           refreshControl={
@@ -187,6 +208,9 @@ export default function ServiceRequestDetailsScreen() {
           {loading ? (
             <View className="py-12 items-center justify-center">
               <ActivityIndicator size="large" color={colors.primary} />
+              <Text className="text-xs font-inter text-secondary mt-3">
+                {t('common.loading', 'Loading details...')}
+              </Text>
             </View>
           ) : (
             <>
@@ -207,11 +231,11 @@ export default function ServiceRequestDetailsScreen() {
                         Rejected
                       </Text>
                     </View>
-                  ) : status === 'IN_PROGRESS' ? (
-                    <View className="bg-blue-50 border border-blue-300 rounded-md px-2.5 py-1 flex-row items-center">
-                      <ClockIcon size={14} color="#2563eb" />
-                      <Text className="text-xs font-inter-bold text-blue-700 ml-1.5">
-                        In Progress
+                  ) : status === 'SCHEDULED' ? (
+                    <View className="bg-indigo-50 border border-indigo-300 rounded-md px-2.5 py-1 flex-row items-center">
+                      <CalendarDaysIcon size={14} color="#4338ca" />
+                      <Text className="text-xs font-inter-bold text-indigo-700 ml-1.5">
+                        Meeting Scheduled
                       </Text>
                     </View>
                   ) : (
@@ -236,6 +260,40 @@ export default function ServiceRequestDetailsScreen() {
                   </Text>
                 ) : null}
               </View>
+
+              {/* Scheduled Meeting Notice Banner */}
+              {status === 'SCHEDULED' && (
+                <View className="bg-indigo-50 border border-indigo-300 rounded-2xl p-4 mb-4">
+                  <View className="flex-row items-center mb-2.5">
+                    <CalendarDaysIcon size={20} color="#4338ca" />
+                    <Text className="text-sm font-inter-bold text-indigo-900 ml-2">
+                      Meeting Scheduled by Officer
+                    </Text>
+                  </View>
+
+                  {formattedScheduleDate ? (
+                    <View className="flex-row items-start mb-1.5 ml-1">
+                      <ClockIcon size={15} color="#4338ca" className="mt-0.5" />
+                      <Text className="text-xs font-inter-bold text-indigo-950 ml-2">
+                        Date & Time: <Text className="font-inter-medium text-indigo-800">{formattedScheduleDate}</Text>
+                      </Text>
+                    </View>
+                  ) : null}
+
+                  {schedulePlace ? (
+                    <View className="flex-row items-start ml-1">
+                      <MapPinIcon size={15} color="#4338ca" className="mt-0.5" />
+                      <Text className="text-xs font-inter-bold text-indigo-950 ml-2">
+                        Venue / Place: <Text className="font-inter-medium text-indigo-800">{schedulePlace}</Text>
+                      </Text>
+                    </View>
+                  ) : null}
+
+                  <Text className="text-[11px] font-inter text-indigo-700 mt-2.5 pt-2 border-t border-indigo-200">
+                    Please visit the venue on the scheduled date & time with all required documents.
+                  </Text>
+                </View>
+              )}
 
               {/* Rejection Notice Banner */}
               {status === 'REJECTED' && rejectionReason && (
@@ -263,91 +321,84 @@ export default function ServiceRequestDetailsScreen() {
               {/* Submitted Applicant Details */}
               <View className="bg-surface border border-border rounded-2xl p-4 mb-4">
                 <Text className="text-sm font-inter-bold text-dark mb-3">
-                  Applicant Information
+                  {t('services.applicantDetails', 'Applicant Details')}
                 </Text>
-
-                <View className="flex-row items-center mb-2.5">
-                  <UserIcon size={16} color={colors.secondary} />
-                  <Text className="text-xs font-inter text-secondary ml-2 w-24">
-                    Applicant:
-                  </Text>
+                <View className="flex-row items-center mb-2">
+                  <UserIcon size={15} color={colors.secondary} />
+                  <Text className="text-xs font-inter text-secondary ml-2 w-20">Name:</Text>
                   <Text className="text-xs font-inter-bold text-dark flex-1">
                     {displayApplicantName}
                   </Text>
                 </View>
-
-                <View className="flex-row items-center mb-2.5">
-                  <PhoneIcon size={16} color={colors.secondary} />
-                  <Text className="text-xs font-inter text-secondary ml-2 w-24">
-                    Mobile:
-                  </Text>
+                <View className="flex-row items-center mb-2">
+                  <PhoneIcon size={15} color={colors.secondary} />
+                  <Text className="text-xs font-inter text-secondary ml-2 w-20">Mobile:</Text>
                   <Text className="text-xs font-inter-bold text-dark flex-1">
-                    {displayApplicantPhone ? `+91 ${displayApplicantPhone}` : '—'}
+                    {displayApplicantPhone || '—'}
                   </Text>
                 </View>
-
-                {displayRemarks ? (
-                  <View className="mt-2 pt-2.5 border-t border-border/60">
-                    <Text className="text-xs font-inter text-secondary mb-1">
-                      Applicant Remarks:
-                    </Text>
-                    <Text className="text-xs font-inter-medium text-dark leading-5">
-                      {displayRemarks}
-                    </Text>
-                  </View>
-                ) : null}
+                <View className="flex-row items-center">
+                  <DocumentTextIcon size={15} color={colors.secondary} />
+                  <Text className="text-xs font-inter text-secondary ml-2 w-20">Token #:</Text>
+                  <Text className="text-xs font-inter-bold text-primary flex-1">
+                    {displayToken}
+                  </Text>
+                </View>
               </View>
 
-              {/* Uploaded Documents */}
-              <View className="bg-surface border border-border rounded-2xl p-4 mb-4">
-                <View className="flex-row items-center mb-3">
-                  <DocumentTextIcon size={18} color={colors.primary} />
-                  <Text className="text-sm font-inter-bold text-dark ml-2">
-                    Submitted Documents ({application?.documents?.length || appointment?.requiredDocuments?.length || 0})
+              {/* Applicant Remarks */}
+              {displayRemarks ? (
+                <View className="bg-surface border border-border rounded-2xl p-4 mb-4">
+                  <View className="flex-row items-center mb-2">
+                    <ChatBubbleLeftEllipsisIcon size={16} color={colors.secondary} />
+                    <Text className="text-sm font-inter-bold text-dark ml-2">
+                      {t('services.applicantRemarks', 'Applicant Remarks')}
+                    </Text>
+                  </View>
+                  <Text className="text-xs font-inter text-secondary leading-5">
+                    {displayRemarks}
                   </Text>
                 </View>
+              ) : null}
 
-                {application?.documents && application.documents.length > 0 ? (
+              {/* Uploaded Documents */}
+              {application?.documents && application.documents.length > 0 && (
+                <View className="bg-surface border border-border rounded-2xl p-4 mb-4">
+                  <Text className="text-sm font-inter-bold text-dark mb-3">
+                    {t('services.submittedDocuments', 'Uploaded Documents')} (
+                    {application.documents.length})
+                  </Text>
                   <View className="space-y-2">
                     {application.documents.map((doc, idx) => (
-                      <TouchableOpacity
+                      <View
                         key={idx}
-                        activeOpacity={0.7}
-                        onPress={() => handleOpenDoc(doc.url)}
-                        className="bg-background border border-border rounded-xl p-3 flex-row items-center justify-between"
+                        className="flex-row items-center justify-between p-3 bg-surface-variant/40 rounded-xl border border-border/80"
                       >
-                        <View className="flex-row items-center flex-1 mr-2">
+                        <View className="flex-row items-center flex-1 pr-2">
                           <DocumentTextIcon size={16} color={colors.primary} />
                           <Text
-                            className="text-xs font-inter-bold text-dark ml-2 flex-1"
+                            className="text-xs font-inter-semibold text-dark ml-2 flex-1"
                             numberOfLines={1}
                           >
-                            {doc.documentName}
+                            {doc.documentName || `Document ${idx + 1}`}
                           </Text>
                         </View>
-                        <View className="flex-row items-center">
-                          <Text className="text-[11px] font-inter-medium text-primary mr-1">
-                            View
-                          </Text>
-                          <ArrowTopRightOnSquareIcon size={13} color={colors.primary} />
-                        </View>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                ) : appointment?.requiredDocuments && appointment.requiredDocuments.length > 0 ? (
-                  <View className="space-y-1.5">
-                    {appointment.requiredDocuments.map((doc) => (
-                      <View key={doc.id} className="flex-row items-center">
-                        <Text className="text-xs font-inter text-dark">• {doc.name}</Text>
+                        {doc.url ? (
+                          <TouchableOpacity
+                            onPress={() => handleOpenDoc(doc.url)}
+                            className="flex-row items-center px-2.5 py-1 bg-primary/10 rounded-lg"
+                          >
+                            <Text className="text-[11px] font-inter-bold text-primary mr-1">
+                              View
+                            </Text>
+                            <ArrowTopRightOnSquareIcon size={12} color={colors.primary} />
+                          </TouchableOpacity>
+                        ) : null}
                       </View>
                     ))}
                   </View>
-                ) : (
-                  <Text className="text-xs font-inter text-secondary">
-                    No documents attached.
-                  </Text>
-                )}
-              </View>
+                </View>
+              )}
             </>
           )}
         </ScrollView>

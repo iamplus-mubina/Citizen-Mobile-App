@@ -26,7 +26,6 @@ import {
   getCategoryTitle as getTitle,
   toFrontendCategory,
 } from '@/services/popularService';
-import { getServicesByCategory as getMockServicesByCategory } from '@/services/mock/popularServices.data';
 import { useLanguageStore } from '@/store/useLanguageStore';
 
 export default function CategoryServicesScreen() {
@@ -45,36 +44,10 @@ export default function CategoryServicesScreen() {
   const fetchServices = useCallback(async () => {
     try {
       const data = await popularService.getServicesByCategory(categoryId);
-      if (Array.isArray(data) && data.length > 0) {
-        setServices(data);
-      } else {
-        // Fallback to mock data if backend has no active records in this category yet
-        const mockList = getMockServicesByCategory(categoryId as any);
-        const mappedMock: PopularServiceItem[] = (mockList || []).map((m: any) => ({
-          id: m.id,
-          name: m.title,
-          category: m.categoryId,
-          description: m.description,
-          requiredDocuments: Array.isArray(m.requiredDocuments)
-            ? m.requiredDocuments.map((d: any) => (typeof d === 'string' ? d : d.name))
-            : [],
-          isActive: true,
-        }));
-        setServices(mappedMock);
-      }
+      setServices(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('[CategoryServicesScreen] fetchServices error:', err);
-      const mockList = getMockServicesByCategory(categoryId as any);
-      setServices(
-        (mockList || []).map((m: any) => ({
-          id: m.id,
-          name: m.title,
-          category: m.categoryId,
-          description: m.description,
-          requiredDocuments: (m.requiredDocuments || []).map((d: any) => (typeof d === 'string' ? d : d.name)),
-          isActive: true,
-        }))
-      );
+      setServices([]);
     } finally {
       setLoading(false);
       setRefreshing(false);

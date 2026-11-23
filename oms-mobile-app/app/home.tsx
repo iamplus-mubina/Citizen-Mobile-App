@@ -60,7 +60,7 @@ export default function HomeScreen() {
   }, [cleanPhotoUrlM]);
 
   useEffect(() => {
-    if (params?.tab && ['home', 'complaints', 'updates', 'profile', 'notifications', 'contact'].includes(params.tab)) {
+    if (params?.tab && ['home', 'complaints', 'updates', 'profile', 'notifications', 'contact', 'myrequests'].includes(params.tab)) {
       setActiveTab(params.tab as TabType);
     }
   }, [params?.tab]);
@@ -388,6 +388,8 @@ export default function HomeScreen() {
         return <ContactUs />;
       case 'profile':
         return <Profile />;
+      case 'myrequests':
+        return null;
     }
   };
 
@@ -406,7 +408,11 @@ export default function HomeScreen() {
         <BottomNavigation 
           activeTab={activeTab} 
           onTabPress={(tab) => {
-            setActiveTab(tab);
+            if (tab === 'myrequests') {
+              router.push('/services/my-applications' as any);
+            } else {
+              setActiveTab(tab);
+            }
           }} 
         />
       </View>

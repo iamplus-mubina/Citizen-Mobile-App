@@ -70,35 +70,25 @@ export interface PopularServiceApplication {
     description?: string;
     requiredDocuments?: string[];
   };
-  // visitor sub-object as returned by backend
-  visitor?: {
-    id: number;
-    fullName?: string;
-    firstName?: string;
-    middleName?: string;
-    lastName?: string;
-    phone?: string;
-    alternatePhone?: string;
-    email?: string;
-    profileImage?: string;
-  };
   visitorId: number;
-  // convenience flat fields (populated by normalizeApplication)
   applicantName?: string;
   mobileNumber?: string;
   email?: string;
   profileImage?: string;
   documents: PopularServiceDocument[];
   remarks?: string;
-  status: 'PENDING' | 'IN_PROGRESS' | 'APPROVED' | 'REJECTED';
+  status: 'PENDING' | 'SCHEDULED' | 'APPROVED' | 'REJECTED';
   rejectionReason?: string;
+  scheduleDate?: string;
+  schedulePlace?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface ApplyPopularServicePayload {
   serviceId: number;
-  documents: PopularServiceDocument[];
+  applicantName: string;
+  mobileNumber: string;
   remarks?: string;
 }
 
@@ -124,32 +114,6 @@ export const toFrontendCategory = (cat: string): FrontendCategoryKey => {
 
 export const getCategoryTitle = (cat: string): string => {
   return CATEGORY_TITLES[cat] || cat;
-};
-
-/**
- * Normalizes a raw API application response into a flat PopularServiceApplication.
- * The backend returns visitor info nested under `app.visitor.*`
- * but the app reads flat fields like `applicantName`, `mobileNumber`, `createdAt`.
- */
-const normalizeApplication = (raw: any): PopularServiceApplication => {
-  const visitor = raw.visitor || {};
-  const fullName =
-    visitor.fullName ||
-    [visitor.firstName, visitor.middleName, visitor.lastName]
-      .filter(Boolean)
-      .join(' ') ||
-    '';
-
-  return {
-    ...raw,
-    applicantName: raw.applicantName || fullName || undefined,
-    mobileNumber: raw.mobileNumber || visitor.phone || visitor.alternatePhone || undefined,
-    email: raw.email || visitor.email || undefined,
-    profileImage: raw.profileImage || visitor.profileImage || undefined,
-    // backend uses createdDate / updatedDate — normalise to camelCase
-    createdAt: raw.createdAt || raw.createdDate || '',
-    updatedAt: raw.updatedAt || raw.updatedDate || '',
-  };
 };
 
 export const popularService = {
@@ -197,8 +161,7 @@ export const popularService = {
   getMyApplications: async (): Promise<PopularServiceApplication[]> => {
     try {
       const res = await api.get('/popular-services/citizen/my-applications');
-      const raw: any[] = res.data?.data || [];
-      return raw.map(normalizeApplication);
+      return res.data?.data || [];
     } catch (err) {
       console.error('[popularService] getMyApplications error:', err);
       return [];
@@ -209,7 +172,7 @@ export const popularService = {
   getApplicationById: async (id: number | string): Promise<PopularServiceApplication | null> => {
     try {
       const res = await api.get(`/popular-services/citizen/applications/${id}`);
-      if (res.data?.data) return normalizeApplication(res.data.data);
+      if (res.data?.data) return res.data.data;
     } catch (err: any) {
       console.warn('[popularService] Direct application fetch failed, checking in my-applications list...', err?.message);
     }

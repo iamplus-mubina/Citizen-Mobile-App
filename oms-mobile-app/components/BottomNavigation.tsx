@@ -3,20 +3,20 @@ import {
   HomeIcon as HomeOutline, 
   DocumentTextIcon as DocumentOutline,
   MegaphoneIcon as MegaphoneOutline,
-  UserIcon as UserOutline,
   PhoneIcon as PhoneOutline,
+  ClipboardDocumentListIcon as ClipboardOutline,
 } from 'react-native-heroicons/outline';
 import { 
   HomeIcon as HomeSolid, 
   DocumentTextIcon as DocumentSolid,
   MegaphoneIcon as MegaphoneSolid,
-  UserIcon as UserSolid,
   PhoneIcon as PhoneSolid,
+  ClipboardDocumentListIcon as ClipboardSolid,
 } from 'react-native-heroicons/solid';
 import { colors } from '@/constants/Colors';
 import { useTranslation } from '@/store/useLanguageStore';
 
-export type TabType = 'home' | 'complaints' | 'updates' | 'contact' | 'profile' | 'notifications';
+export type TabType = 'home' | 'complaints' | 'updates' | 'contact' | 'profile' | 'notifications' | 'myrequests';
 
 interface BottomNavigationProps {
   activeTab: TabType;
@@ -31,8 +31,8 @@ export function BottomNavigation({ activeTab, onTabPress, updatesBadgeCount }: B
     { id: 'complaints' as TabType, label: t('nav.complaints'), OutlineIcon: DocumentOutline, SolidIcon: DocumentSolid },
     { id: 'updates' as TabType, label: t('nav.updates'), OutlineIcon: MegaphoneOutline, SolidIcon: MegaphoneSolid, badge: updatesBadgeCount },
     { id: 'home' as TabType, label: t('nav.home'), OutlineIcon: HomeOutline, SolidIcon: HomeSolid },
+    { id: 'myrequests' as TabType, label: t('nav.myRequests', 'My Requests'), OutlineIcon: ClipboardOutline, SolidIcon: ClipboardSolid },
     { id: 'contact' as TabType, label: t('nav.contact'), OutlineIcon: PhoneOutline, SolidIcon: PhoneSolid },
-    { id: 'profile' as TabType, label: t('nav.profile'), OutlineIcon: UserOutline, SolidIcon: UserSolid },
   ];
 
   return (

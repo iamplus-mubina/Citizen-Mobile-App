@@ -26,6 +26,7 @@ export const translations = {
       contact: 'Contact Us',
       profile: 'Profile',
       notifications: 'Notifications',
+      myRequests: 'My Requests',
     },
     header: {
       citizenPortal: 'Citizen Portal',
@@ -116,6 +117,8 @@ export const translations = {
       chooseFile: 'Choose Document (PDF or Photo)',
       submitApplication: 'Submit Application',
       submitting: 'Submitting...',
+      scheduled: 'Scheduled',
+      meetingScheduled: 'Meeting Scheduled',
     },
     complaints: {
       title: 'My Complaints',
@@ -197,6 +200,7 @@ export const translations = {
       contact: 'संपर्क',
       profile: 'प्रोफाइल',
       notifications: 'सूचना',
+      myRequests: 'माझे अर्ज',
     },
     header: {
       citizenPortal: 'नागरिक पोर्टल',
@@ -287,6 +291,8 @@ export const translations = {
       chooseFile: 'कागदपत्र निवडा (PDF किंवा फोटो)',
       submitApplication: 'अर्ज सबमिट करा',
       submitting: 'सबमिट होत आहे...',
+      scheduled: 'नियोजित',
+      meetingScheduled: 'भेट नियोजित',
     },
     complaints: {
       title: 'माझ्या तक्रारी',
