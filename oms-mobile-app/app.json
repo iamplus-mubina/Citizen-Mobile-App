@@ -2,7 +2,7 @@
   "expo": {
     "name": "Citizen E-Connect",
     "slug": "oms-mobile-app",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/citizen_logo.png",
     "scheme": "omsmobileapp",
@@ -13,6 +13,7 @@
     },
     "android": {
       "package": "com.oms.citizen",
+      "versionCode": 7,
       "googleServicesFile": "./google-services.json",
       "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {

@@ -398,9 +398,20 @@ export default function HomeScreen() {
       <View className={containerClass}>
         <View className="flex-1">
           <Header
+            variant={activeTab === 'home' ? 'home' : 'standard'}
+            title={
+              activeTab === 'complaints' ? t('nav.complaints', 'Complaints') :
+              activeTab === 'updates' ? t('nav.updates', 'Updates') :
+              activeTab === 'notifications' ? t('nav.notifications', 'Notifications') :
+              activeTab === 'contact' ? t('nav.contact', 'Contact Us') :
+              activeTab === 'profile' ? t('nav.profile', 'Profile') : undefined
+            }
+            showBack={activeTab !== 'home'}
+            onBack={() => setActiveTab('home')}
             avatarUrl={profilePhoto || undefined}
             notificationCount={unreadCount}
             onNotificationPress={() => setActiveTab('notifications')}
+            onProfilePress={() => setActiveTab('profile')}
           />
           {renderTabContent()}
         </View>
