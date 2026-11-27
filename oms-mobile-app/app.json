@@ -48,7 +48,8 @@
           "icon": "./assets/images/citizen_logo.png",
           "color": "#182641"
         }
-      ]
+      ],
+      "@react-native-firebase/app"
     ],
     "experiments": {
       "typedRoutes": true

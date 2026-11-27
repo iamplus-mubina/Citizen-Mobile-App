@@ -11,6 +11,7 @@ import {
 } from '@expo-google-fonts/inter';
 import { useSystemConfigStore } from '@/store/useSystemConfigStore';
 import { useLanguageStore } from '@/store/useLanguageStore';
+import { useBaseUrlStore } from '@/store/useBaseUrlStore';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -23,6 +24,13 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
+    // 1. Resolve base URL first:
+    //    - Staging:    fetches from Firebase Firestore 'mn' collection (can be changed remotely)
+    //    - Production: reads from EXPO_PUBLIC_API_URL in .env (baked into build)
+    useBaseUrlStore.getState().initialize();
+
+    // 2. System config and language init (these also depend on the base URL,
+    //    but they are resilient — they will retry if the URL is not yet ready)
     useSystemConfigStore.getState().fetchSystemConfig();
     useLanguageStore.getState().initLanguage();
   }, []);
@@ -64,4 +72,3 @@ export default function RootLayout() {
     </Stack>
   );
 }
-

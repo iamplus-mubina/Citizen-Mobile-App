@@ -2,44 +2,16 @@ import axios from 'axios';
 import { Platform } from 'react-native';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
+import { useBaseUrlStore } from '@/store/useBaseUrlStore';
 
-
-const resolveBaseUrl = (): string => {
-  const envUrl = process.env.EXPO_PUBLIC_API_URL;
-
-  // 1. Always prefer the .env value (set via EXPO_PUBLIC_API_URL)
-  if (envUrl) {
-    // If it's a real server URL (not localhost), use it directly
-    if (!envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
-      return envUrl;
-    }
-    // If it's a localhost URL, try to resolve Metro host IP for physical devices
-    const hostUri = Constants.expoConfig?.hostUri || (Constants as any).manifest?.debuggerHost;
-    if (hostUri) {
-      const ip = hostUri.split(':')[0];
-      return `http://${ip}:8080`;
-    }
-    // Otherwise use the localhost URL as-is (emulator)
-    return envUrl;
-  }
-
-  // 2. No .env set on mobile device with Metro
-  const hostUri = Constants.expoConfig?.hostUri || (Constants as any).manifest?.debuggerHost;
-  if (hostUri && Platform.OS !== 'web') {
-    const ip = hostUri.split(':')[0];
-    return `http://${ip}:8080`;
-  }
-
-  // 3. Fallback to live deployed OMS API (per rules.md)
-  return 'https://mn-0042-api.digitaloms.in';
-};
-
-export const BASE_URL = resolveBaseUrl().replace(/\/+$/, '');
-console.log('[OMS] Resolved BASE_URL:', BASE_URL);
+/**
+ * Returns the current base URL at call-time from the store.
+ * - Staging:    value comes from Firebase Firestore (updated remotely).
+ * - Production: value comes from EXPO_PUBLIC_API_URL in .env.
+ */
+export const getBaseUrl = (): string => useBaseUrlStore.getState().baseUrl;
 
 export const api = axios.create({
-  baseURL: BASE_URL,
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
@@ -47,7 +19,7 @@ export const api = axios.create({
   },
 });
 
-// In-memory fallback token cache in case both AsyncStorage and localStorage are unavailable
+// In-memory fallback token cache in case AsyncStorage is unavailable
 let memoryToken: string | null = null;
 
 export const getStoredToken = async (): Promise<string | null> => {
@@ -97,9 +69,14 @@ export const removeStoredToken = async (): Promise<void> => {
   }
 };
 
-// Request Interceptor: Attach Bearer Token
+// ── Request Interceptor ───────────────────────────────────────────────────────
+// Sets baseURL dynamically on every request so the URL change from Firebase
+// is picked up without restarting the app.
 api.interceptors.request.use(
   async (config) => {
+    // Inject the current base URL from store (staging = Firebase, prod = .env)
+    config.baseURL = getBaseUrl();
+
     try {
       const token = await getStoredToken();
       if (token) {
@@ -121,7 +98,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor: Handle 401 (session expired)
+// ── Response Interceptor ──────────────────────────────────────────────────────
 let isRedirectingToLogin = false;
 
 api.interceptors.response.use(
