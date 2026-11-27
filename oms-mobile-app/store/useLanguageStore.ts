@@ -88,6 +88,8 @@ export const translations = {
       editProfile: 'Edit Profile',
     },
     home: {
+      greeting: 'Namaskar',
+      whatToDoToday: 'What would you like to do today?',
       raiseComplaint: 'Raise a Complaint',
       popularServices: 'Popular Services',
       announcements: 'Announcements',
@@ -262,6 +264,8 @@ export const translations = {
       editProfile: 'प्रोफाइल संपादित करा',
     },
     home: {
+      greeting: 'नमस्कार',
+      whatToDoToday: 'आज आपण काय करू इच्छिता?',
       raiseComplaint: 'तक्रार नोंदवा',
       popularServices: 'लोकप्रिय सेवा',
       announcements: 'घोषणा',
